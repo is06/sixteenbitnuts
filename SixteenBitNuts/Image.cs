@@ -3,10 +3,10 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace SixteenBitNuts
 {
-    class Image
+    public class Image
     {
-        private SpriteBatch spriteBatch;
-        private Texture2D texture;
+        private readonly SpriteBatch spriteBatch;
+        private readonly Texture2D texture;
 
         public Vector2 Position { get; set; }
         public Color Color { get; set; }
@@ -20,11 +20,6 @@ namespace SixteenBitNuts
             Color = Color.White;
             Scale = Vector2.One;
             Position = position;
-        }
-
-        public void Update()
-        {
-
         }
 
         public void Draw()
