@@ -200,8 +200,8 @@ namespace SixteenBitNuts
 
             // Components
             spriteBatch = new SpriteBatch(map.Graphics);
-            debugTexture = map.Content.Load<Texture2D>("sprites/debug_1624");
-            sprite = new Sprite("player", map.Graphics, map.Content);
+            debugTexture = map.Content.Load<Texture2D>("Game/sprites/debug_1624");
+            sprite = new Sprite("gameplay/player", map.Graphics, map.Content);
         }
 
         /// <summary>

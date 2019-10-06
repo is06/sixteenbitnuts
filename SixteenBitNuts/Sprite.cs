@@ -70,7 +70,7 @@ namespace SixteenBitNuts
 
             // Loading sprite descriptor and texture
             LoadFromFile("Data/sprites/" + name + ".sprite");
-            texture = content.Load<Texture2D>("sprites/" + textureName);
+            texture = content.Load<Texture2D>("Game/sprites/" + textureName);
         }
 
         public void Draw(Vector2 position, float layer, Matrix transform)

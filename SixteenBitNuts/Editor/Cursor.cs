@@ -49,10 +49,10 @@ namespace SixteenBitNuts.Editor
             this.map = map;
             this.camera = camera;
             spriteBatch = new SpriteBatch(map.Graphics);
-            textures[0] = map.Content.Load<Texture2D>("editor/cursor_crosshair");
-            textures[1] = map.Content.Load<Texture2D>("editor/cursor_resize_horizontal");
-            textures[2] = map.Content.Load<Texture2D>("editor/cursor_resize_vertical");
-            textures[3] = map.Content.Load<Texture2D>("editor/cursor_move");
+            textures[0] = map.Content.Load<Texture2D>("Engine/editor/cursor_crosshair");
+            textures[1] = map.Content.Load<Texture2D>("Engine/editor/cursor_resize_horizontal");
+            textures[2] = map.Content.Load<Texture2D>("Engine/editor/cursor_resize_vertical");
+            textures[3] = map.Content.Load<Texture2D>("Engine/editor/cursor_move");
         }
 
         public void Update()

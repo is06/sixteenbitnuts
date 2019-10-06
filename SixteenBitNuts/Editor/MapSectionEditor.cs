@@ -5,7 +5,7 @@ using System;
 
 namespace SixteenBitNuts.Editor
 {
-    class MapSectionEditor
+    public class MapSectionEditor
     {
         #region Constants
 
@@ -21,7 +21,8 @@ namespace SixteenBitNuts.Editor
 
         #region Components
 
-        private readonly EntityBar entityBar;
+        protected Toolbar toolbar;
+
         private readonly Cursor cursor;
         private readonly Texture2D frameTexture;
         private readonly Texture2D gridTexture;
@@ -33,16 +34,16 @@ namespace SixteenBitNuts.Editor
         {
             Map = map;
 
-            entityBar = new EntityBar(this);
+            toolbar = new Toolbar(this);
             cursor = new Cursor(map, map.Camera);
-            frameTexture = map.Content.Load<Texture2D>("editor/frame");
-            gridTexture = map.Content.Load<Texture2D>("editor/grid");
+            frameTexture = map.Content.Load<Texture2D>("Engine/editor/frame");
+            gridTexture = map.Content.Load<Texture2D>("Engine/editor/grid");
             spriteBatch = new SpriteBatch(map.Graphics);
         }
 
         public void Update()
         {
-            entityBar.Update();
+            toolbar.Update();
             cursor.Update();
 
             #region Draw a tile
@@ -51,12 +52,12 @@ namespace SixteenBitNuts.Editor
             {
                 // Select a tile in the bar
                 bool clickedOnBarElement = false;
-                foreach (EntityBarButton button in entityBar.Buttons)
+                foreach (ToolbarButton button in toolbar.Buttons)
                 {
                     if (button.HitBox.Contains(cursor.Position))
                     {
                         clickedOnBarElement = true;
-                        entityBar.SelectedTileId = button.Id;
+                        toolbar.SelectedTileId = button.Id;
                         break;
                     }
                 }
@@ -70,10 +71,10 @@ namespace SixteenBitNuts.Editor
                     {
                         Map.CurrentMapSection.Tiles.Add(new Tile(
                             Map.CurrentMapSection.Tileset,
-                            entityBar.SelectedTileId,
+                            toolbar.SelectedTileId,
                             drawerPosition,
-                            Map.CurrentMapSection.Tileset.GetSizeFromId(entityBar.SelectedTileId),
-                            Map.CurrentMapSection.Tileset.GetTypeFromId(entityBar.SelectedTileId),
+                            Map.CurrentMapSection.Tileset.GetSizeFromId(toolbar.SelectedTileId),
+                            Map.CurrentMapSection.Tileset.GetTypeFromId(toolbar.SelectedTileId),
                             0
                         ));
                     }
@@ -145,7 +146,7 @@ namespace SixteenBitNuts.Editor
             }
             spriteBatch.End();
 
-            entityBar.Draw();
+            toolbar.Draw();
             cursor.Draw();
 
             // Draw frame

@@ -33,7 +33,7 @@
   <ItemGroup>
     <Reference Include="MonoGame.Framework, Version=3.7.1.189, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\MonoGame\v3.0\Assemblies\Windows\MonoGame.Framework.dll</HintPath>
+      <HintPath>$(MonoGameInstallDirectory)\MonoGame\v3.0\Assemblies\Windows\MonoGame.Framework.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="System" />
@@ -47,8 +47,10 @@
     <Compile Include="Console.cs" />
     <Compile Include="Direction.cs" />
     <Compile Include="Editor\Cursor.cs" />
-    <Compile Include="Editor\EntityBar.cs" />
-    <Compile Include="Editor\EntityBarButton.cs" />
+    <Compile Include="Editor\EntityToolbarButton.cs" />
+    <Compile Include="Editor\TileToolbarButton.cs" />
+    <Compile Include="Editor\Toolbar.cs" />
+    <Compile Include="Editor\ToolbarButton.cs" />
     <Compile Include="Editor\MapEditor.cs" />
     <Compile Include="Editor\MapSection.cs" />
     <Compile Include="Editor\MapSectionEditor.cs" />
@@ -76,7 +78,7 @@
     <Compile Include="TransitionGuide.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Content\Content.mgcb" />
+    <None Include="Content\engine\Content.mgcb" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

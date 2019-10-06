@@ -23,8 +23,8 @@ namespace SixteenBitNuts
 
             // Components
             spriteBatch = new SpriteBatch(graphicsDevice);
-            texture = contentManager.Load<Texture2D>("tilesets/" + name);
-            debugTexture = contentManager.Load<Texture2D>("sprites/debug_1616");
+            texture = contentManager.Load<Texture2D>("Game/tilesets/" + name);
+            debugTexture = contentManager.Load<Texture2D>("Game/sprites/debug_1616");
             elements = new Dictionary<int, TileElement>();
 
             LoadFromFile("Data/tilesets/" + name + ".tileset");

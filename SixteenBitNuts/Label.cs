@@ -16,7 +16,7 @@ namespace SixteenBitNuts
         public Label(Map map)
         {
             spriteBatch = new SpriteBatch(map.Graphics);
-            font = map.Content.Load<SpriteFont>("fonts/numbers");
+            font = map.Content.Load<SpriteFont>("Engine/fonts/numbers");
         }
 
         public void Update()

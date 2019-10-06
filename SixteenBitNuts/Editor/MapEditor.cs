@@ -16,9 +16,9 @@ namespace SixteenBitNuts.Editor
         private readonly Texture2D gridTexture;
         private readonly SpriteBatch spriteBatch;
         private readonly Map map;
-        private Label cursorPosition;
+        private readonly Label cursorPosition;
 
-        private int gridZoom = 4;
+        private readonly int gridZoom = 4;
         private bool isKeyAddPressed = false;
 
         public bool IsMovingSection { get; set; }
@@ -36,11 +36,11 @@ namespace SixteenBitNuts.Editor
             };
             Cursor = new Cursor(map, camera);
             sections = new Dictionary<int, MapSection>();
-            frame = new Image(map, new Vector2(0, 0), "editor/level_frame")
+            frame = new Image(map, new Vector2(0, 0), "Engine/editor/level_frame")
             {
                 Color = Color.BlueViolet
             };
-            gridTexture = map.Content.Load<Texture2D>("editor/grid");
+            gridTexture = map.Content.Load<Texture2D>("Engine/editor/grid");
             spriteBatch = new SpriteBatch(map.Graphics);
 
             foreach (KeyValuePair<int, SixteenBitNuts.MapSection> section in map.Sections)

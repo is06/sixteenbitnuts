@@ -42,7 +42,6 @@ namespace SixteenBitNuts
         public Game()
         {
             graphics = new GraphicsDeviceManager(this);
-            
         }
 
         protected override void Initialize()

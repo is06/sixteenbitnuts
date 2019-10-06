@@ -32,7 +32,7 @@ namespace SixteenBitNuts
         {
             this.map = map;
             spriteBatch = new SpriteBatch(map.Graphics);
-            transitionCornerTexture = map.Content.Load<Texture2D>("editor/transition_corner");
+            transitionCornerTexture = map.Content.Load<Texture2D>("Engine/editor/transition_corner");
 
             // Properties
             Bounds = bounds;

@@ -14,7 +14,7 @@ namespace SixteenBitNuts
         public Line(Map map, Rectangle bounds, Color color)
         {
             spriteBatch = new SpriteBatch(map.Graphics);
-            texture = map.Content.Load<Texture2D>("sprites/pixel");
+            texture = map.Content.Load<Texture2D>("Engine/primitive/pixel");
             Bounds = bounds;
             Color = color;
         }
