@@ -57,13 +57,14 @@ namespace SixteenBitNuts
         }
         public Player Player { get; private set; }
         public Camera Camera { get; private set; }
+        public int EntityLastIndex { get; set; }
 
         #endregion
 
         #region Components
 
         protected readonly Dictionary<int, MapSection> sections;
-        private readonly MapSectionEditor sectionEditor;
+        protected MapSectionEditor sectionEditor;
         private readonly MapEditor mapEditor;
         private readonly TransitionGuide transitionGuide;
 

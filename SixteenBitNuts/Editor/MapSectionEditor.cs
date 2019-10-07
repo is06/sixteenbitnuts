@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.Collections.Generic;
 
 namespace SixteenBitNuts.Editor
 {
@@ -46,7 +47,7 @@ namespace SixteenBitNuts.Editor
             toolbar.Update();
             cursor.Update();
 
-            #region Draw a tile
+            #region Draw
 
             if (Mouse.GetState().LeftButton == ButtonState.Pressed)
             {
@@ -58,16 +59,24 @@ namespace SixteenBitNuts.Editor
                     {
                         clickedOnBarElement = true;
                         toolbar.SelectedTileId = button.Id;
+                        toolbar.SelectedButtonType = button.GetType();
+
+                        if (button.GetType() == typeof(EntityToolbarButton))
+                        {
+                            toolbar.SelectedEntityId = ((EntityToolbarButton)button).Type;
+                        }
+                        
                         break;
                     }
                 }
 
-                // Draw a tile
+                
                 if (!clickedOnBarElement)
                 {
                     Vector2 drawerPosition = GetGridSnapedPosition();
 
-                    if (!TileAlreadyAtPosition(drawerPosition))
+                    // Draw a tile
+                    if (toolbar.SelectedButtonType == typeof(TileToolbarButton) && !TileAlreadyAtPosition(drawerPosition))
                     {
                         Map.CurrentMapSection.Tiles.Add(new Tile(
                             Map.CurrentMapSection.Tileset,
@@ -77,6 +86,12 @@ namespace SixteenBitNuts.Editor
                             Map.CurrentMapSection.Tileset.GetTypeFromId(toolbar.SelectedTileId),
                             0
                         ));
+                    }
+
+                    // Draw an entity
+                    if (toolbar.SelectedButtonType == typeof(EntityToolbarButton) && !EntityAlreadyAtPosition(drawerPosition))
+                    {
+                        AddEntity(toolbar.SelectedEntityId, drawerPosition);
                     }
                 }
             }
@@ -165,6 +180,11 @@ namespace SixteenBitNuts.Editor
             spriteBatch.End();
         }
 
+        protected virtual void AddEntity(string entityType, Vector2 position)
+        {
+
+        }
+
         private Vector2 GetGridSnapedPosition()
         {
             Vector2 position = cursor.InGamePosition;
@@ -179,6 +199,19 @@ namespace SixteenBitNuts.Editor
             foreach (Tile tile in Map.CurrentMapSection.Tiles)
             {
                 if (tile.Position == position)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private bool EntityAlreadyAtPosition(Vector2 position)
+        {
+            foreach (KeyValuePair<string, Entity> entity in Map.CurrentMapSection.Entities)
+            {
+                if (entity.Value.Position == position)
                 {
                     return true;
                 }

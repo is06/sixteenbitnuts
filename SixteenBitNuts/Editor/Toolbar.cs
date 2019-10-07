@@ -7,7 +7,9 @@ namespace SixteenBitNuts.Editor
     {
         public MapSectionEditor Editor { get; private set; }
         public List<ToolbarButton> Buttons { get; }
+        public System.Type SelectedButtonType { get; set; }
         public int SelectedTileId { get; set; }
+        public string SelectedEntityId { get; set; }
 
         public Toolbar(MapSectionEditor editor)
         {

@@ -35,7 +35,7 @@ namespace SixteenBitNuts.Editor
 
         #region Components
 
-        private readonly SpriteBatch spriteBatch;
+        protected readonly SpriteBatch spriteBatch;
         private readonly Texture2D buttonTexture;
 
         #endregion
