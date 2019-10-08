@@ -14,6 +14,12 @@ namespace SixteenBitNuts.Editor
 
         #endregion
 
+        #region Fields
+
+        private bool hasErasedAnEntity;
+
+        #endregion
+
         #region Properties
 
         public Map Map { get; private set; }
@@ -104,14 +110,32 @@ namespace SixteenBitNuts.Editor
             {
                 Vector2 eraserPosition = GetGridSnapedPosition();
 
-                foreach (Tile tile in Map.CurrentMapSection.Tiles)
+                foreach (KeyValuePair<string, Entity> entity in Map.CurrentMapSection.Entities)
                 {
-                    if (tile.Position == eraserPosition)
+                    if (entity.Value.Position == eraserPosition)
                     {
-                        Map.CurrentMapSection.Tiles.Remove(tile);
+                        Map.CurrentMapSection.Entities.Remove(entity.Key);
+                        hasErasedAnEntity = true;
                         break;
                     }
                 }
+
+                if (!hasErasedAnEntity)
+                {
+                    foreach (Tile tile in Map.CurrentMapSection.Tiles)
+                    {
+                        if (tile.Position == eraserPosition)
+                        {
+                            Map.CurrentMapSection.Tiles.Remove(tile);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (hasErasedAnEntity && Mouse.GetState().RightButton == ButtonState.Released)
+            {
+                hasErasedAnEntity = false;
             }
 
             #endregion
