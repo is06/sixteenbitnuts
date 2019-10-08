@@ -58,6 +58,13 @@ namespace SixteenBitNuts
         public Player Player { get; private set; }
         public Camera Camera { get; private set; }
         public int EntityLastIndex { get; set; }
+        public bool IsInSectionEditMode
+        {
+            get
+            {
+                return isInSectionEditMode;
+            }
+        }
 
         #endregion
 
@@ -332,9 +339,9 @@ namespace SixteenBitNuts
             }
             else
             { 
-                foreach (KeyValuePair<int, MapSection> pair in sections)
+                foreach (KeyValuePair<int, MapSection> section in sections)
                 {
-                    pair.Value.Draw(Camera.Transform);
+                    section.Value.Draw(Camera.Transform);
                 }
 
                 Player.Draw(Camera.Transform);

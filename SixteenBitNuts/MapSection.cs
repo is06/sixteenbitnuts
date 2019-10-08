@@ -69,6 +69,14 @@ namespace SixteenBitNuts
             {
                 pair.Value.Draw(transform);
             }
+
+            if (map.IsInSectionEditMode)
+            {
+                foreach (KeyValuePair<string, Entity> pair in Entities)
+                {
+                    pair.Value.EditorDraw(transform);
+                }
+            }
         }
 
         /// <summary>

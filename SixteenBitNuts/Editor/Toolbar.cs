@@ -9,7 +9,7 @@ namespace SixteenBitNuts.Editor
         public List<ToolbarButton> Buttons { get; }
         public System.Type SelectedButtonType { get; set; }
         public int SelectedTileId { get; set; }
-        public string SelectedEntityId { get; set; }
+        public string SelectedEntityType { get; set; }
 
         public Toolbar(MapSectionEditor editor)
         {
@@ -28,6 +28,12 @@ namespace SixteenBitNuts.Editor
                 });
                 position += 22;
             }
+
+            Buttons.Add(new EntityToolbarButton(this, "spawn")
+            {
+                Id = 100,
+                Position = new Vector2(position, 4),
+            });
         }
 
         public void Update()

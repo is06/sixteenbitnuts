@@ -69,7 +69,7 @@ namespace SixteenBitNuts.Editor
 
                         if (button.GetType() == typeof(EntityToolbarButton))
                         {
-                            toolbar.SelectedEntityId = ((EntityToolbarButton)button).Type;
+                            toolbar.SelectedEntityType = ((EntityToolbarButton)button).Type;
                         }
                         
                         break;
@@ -97,7 +97,7 @@ namespace SixteenBitNuts.Editor
                     // Draw an entity
                     if (toolbar.SelectedButtonType == typeof(EntityToolbarButton) && !EntityAlreadyAtPosition(drawerPosition))
                     {
-                        AddEntity(toolbar.SelectedEntityId, drawerPosition);
+                        AddEntity(toolbar.SelectedEntityType, drawerPosition);
                     }
                 }
             }
@@ -206,7 +206,24 @@ namespace SixteenBitNuts.Editor
 
         protected virtual void AddEntity(string entityType, Vector2 position)
         {
+            string name = entityType;
+            while (Map.CurrentMapSection.Entities.ContainsKey(name))
+            {
+                name = entityType + "_" + Map.EntityLastIndex;
+                Map.EntityLastIndex++;
+            }
 
+            switch (entityType)
+            {
+                case "spawn":
+                    Map.CurrentMapSection.Entities.Add(name, new SpawnPoint(Map)
+                    {
+                        Position = position
+                    });
+                    break;
+                default:
+                    break;
+            }
         }
 
         private Vector2 GetGridSnapedPosition()

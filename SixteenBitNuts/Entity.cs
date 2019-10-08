@@ -26,6 +26,11 @@ namespace SixteenBitNuts
 
         }
 
+        public virtual void EditorDraw(Matrix transform)
+        {
+
+        }
+
         public virtual void DebugDraw(Matrix transform)
         {
 

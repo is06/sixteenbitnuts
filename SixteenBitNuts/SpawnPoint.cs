@@ -23,6 +23,13 @@ namespace SixteenBitNuts
             base.Draw(transform);
         }
 
+        public override void EditorDraw(Matrix transform)
+        {
+            DebugDraw(transform);
+
+            base.EditorDraw(transform);
+        }
+
         public override void DebugDraw(Matrix transform)
         {
             spriteBatch.Begin(transformMatrix: transform);

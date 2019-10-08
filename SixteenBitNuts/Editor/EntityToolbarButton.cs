@@ -13,7 +13,14 @@ namespace SixteenBitNuts.Editor
         {
             Type = type;
 
-            texture = bar.Editor.Map.Content.Load<Texture2D>("Game/sprites/entities/" + type);
+            if (type == "spawn")
+            {
+                texture = bar.Editor.Map.Content.Load<Texture2D>("Engine/editor/" + type);
+            }
+            else
+            {
+                texture = bar.Editor.Map.Content.Load<Texture2D>("Game/sprites/entities/" + type);
+            }
         }
 
         public override void Draw()
