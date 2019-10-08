@@ -45,7 +45,7 @@ namespace SixteenBitNuts
 
         public KeyboardDispatcher(GameWindow window)
         {
-#if WIN32
+#if WINDOWS
             EventInput.Initialize(window);
             EventInput.CharEntered += CharEntered;
             EventInput.KeyDown += KeyDown;
@@ -93,7 +93,7 @@ namespace SixteenBitNuts
         [STAThread]
         void PasteThread()
         {
-#if WIN32
+#if WINDOWS
             if (Clipboard.ContainsText())
             {
                 pasteResult = Clipboard.GetText();
