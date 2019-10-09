@@ -48,6 +48,7 @@
     <Compile Include="Direction.cs" />
     <Compile Include="Editor\Cursor.cs" />
     <Compile Include="Editor\EntityToolbarButton.cs" />
+    <Compile Include="Editor\MapSectionPreview.cs" />
     <Compile Include="Editor\TileToolbarButton.cs" />
     <Compile Include="Editor\Toolbar.cs" />
     <Compile Include="Editor\ToolbarButton.cs" />
@@ -76,9 +77,6 @@
     <Compile Include="TileOffsetException.cs" />
     <Compile Include="Tileset.cs" />
     <Compile Include="TransitionGuide.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Content\engine\Content.mgcb" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

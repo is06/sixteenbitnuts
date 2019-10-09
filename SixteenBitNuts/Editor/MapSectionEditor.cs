@@ -79,7 +79,7 @@ namespace SixteenBitNuts.Editor
                 
                 if (!clickedOnBarElement)
                 {
-                    Vector2 drawerPosition = GetGridSnapedPosition();
+                    var drawerPosition = GetGridSnapedPosition();
 
                     // Draw a tile
                     if (toolbar.SelectedButtonType == typeof(TileToolbarButton) && !TileAlreadyAtPosition(drawerPosition))
@@ -228,7 +228,7 @@ namespace SixteenBitNuts.Editor
 
         private Vector2 GetGridSnapedPosition()
         {
-            Vector2 position = cursor.InGamePosition;
+            var position = cursor.InGamePosition;
             position.X = ((int)Math.Ceiling(position.X) / GRID_SIZE) * GRID_SIZE;
             position.Y = ((int)Math.Ceiling(position.Y) / GRID_SIZE) * GRID_SIZE;
 
@@ -237,7 +237,7 @@ namespace SixteenBitNuts.Editor
 
         private bool TileAlreadyAtPosition(Vector2 position)
         {
-            foreach (Tile tile in Map.CurrentMapSection.Tiles)
+            foreach (var tile in Map.CurrentMapSection.Tiles)
             {
                 if (tile.Position == position)
                 {

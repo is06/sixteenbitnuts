@@ -319,6 +319,7 @@ namespace SixteenBitNuts
             {
                 keyMapEditModePressed = true;
                 isInMapEditMode = !isInMapEditMode;
+                mapEditor.UpdateLayout();
             }
             if (Keyboard.GetState().IsKeyUp(Keys.F1))
             {

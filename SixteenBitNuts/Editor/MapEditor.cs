@@ -43,12 +43,9 @@ namespace SixteenBitNuts.Editor
             gridTexture = map.Content.Load<Texture2D>("Engine/editor/grid");
             spriteBatch = new SpriteBatch(map.Graphics);
 
-            foreach (KeyValuePair<int, SixteenBitNuts.MapSection> section in map.Sections)
+            foreach (var section in map.Sections)
             {
-                sections[section.Key] = new MapSection(map, this, section.Value.Bounds)
-                {
-                    Index = section.Key
-                };
+                sections[section.Key] = new MapSection(map, this, section.Key, section.Value.Bounds);
             }
 
             cursorPosition = new Label(map)
@@ -91,7 +88,7 @@ namespace SixteenBitNuts.Editor
             {
                 isKeyAddPressed = true;
 
-                Rectangle bounds = new Rectangle(
+                var bounds = new Rectangle(
                     (int)(Cursor.InGamePosition.X * SCALE),
                     (int)(Cursor.InGamePosition.Y * SCALE),
                     480,
@@ -99,10 +96,10 @@ namespace SixteenBitNuts.Editor
                 );
 
                 int nextSectionIndex = sections.Count;
-                sections.Add(nextSectionIndex, new MapSection(map, this, bounds));
+                sections.Add(nextSectionIndex, new MapSection(map, this, nextSectionIndex, bounds));
 
                 // TODO: retrieve tileset from tileset factory
-                Tileset tileset = new Tileset(map.Graphics, map.Content, "tileset3");
+                var tileset = new Tileset(map.Graphics, map.Content, "tileset3");
 
                 // TODO: create a spawn point for this section
                 map.Sections.Add(nextSectionIndex, new SixteenBitNuts.MapSection(map, bounds, tileset, "spawn02"));
@@ -114,9 +111,9 @@ namespace SixteenBitNuts.Editor
 
             #endregion
 
-            foreach (KeyValuePair<int, MapSection> section in sections)
+            foreach (var section in sections)
             {
-                section.Value.Update(section.Key, new Vector2(
+                section.Value.Update(new Vector2(
                     Cursor.InGamePosition.X * SCALE,
                     Cursor.InGamePosition.Y * SCALE
                 ));
@@ -131,8 +128,8 @@ namespace SixteenBitNuts.Editor
 
         public void Draw()
         {
-            Point gridOrigin = camera.ViewPort.Bounds.Location - camera.ViewPort.Bounds.Center - (new Point((int)camera.Transform.Translation.X, (int)camera.Transform.Translation.Y));
-            Point gridDestination = camera.ViewPort.Bounds.Location + camera.ViewPort.Bounds.Size - (new Point((int)camera.Transform.Translation.X, (int)camera.Transform.Translation.Y));
+            var gridOrigin = camera.ViewPort.Bounds.Location - camera.ViewPort.Bounds.Center - (new Point((int)camera.Transform.Translation.X, (int)camera.Transform.Translation.Y));
+            var gridDestination = camera.ViewPort.Bounds.Location + camera.ViewPort.Bounds.Size - (new Point((int)camera.Transform.Translation.X, (int)camera.Transform.Translation.Y));
 
             // Draw grid
             spriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: camera.Transform);
@@ -156,7 +153,7 @@ namespace SixteenBitNuts.Editor
             spriteBatch.End();
 
             // Draw map sections
-            foreach (KeyValuePair<int, MapSection> section in sections)
+            foreach (var section in sections)
             {
                 section.Value.Draw(camera.Transform);
             }
@@ -168,6 +165,14 @@ namespace SixteenBitNuts.Editor
         public void UIDraw()
         {
             Cursor.Draw();
+        }
+
+        public void UpdateLayout()
+        {
+            foreach (var section in sections)
+            {
+                section.Value.UpdateLayout();
+            }
         }
 
         public void LoadSection(MapSection section)

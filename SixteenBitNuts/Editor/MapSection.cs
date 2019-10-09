@@ -14,11 +14,18 @@ namespace SixteenBitNuts.Editor
 
     class MapSection
     {
+        public Map Map { get; private set; }
         public int Index { get; set; }
+        public SixteenBitNuts.MapSection RealSection
+        {
+            get
+            {
+                return Map.Sections[Index];
+            }
+        }
 
         private const int SCALE = 16;
 
-        private readonly Map map;
         private readonly MapEditor editor;
         private bool isMoving;
         private bool canResize;
@@ -28,6 +35,7 @@ namespace SixteenBitNuts.Editor
         private Point previousSectionPosition;
         private Rectangle bounds;
         private readonly Box box;
+        private readonly MapSectionPreview preview;
         private readonly Label sizeLabel;
         private readonly Label positionLabel;
 
@@ -43,15 +51,17 @@ namespace SixteenBitNuts.Editor
             }
         }
 
-        public MapSection(Map map, MapEditor editor, Rectangle bounds)
+        public MapSection(Map map, MapEditor editor, int index, Rectangle bounds)
         {
-            this.map = map;
+            Map = map;
+            Index = index;
             this.editor = editor;
             this.bounds = bounds;
 
             previousSectionPosition = new Point(0, 0);
 
             box = new Box(map, bounds, 1, Color.Ivory);
+            preview = new MapSectionPreview(this);
             sizeLabel = new Label(map)
             {
                 Text = "64x128",
@@ -66,7 +76,7 @@ namespace SixteenBitNuts.Editor
             };
         }
 
-        public void Update(int sectionIndex, Vector2 cursorInMapPosition)
+        public void Update(Vector2 cursorInMapPosition)
         {
             box.Color = Color.Ivory;
             sizeLabel.IsVisible = false;
@@ -116,7 +126,9 @@ namespace SixteenBitNuts.Editor
                         editor.IsMovingSection = false;
 
                         // Update all positions in the real map section
-                        map.Sections[sectionIndex].UpdateAllPositions(bounds.Location - previousSectionPosition, bounds.Size);
+                        RealSection.UpdateAllPositions(bounds.Location - previousSectionPosition, bounds.Size);
+
+                        preview.UpdatePreviewTilesFromRealSection();
                     }
                 }
             }
@@ -129,10 +141,10 @@ namespace SixteenBitNuts.Editor
             {
                 if (bounds.Contains(cursorInMapPosition))
                 {
-                    Rectangle leftSide = new Rectangle(bounds.X - 32, bounds.Y, 64, bounds.Height);
-                    Rectangle rightSide = new Rectangle(bounds.X + bounds.Width - 32, bounds.Y, 64, bounds.Height);
-                    Rectangle topSide = new Rectangle(bounds.X, bounds.Y - 32, bounds.Width, 64);
-                    Rectangle bottomSide = new Rectangle(bounds.X, bounds.Y + bounds.Height - 32, bounds.Width, 64);
+                    var leftSide = new Rectangle(bounds.X - 32, bounds.Y, 64, bounds.Height);
+                    var rightSide = new Rectangle(bounds.X + bounds.Width - 32, bounds.Y, 64, bounds.Height);
+                    var topSide = new Rectangle(bounds.X, bounds.Y - 32, bounds.Width, 64);
+                    var bottomSide = new Rectangle(bounds.X, bounds.Y + bounds.Height - 32, bounds.Width, 64);
 
                     if (!editor.IsResizingSection)
                     {
@@ -279,7 +291,9 @@ namespace SixteenBitNuts.Editor
                         editor.IsResizingSection = false;
 
                         // Update all positions in the real map section
-                        map.Sections[sectionIndex].UpdateAllPositions(bounds.Location - previousSectionPosition, bounds.Size);
+                        RealSection.UpdateAllPositions(bounds.Location - previousSectionPosition, bounds.Size);
+
+                        preview.UpdatePreviewTilesFromRealSection();
                     }
                 }
             }
@@ -316,14 +330,21 @@ namespace SixteenBitNuts.Editor
             #endregion
 
             box.Bounds = ScreenBounds;
+            preview.Position = ScreenBounds.Location;
             box.Update();
         }
 
         public void Draw(Matrix transform)
         {
             box.Draw(transform);
+            preview.Draw(transform);
             sizeLabel.Draw(transform);
             positionLabel.Draw(transform);
+        }
+
+        public void UpdateLayout()
+        {
+            preview.UpdatePreviewTilesFromRealSection();
         }
     }
 }
