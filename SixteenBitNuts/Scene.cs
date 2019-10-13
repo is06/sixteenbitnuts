@@ -17,7 +17,7 @@ namespace SixteenBitNuts
             Content = game.Content;
         }
 
-        public virtual void Update()
+        public virtual void Update(GameTime gameTime)
         {
 
         }

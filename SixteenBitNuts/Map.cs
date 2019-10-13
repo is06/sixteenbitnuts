@@ -37,6 +37,9 @@ namespace SixteenBitNuts
         private float transitionDeltaY;
         private bool transitionIsFinished;
 
+        // Death
+        private readonly Timer deathTimer;
+
         #endregion
 
         #region Properties
@@ -93,11 +96,19 @@ namespace SixteenBitNuts
             sections = new Dictionary<int, MapSection>();
             sectionEditor = new MapSectionEditor(this);
             transitionGuide = new TransitionGuide();
+            deathTimer = new Timer()
+            {
+                Duration = 2,
+                Callback = () => {
+                    Player.Position = CurrentMapSection.DefaultSpawnPoint.Position;
+                    Player.IsControllable = true;
+                }
+            };
 
             // Load map descriptor
             LoadFromFile("Data/maps/" + name + ".map");
 
-            Player = new Player(this, CurrentMapSection.Entities[CurrentMapSection.DefaultSpawnPointName].Position);
+            Player = new Player(this, CurrentMapSection.DefaultSpawnPoint.Position);
 
             mapEditor = new MapEditor(this);
         }
@@ -105,9 +116,11 @@ namespace SixteenBitNuts
         /// <summary>
         /// Performs calculations for the map
         /// </summary>
-        public override void Update()
+        public override void Update(GameTime gameTime)
         {
-            base.Update();
+            base.Update(gameTime);
+
+            deathTimer.Update(gameTime);
 
             if (isInMapEditMode)
             {
@@ -311,6 +324,16 @@ namespace SixteenBitNuts
                 }
 
                 #endregion
+
+                #region Player falls down
+
+                if (Player.Position.Y >= CurrentMapSection.Bounds.Bottom)
+                {
+                    Player.IsControllable = false;
+                    deathTimer.Active = true;
+                }
+
+                #endregion
             }
 
             #region Map Editor
@@ -389,7 +412,7 @@ namespace SixteenBitNuts
         public void LoadSectionFromIndex(int index)
         {
             currentSectionIndex = index;
-            Player.Position = CurrentMapSection.Entities[CurrentMapSection.DefaultSpawnPointName].Position;
+            Player.Position = CurrentMapSection.DefaultSpawnPoint.Position;
 
             isInMapEditMode = false;
         }
@@ -541,7 +564,7 @@ namespace SixteenBitNuts
             {
                 case "spawn": // TODO: remove this identifier
                 case "SixteenBitNuts.SpawnPoint":
-                    sections[sectionIndex].Entities[name] = new SpawnPoint(this)
+                    sections[sectionIndex].Entities[name] = new SpawnPoint(this, name)
                     {
                         Position = position
                     };
@@ -564,7 +587,7 @@ namespace SixteenBitNuts
                     " " + section.Value.Bounds.Width +
                     " " + section.Value.Bounds.Height +
                     " " + section.Value.Tileset.Name +
-                    " " + section.Value.DefaultSpawnPointName
+                    " " + section.Value.DefaultSpawnPoint.Name
                 );
 
                 foreach (Tile tile in section.Value.Tiles)

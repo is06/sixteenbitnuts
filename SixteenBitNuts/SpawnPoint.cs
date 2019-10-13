@@ -4,12 +4,15 @@ using System;
 
 namespace SixteenBitNuts
 {
-    class SpawnPoint : Entity
+    public class SpawnPoint : Entity
     {
+        public string Name { get; private set; }
+
         private readonly Texture2D debugTexture;
 
-        public SpawnPoint(Map map) : base(map)
+        public SpawnPoint(Map map, string name) : base(map)
         {
+            Name = name;
             debugTexture = map.Content.Load<Texture2D>("Engine/editor/spawn");
         }
 

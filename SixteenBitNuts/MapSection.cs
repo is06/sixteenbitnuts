@@ -14,6 +14,7 @@ namespace SixteenBitNuts
         private readonly Map map;
         private readonly SpriteBatch spriteBatch;
         private readonly Texture2D transitionCornerTexture;
+        private readonly string defaultSpawnPointName;
 
         #region Properties
 
@@ -21,16 +22,23 @@ namespace SixteenBitNuts
         public Tileset Tileset { get; private set; }
         public List<Tile> Tiles { get; set; }
         public Dictionary<string, Entity> Entities { get; set; }
-        public string DefaultSpawnPointName { get; private set; }
+        public SpawnPoint DefaultSpawnPoint
+        {
+            get
+            {
+                return (SpawnPoint)Entities[defaultSpawnPointName];
+            }
+        }
 
         #endregion
 
         /// <summary>
         /// Constructor
         /// </summary>
-        public MapSection(Map map, Rectangle bounds, Tileset tileset, string defaultSpawnPoint)
+        public MapSection(Map map, Rectangle bounds, Tileset tileset, string defaultSpawnPointName)
         {
             this.map = map;
+            this.defaultSpawnPointName = defaultSpawnPointName;
             spriteBatch = new SpriteBatch(map.Graphics);
             transitionCornerTexture = map.Content.Load<Texture2D>("Engine/editor/transition_corner");
 
@@ -39,7 +47,6 @@ namespace SixteenBitNuts
             Tileset = tileset;
             Tiles = new List<Tile>();
             Entities = new Dictionary<string, Entity>();
-            DefaultSpawnPointName = defaultSpawnPoint;
 
             SetTransitionPoints(bounds);
         }

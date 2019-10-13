@@ -216,7 +216,7 @@ namespace SixteenBitNuts.Editor
             switch (entityType)
             {
                 case "spawn":
-                    Map.CurrentMapSection.Entities.Add(name, new SpawnPoint(Map)
+                    Map.CurrentMapSection.Entities.Add(name, new SpawnPoint(Map, name)
                     {
                         Position = position
                     });
