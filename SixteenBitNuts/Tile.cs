@@ -8,6 +8,7 @@ namespace SixteenBitNuts
 
         public int Id { get; }
         public Vector2 Position { get; set; }
+        public Vector2 Size { get; set; }
         public BoundingBox HitBox
         {
             get
@@ -15,7 +16,7 @@ namespace SixteenBitNuts
                 return new BoundingBox
                 {
                     Min = new Vector3(Position.X, Position.Y, 0),
-                    Max = new Vector3(Position.X + size.X, Position.Y + size.Y, 0)
+                    Max = new Vector3(Position.X + Size.X, Position.Y + Size.Y, 0)
                 };
             }
         }
@@ -25,7 +26,6 @@ namespace SixteenBitNuts
         #region Components
 
         private readonly Tileset tileset;
-        private Vector2 size;
         private readonly float layer;
         public bool IsObstacle;
 
@@ -36,9 +36,9 @@ namespace SixteenBitNuts
             // Properties
             Id = id;
             Position = position;
+            Size = size;
 
             this.tileset = tileset;
-            this.size = size;
             this.layer = layer;
 
             IsObstacle = type == TileType.Obstacle;
@@ -46,12 +46,12 @@ namespace SixteenBitNuts
 
         public void Draw(Matrix transform)
         {
-            tileset.Draw(Position, size, tileset.GetOffsetFromId(Id), layer, transform);
+            tileset.Draw(Position, Size, tileset.GetOffsetFromId(Id), layer, transform);
         }
 
         public void DebugDraw(Matrix transform)
         {
-            tileset.DebugDraw(new Vector2(Position.X, Position.Y), transform);
+            tileset.DebugDraw(Position.ToPoint(), Size.ToPoint(), transform);
         }
     }
 }

@@ -1,26 +1,28 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace SixteenBitNuts
 {
     class Box
     {
-        private Line[] lines;
+        private readonly Line[] lines;
 
         public Rectangle Bounds { get; set; }
         public int Thickness { get; set; }
         public Color Color { get; set; }
 
-        public Box(Map map, Rectangle bounds, int thickness, Color color)
+        public Box(GraphicsDevice graphicsDevice, Rectangle bounds, int thickness, Color color)
         {
             Bounds = bounds;
             Thickness = thickness;
             Color = color;
 
             lines = new Line[4];
-            lines[0] = new Line(map, new Rectangle(0, 0, 1, 1), color);
-            lines[1] = new Line(map, new Rectangle(0, 0, 1, 1), color);
-            lines[2] = new Line(map, new Rectangle(0, 0, 1, 1), color);
-            lines[3] = new Line(map, new Rectangle(0, 0, 1, 1), color);
+            lines[0] = new Line(graphicsDevice, new Rectangle(0, 0, 1, 1), color);
+            lines[1] = new Line(graphicsDevice, new Rectangle(0, 0, 1, 1), color);
+            lines[2] = new Line(graphicsDevice, new Rectangle(0, 0, 1, 1), color);
+            lines[3] = new Line(graphicsDevice, new Rectangle(0, 0, 1, 1), color);
         }
 
         public void Update()

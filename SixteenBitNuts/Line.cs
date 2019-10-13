@@ -11,10 +11,11 @@ namespace SixteenBitNuts
         public Rectangle Bounds { get; set; }
         public Color Color { get; set; }
 
-        public Line(Map map, Rectangle bounds, Color color)
+        public Line(GraphicsDevice graphicsDevice, Rectangle bounds, Color color)
         {
-            spriteBatch = new SpriteBatch(map.Graphics);
-            texture = map.Content.Load<Texture2D>("Engine/primitive/pixel");
+            spriteBatch = new SpriteBatch(graphicsDevice);
+            texture = new Texture2D(graphicsDevice, 1, 1);
+            texture.SetData(new[] { Color.White });
             Bounds = bounds;
             Color = color;
         }

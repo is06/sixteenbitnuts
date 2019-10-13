@@ -118,6 +118,18 @@ namespace SixteenBitNuts
                 };
             }
         }
+
+        public Vector2 HitBoxSize
+        {
+            get
+            {
+                return new Vector2(
+                    hitBox.Max.X - hitBox.Min.X,
+                    hitBox.Max.Y - hitBox.Min.Y
+                );
+            }
+        }
+
         public float Left
         {
             get
@@ -168,9 +180,8 @@ namespace SixteenBitNuts
 
         #region Components
 
-        private readonly SpriteBatch spriteBatch;
-        private readonly Texture2D debugTexture;
         private readonly Sprite sprite;
+        private readonly Box debugHitBox;
 
         #endregion
 
@@ -199,9 +210,8 @@ namespace SixteenBitNuts
             IsControllable = true;
 
             // Components
-            spriteBatch = new SpriteBatch(map.Graphics);
-            debugTexture = map.Content.Load<Texture2D>("Game/sprites/debug_1624");
             sprite = new Sprite("gameplay/player", map.Graphics, map.Content);
+            debugHitBox = new Box(map.Graphics, new Rectangle(Position.ToPoint(), HitBoxSize.ToPoint()), 1, Color.Cyan);
         }
 
         /// <summary>
@@ -229,7 +239,6 @@ namespace SixteenBitNuts
 
             if (IsControllable)
             {
-
                 // Gamepad
                 if (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.LeftThumbstickLeft) ||
                     GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.DPadLeft))
@@ -367,19 +376,9 @@ namespace SixteenBitNuts
         /// </summary>
         public void DebugDraw(Matrix transform)
         {
-            spriteBatch.Begin(transformMatrix: transform);
-            spriteBatch.Draw(
-                texture: debugTexture,
-                position: new Vector2((float)Math.Round(hitBox.Min.X), (float)Math.Round(hitBox.Min.Y)),
-                sourceRectangle: new Rectangle(0, 0, 16, 24),
-                color: Color.Red,
-                rotation: 0f,
-                origin: new Vector2(0, 0),
-                scale: Vector2.One,
-                effects: SpriteEffects.None,
-                layerDepth: 0f
-            );
-            spriteBatch.End();
+            debugHitBox.Bounds = new Rectangle(position.ToPoint(), HitBoxSize.ToPoint());
+            debugHitBox.Update();
+            debugHitBox.Draw(transform);
         }
 
         public void MoveLeft(float value)

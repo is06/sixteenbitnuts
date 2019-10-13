@@ -11,7 +11,7 @@ namespace SixteenBitNuts
     {
         private readonly SpriteBatch spriteBatch;
         private readonly Texture2D texture;
-        private readonly Texture2D debugTexture;
+        private readonly Box debugHitBox;
         private readonly Dictionary<int, TileElement> elements;
 
         public string Name { get; private set; }
@@ -24,8 +24,8 @@ namespace SixteenBitNuts
             // Components
             spriteBatch = new SpriteBatch(graphicsDevice);
             texture = contentManager.Load<Texture2D>("Game/tilesets/" + name);
-            debugTexture = contentManager.Load<Texture2D>("Game/sprites/debug_1616");
             elements = new Dictionary<int, TileElement>();
+            debugHitBox = new Box(graphicsDevice, new Rectangle(0, 0, 16, 16), 1, Color.DarkRed);
 
             LoadFromFile("Data/tilesets/" + name + ".tileset");
         }
@@ -47,21 +47,11 @@ namespace SixteenBitNuts
             spriteBatch.End();
         }
 
-        public void DebugDraw(Vector2 position, Matrix transform)
+        public void DebugDraw(Point position, Point size, Matrix transform)
         {
-            spriteBatch.Begin(transformMatrix: transform);
-            spriteBatch.Draw(
-                texture: debugTexture,
-                position: position,
-                sourceRectangle: new Rectangle(0, 0, 16, 16),
-                color: Color.Cyan,
-                rotation: 0f,
-                origin: new Vector2(0, 0),
-                scale: Vector2.One,
-                effects: SpriteEffects.None,
-                layerDepth: 0
-            );
-            spriteBatch.End();
+            debugHitBox.Bounds = new Rectangle(position, size);
+            debugHitBox.Update();
+            debugHitBox.Draw(transform);
         }
 
         public Vector2 GetOffsetFromId(int id)
