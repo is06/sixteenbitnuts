@@ -62,7 +62,8 @@ namespace SixteenBitNuts
             Text = "";
 
             spriteBatch = new SpriteBatch(game.GraphicsDevice);
-            texture = game.Content.Load<Texture2D>("Engine/primitive/pixel");
+            texture = new Texture2D(game.GraphicsDevice, 1, 1);
+            texture.SetData(new[] { Color.White });
             font = game.Content.Load<SpriteFont>("Engine/fonts/console");
         }
 
