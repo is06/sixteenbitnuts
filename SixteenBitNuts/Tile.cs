@@ -17,7 +17,7 @@ namespace SixteenBitNuts
 
         #endregion
 
-        public Tile(Tileset tileset, int id, Vector2 position, Vector2 size, TileType type, float layer) : base()
+        public Tile(Tileset tileset, int id, Vector2 position, Vector2 size, TileType type, float layer) : base(tileset.Graphics)
         {
             // Properties
             Id = id;
@@ -30,12 +30,12 @@ namespace SixteenBitNuts
             IsObstacle = type == TileType.Obstacle;
         }
 
-        public void Draw(Matrix transform)
+        public override void Draw(Matrix transform)
         {
             tileset.Draw(Position, Size, tileset.GetOffsetFromId(Id), layer, transform);
         }
 
-        public void DebugDraw(Matrix transform)
+        public override void DebugDraw(Matrix transform)
         {
             tileset.DebugDraw(Position.ToPoint(), Size.ToPoint(), transform);
         }

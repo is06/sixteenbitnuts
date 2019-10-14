@@ -427,7 +427,7 @@ namespace SixteenBitNuts
         {
             int count = 0;
 
-            foreach (Tile obstacle in obstacles)
+            foreach (var obstacle in obstacles)
             {
                 if (moving.Intersects(obstacle.HitBox))
                 {
