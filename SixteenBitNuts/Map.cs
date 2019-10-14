@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using SixteenBitNuts.Editor;
 using System.IO;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SixteenBitNuts
 {
@@ -13,6 +14,7 @@ namespace SixteenBitNuts
     public class Map : Scene
     {
         private const float TRANSITION_SPEED = 0.03f;
+        private const float NEAR_OBSTACLE_THRESHOLD = 100f;
 
         #region Fields
 
@@ -152,16 +154,41 @@ namespace SixteenBitNuts
 
                 if (!isInSectionEditMode)
                 {
+                    foreach (var obstacle in CurrentMapSection.Obstacles)
+                    {
+                        obstacle.DebugColor = Color.LimeGreen;
+                    }
+
+                    var nearObstacles = CurrentMapSection.Obstacles.Where(obstacle =>
+                    {
+                        return Vector2.Distance(Player.Position, obstacle.Position) <= NEAR_OBSTACLE_THRESHOLD;
+                    });
+                    foreach (var obstacle in nearObstacles)
+                    {
+                        obstacle.DebugColor = Color.Orange;
+                    }
+
                     // Get the nearest obstacles to test intersection
-                    int nearestObstacleLimit = GetFutureIntersectionCount(Player.NextFrameHitBox, CurrentMapSection.Obstacles);
+                    int nearestObstacleLimit = nearObstacles.Aggregate(0, (limit, obstacle) =>
+                    {
+                        if (Player.NextFrameHitBox.Intersects(obstacle.HitBox))
+                        {
+                            limit++;
+                        }
+
+                        return limit;
+                    });
                     if (nearestObstacleLimit >= 2)
                     {
                         nearestObstacleLimit -= 1;
                     }
-                    var nearestObstacles = GetNearestObstaclesFromHitBox(Player.DistanceBox, CurrentMapSection.Obstacles, nearestObstacleLimit);
+
+                    var nearestObstacles = GetNearestObstaclesFromHitBox(Player.DistanceBox, nearObstacles, nearestObstacleLimit);
 
                     foreach (var obstacle in nearestObstacles)
                     {
+                        obstacle.DebugColor = Color.Red;
+
                         if (Player.HitBox.Intersects(obstacle.HitBox))
                         {
                             // Detect the collision side of the obstacle
@@ -418,34 +445,13 @@ namespace SixteenBitNuts
         }
 
         /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="moving"></param>
-        /// <param name="obstacles"></param>
-        /// <returns></returns>
-        private int GetFutureIntersectionCount(BoundingBox moving, List<MapElement> obstacles)
-        {
-            int count = 0;
-
-            foreach (var obstacle in obstacles)
-            {
-                if (moving.Intersects(obstacle.HitBox))
-                {
-                    count++;
-                }
-            }
-
-            return count;
-        }
-
-        /// <summary>
         /// Get the list of the nearest tiles (1 or 2 at equal distance) from the specified hit box
         /// </summary>
         /// <param name="hitBox">The hitbox of the moving object</param>
         /// <param name="obstacles">List of obstacles</param>
         /// <param name="limit">Limit count of nearest obstacles</param>
         /// <returns>The list of the nearest obstacles from the specified hit box</returns>
-        private List<MapElement> GetNearestObstaclesFromHitBox(BoundingBox hitBox, List<MapElement> obstacles, int limit)
+        private List<MapElement> GetNearestObstaclesFromHitBox(BoundingBox hitBox, IEnumerable<MapElement> obstacles, int limit)
         {
             var nearestTiles = new List<MapElement>();
             var distances = new List<float>();

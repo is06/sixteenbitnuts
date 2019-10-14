@@ -50,8 +50,9 @@ namespace SixteenBitNuts
             spriteBatch.End();
         }
 
-        public void DebugDraw(Point position, Point size, Matrix transform)
+        public void DebugDraw(Point position, Point size, Matrix transform, Color color)
         {
+            debugHitBox.Color = color;
             debugHitBox.Bounds = new Rectangle(position, size);
             debugHitBox.Update();
             debugHitBox.Draw(transform);

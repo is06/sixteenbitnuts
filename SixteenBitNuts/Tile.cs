@@ -37,7 +37,7 @@ namespace SixteenBitNuts
 
         public override void DebugDraw(Matrix transform)
         {
-            tileset.DebugDraw(Position.ToPoint(), Size.ToPoint(), transform);
+            tileset.DebugDraw(Position.ToPoint(), Size.ToPoint(), transform, DebugColor);
         }
     }
 }
