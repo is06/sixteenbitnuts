@@ -63,6 +63,7 @@
     <Compile Include="Label.cs" />
     <Compile Include="Line.cs" />
     <Compile Include="Map.cs" />
+    <Compile Include="MapElement.cs" />
     <Compile Include="MapException.cs" />
     <Compile Include="MapSection.cs" />
     <Compile Include="Player.cs" />
