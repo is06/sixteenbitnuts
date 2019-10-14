@@ -22,11 +22,12 @@ namespace SixteenBitNuts
         public Tileset Tileset { get; private set; }
         public List<Tile> Tiles { get; set; }
         public Dictionary<string, Entity> Entities { get; set; }
+
         public List<MapElement> Obstacles
         {
             get
             {
-                List<MapElement> obstacles = new List<MapElement>();
+                var obstacles = new List<MapElement>();
                 foreach (var tile in Tiles)
                 {
                     if (tile.IsObstacle)
@@ -50,6 +51,36 @@ namespace SixteenBitNuts
                 return obstacles;
             }
         }
+
+        public List<MapElement> Platforms
+        {
+            get
+            {
+                var platforms = new List<MapElement>();
+                foreach (var tile in Tiles)
+                {
+                    if (tile.IsPlatform)
+                    {
+                        platforms.Add(tile);
+                    }
+                }
+                foreach (var entity in Entities)
+                {
+                    if (entity.Value.IsPlatform)
+                    {
+                        platforms.Add(new MapElement()
+                        {
+                            IsObstacle = true,
+                            Size = entity.Value.Size,
+                            Position = entity.Value.Position
+                        });
+                    }
+                }
+
+                return platforms;
+            }
+        }
+
         public SpawnPoint DefaultSpawnPoint
         {
             get

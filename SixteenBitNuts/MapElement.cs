@@ -5,6 +5,7 @@ namespace SixteenBitNuts
     public class MapElement
     {
         public bool IsObstacle { get; set; }
+        public bool IsPlatform { get; set; }
         public Vector2 Position { get; set; }
         public Vector2 Size { get; set; }
         public BoundingBox HitBox
