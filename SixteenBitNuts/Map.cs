@@ -153,14 +153,14 @@ namespace SixteenBitNuts
                 if (!isInSectionEditMode)
                 {
                     // Get the nearest obstacles to test intersection
-                    int nearestObstacleLimit = GetIntersectionCount(Player.NextFrameHitBox, sections[currentSectionIndex].Tiles);
+                    int nearestObstacleLimit = GetFutureIntersectionCount(Player.NextFrameHitBox, CurrentMapSection.Obstacles);
                     if (nearestObstacleLimit >= 2)
                     {
                         nearestObstacleLimit -= 1;
                     }
-                    List<Tile> nearestObstacles = GetNearestObstaclesFromHitBox(Player.DistanceBox, sections[currentSectionIndex].Tiles, nearestObstacleLimit);
+                    var nearestObstacles = GetNearestObstaclesFromHitBox(Player.DistanceBox, CurrentMapSection.Obstacles, nearestObstacleLimit);
 
-                    foreach (Tile obstacle in nearestObstacles)
+                    foreach (var obstacle in nearestObstacles)
                     {
                         if (Player.HitBox.Intersects(obstacle.HitBox))
                         {
@@ -186,9 +186,9 @@ namespace SixteenBitNuts
 
                     // Check for intersection for ground existence
                     bool playerIsIntersectingWithNothing = true;
-                    foreach (Tile tile in sections[currentSectionIndex].Tiles)
+                    foreach (var obstacle in CurrentMapSection.Obstacles)
                     {
-                        if (tile.IsObstacle && Player.HitBox.Intersects(tile.HitBox))
+                        if (Player.HitBox.Intersects(obstacle.HitBox))
                         {
                             playerIsIntersectingWithNothing = false;
                             break;
@@ -421,15 +421,15 @@ namespace SixteenBitNuts
         /// 
         /// </summary>
         /// <param name="moving"></param>
-        /// <param name="tiles"></param>
+        /// <param name="obstacles"></param>
         /// <returns></returns>
-        private int GetIntersectionCount(BoundingBox moving, List<Tile> tiles)
+        private int GetFutureIntersectionCount(BoundingBox moving, List<MapElement> obstacles)
         {
             int count = 0;
 
-            foreach (Tile tile in tiles)
+            foreach (var obstacle in obstacles)
             {
-                if (tile.IsObstacle && moving.Intersects(tile.HitBox))
+                if (moving.Intersects(obstacle.HitBox))
                 {
                     count++;
                 }
@@ -442,15 +442,15 @@ namespace SixteenBitNuts
         /// Get the list of the nearest tiles (1 or 2 at equal distance) from the specified hit box
         /// </summary>
         /// <param name="hitBox">The hitbox of the moving object</param>
-        /// <param name="tiles">List of obstacles</param>
+        /// <param name="obstacles">List of obstacles</param>
         /// <param name="limit">Limit count of nearest obstacles</param>
-        /// <returns>The list of the nearest tiles from the specified hit box</returns>
-        private List<Tile> GetNearestObstaclesFromHitBox(BoundingBox hitBox, List<Tile> tiles, int limit)
+        /// <returns>The list of the nearest obstacles from the specified hit box</returns>
+        private List<MapElement> GetNearestObstaclesFromHitBox(BoundingBox hitBox, List<MapElement> obstacles, int limit)
         {
-            List<Tile> nearestTiles = new List<Tile>();
-            List<float> distances = new List<float>();
+            var nearestTiles = new List<MapElement>();
+            var distances = new List<float>();
 
-            foreach (Tile obstacle in tiles)
+            foreach (var obstacle in obstacles)
             {
                 distances.Add(CollisionManager.GetDistance(hitBox, obstacle.HitBox));
             }
@@ -458,7 +458,7 @@ namespace SixteenBitNuts
 
             foreach (float distance in distances.GetRange(0, limit))
             {
-                foreach (Tile obstacle in tiles)
+                foreach (var obstacle in obstacles)
                 {
                     if (distance == CollisionManager.GetDistance(hitBox, obstacle.HitBox))
                     {

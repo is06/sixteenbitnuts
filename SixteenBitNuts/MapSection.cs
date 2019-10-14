@@ -22,6 +22,65 @@ namespace SixteenBitNuts
         public Tileset Tileset { get; private set; }
         public List<Tile> Tiles { get; set; }
         public Dictionary<string, Entity> Entities { get; set; }
+
+        public List<MapElement> Obstacles
+        {
+            get
+            {
+                var obstacles = new List<MapElement>();
+                foreach (var tile in Tiles)
+                {
+                    if (tile.IsObstacle)
+                    {
+                        obstacles.Add(tile);
+                    }
+                }
+                foreach (var entity in Entities)
+                {
+                    if (entity.Value.IsObstacle)
+                    {
+                        obstacles.Add(new MapElement(map.Graphics)
+                        {
+                            IsObstacle = true,
+                            Size = entity.Value.Size,
+                            Position = entity.Value.Position
+                        });
+                    }
+                }
+
+                return obstacles;
+            }
+        }
+
+        public List<MapElement> Platforms
+        {
+            get
+            {
+                var platforms = new List<MapElement>();
+                foreach (var tile in Tiles)
+                {
+                    if (tile.IsPlatform)
+                    {
+                        platforms.Add(tile);
+                    }
+                }
+                foreach (var entity in Entities)
+                {
+                    if (entity.Value.IsPlatform)
+                    {
+                        platforms.Add(new MapElement(map.Graphics)
+                        {
+                            IsObstacle = true,
+                            Size = entity.Value.Size,
+                            Position = entity.Value.Position
+                        });
+                    }
+                }
+
+                return platforms;
+            }
+        }
+
         public SpawnPoint DefaultSpawnPoint
         {
             get

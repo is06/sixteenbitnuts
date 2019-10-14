@@ -9,6 +9,8 @@ namespace SixteenBitNuts
 {
     public class Tileset
     {
+        public GraphicsDevice Graphics { get; private set; }
+
         private readonly SpriteBatch spriteBatch;
         private readonly Texture2D texture;
         private readonly Box debugHitBox;
@@ -20,6 +22,7 @@ namespace SixteenBitNuts
         {
             // Properties
             Name = name;
+            Graphics = graphicsDevice;
 
             // Components
             spriteBatch = new SpriteBatch(graphicsDevice);

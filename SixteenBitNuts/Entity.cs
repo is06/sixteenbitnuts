@@ -3,37 +3,22 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace SixteenBitNuts
 {
-    public class Entity
+    public class Entity : MapElement
     {
-        public Vector2 Position { get; set; }
-
         protected readonly Map map;
         protected readonly SpriteBatch spriteBatch;
 
-        public Entity(Map map)
+        public Entity(Map map) : base(map.Graphics)
         {
             this.map = map;
             spriteBatch = new SpriteBatch(map.Graphics);
+
+            DebugColor = Color.Orange;
         }
 
-        public virtual void Update()
+        public override void DebugDraw(Matrix transform)
         {
-
-        }
-
-        public virtual void Draw(Matrix transform)
-        {
-
-        }
-
-        public virtual void EditorDraw(Matrix transform)
-        {
-
-        }
-
-        public virtual void DebugDraw(Matrix transform)
-        {
-
+            base.DebugDraw(transform);
         }
     }
 }
