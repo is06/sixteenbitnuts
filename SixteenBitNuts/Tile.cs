@@ -2,24 +2,11 @@
 
 namespace SixteenBitNuts
 {
-    public class Tile
+    public class Tile : MapElement
     {
         #region Properties
 
         public int Id { get; }
-        public Vector2 Position { get; set; }
-        public Vector2 Size { get; set; }
-        public BoundingBox HitBox
-        {
-            get
-            {
-                return new BoundingBox
-                {
-                    Min = new Vector3(Position.X, Position.Y, 0),
-                    Max = new Vector3(Position.X + Size.X, Position.Y + Size.Y, 0)
-                };
-            }
-        }
 
         #endregion
 
@@ -27,11 +14,10 @@ namespace SixteenBitNuts
 
         private readonly Tileset tileset;
         private readonly float layer;
-        public bool IsObstacle;
 
         #endregion
 
-        public Tile(Tileset tileset, int id, Vector2 position, Vector2 size, TileType type, float layer)
+        public Tile(Tileset tileset, int id, Vector2 position, Vector2 size, TileType type, float layer) : base()
         {
             // Properties
             Id = id;

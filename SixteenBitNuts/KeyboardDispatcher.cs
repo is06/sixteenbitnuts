@@ -93,14 +93,11 @@ namespace SixteenBitNuts
         [STAThread]
         void PasteThread()
         {
+            pasteResult = "";
 #if WINDOWS
             if (Clipboard.ContainsText())
             {
                 pasteResult = Clipboard.GetText();
-            }
-            else
-            {
-                pasteResult = "";
             }
 #endif
         }

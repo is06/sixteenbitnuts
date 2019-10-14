@@ -3,10 +3,8 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace SixteenBitNuts
 {
-    public class Entity
+    public class Entity : MapElement
     {
-        public Vector2 Position { get; set; }
-
         protected readonly Map map;
         protected readonly SpriteBatch spriteBatch;
 
