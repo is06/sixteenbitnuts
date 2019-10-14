@@ -39,12 +39,7 @@ namespace SixteenBitNuts
                 {
                     if (entity.Value.IsObstacle)
                     {
-                        obstacles.Add(new MapElement(map.Graphics)
-                        {
-                            IsObstacle = true,
-                            Size = entity.Value.Size,
-                            Position = entity.Value.Position
-                        });
+                        obstacles.Add(entity.Value);
                     }
                 }
 
@@ -68,12 +63,7 @@ namespace SixteenBitNuts
                 {
                     if (entity.Value.IsPlatform)
                     {
-                        platforms.Add(new MapElement(map.Graphics)
-                        {
-                            IsObstacle = true,
-                            Size = entity.Value.Size,
-                            Position = entity.Value.Position
-                        });
+                        platforms.Add(entity.Value);
                     }
                 }
 
