@@ -8,19 +8,25 @@ using System.Globalization;
 
 namespace SixteenBitNuts
 {
-    class Sprite
+    public delegate void AnimationFinishedHandler(Sprite sender);
+
+    public class Sprite
     {
+        public event AnimationFinishedHandler OnAnimationFinished;
+
         #region Fields
 
         private string textureName;
         private string currentAnimationName;
         private float currentAnimationFrame;
+        private bool isAnimated;
 
         #endregion
 
         #region Properties
 
-        public string AnimationName {
+        public string AnimationName
+        {
             get
             {
                 return currentAnimationName;
@@ -31,7 +37,16 @@ namespace SixteenBitNuts
                 {
                     currentAnimationName = value;
                     currentAnimationFrame = 0f;
+                    isAnimated = true;
                 }
+            }
+        }
+
+        public SpriteAnimation CurrentAnimation
+        {
+            get
+            {
+                return animations[AnimationName];
             }
         }
 
@@ -76,13 +91,13 @@ namespace SixteenBitNuts
         public void Draw(Vector2 position, float layer, Matrix transform)
         {
             Point size = new Point(
-                animations[currentAnimationName].Size.X,
-                animations[currentAnimationName].Size.Y
+                CurrentAnimation.Size.X,
+                CurrentAnimation.Size.Y
             );
 
             Point offset = new Point(
-                animations[currentAnimationName].DirectionOffsets[Direction].X + ((int)Math.Floor(currentAnimationFrame) * size.X),
-                animations[currentAnimationName].DirectionOffsets[Direction].Y
+                CurrentAnimation.DirectionOffsets[Direction].X + ((int)Math.Floor(currentAnimationFrame) * size.X),
+                CurrentAnimation.DirectionOffsets[Direction].Y
             );
 
             spriteBatch.Begin(transformMatrix: transform);
@@ -92,8 +107,8 @@ namespace SixteenBitNuts
                 sourceRectangle: new Rectangle(
                     offset.X,
                     offset.Y,
-                    animations[currentAnimationName].Size.X,
-                    animations[currentAnimationName].Size.Y
+                    CurrentAnimation.Size.X,
+                    CurrentAnimation.Size.Y
                 ),
                 color: Color.White,
                 rotation: 0f,
@@ -105,10 +120,23 @@ namespace SixteenBitNuts
             spriteBatch.End();
 
             // Increment animation frame counter
-            currentAnimationFrame += animations[currentAnimationName].Speed;
-            if (currentAnimationFrame >= animations[currentAnimationName].Length)
+            if (isAnimated)
             {
-                currentAnimationFrame = 0;
+                currentAnimationFrame += CurrentAnimation.Speed;
+            }
+            
+            // End of animation sequence
+            if (currentAnimationFrame >= CurrentAnimation.Length)
+            {
+                if (CurrentAnimation.Looped)
+                {
+                    currentAnimationFrame = 0;
+                }
+                else
+                {
+                    OnAnimationFinished?.Invoke(this);
+                    isAnimated = false;
+                }
             }
         }
 
@@ -132,13 +160,16 @@ namespace SixteenBitNuts
                 if (components[0] == "an")
                 {
                     animationName = components[1];
-                    animations[animationName] = new SpriteAnimation(
-                        name: components[1],
-                        size: new Point(int.Parse(components[2]), int.Parse(components[3])),
-                        hitBoxOffset: new Point(int.Parse(components[4]), int.Parse(components[5])),
-                        length: int.Parse(components[6]),
-                        speed: float.Parse(components[7], CultureInfo.InvariantCulture)
-                    );
+                    animations[animationName] = new SpriteAnimation()
+                    {
+                        Name = components[1],
+                        Size = new Point(int.Parse(components[2]), int.Parse(components[3])),
+                        HitBoxOffset = new Point(int.Parse(components[4]), int.Parse(components[5])),
+                        Length = int.Parse(components[6]),
+                        Speed = float.Parse(components[7], CultureInfo.InvariantCulture),
+                        Looped = int.Parse(components[8]) == 1,
+                        DirectionOffsets = new Dictionary<Direction, Point>()
+                    };
                 }
                 if (components[0] == "di")
                 {

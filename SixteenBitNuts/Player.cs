@@ -18,6 +18,7 @@ namespace SixteenBitNuts
         private const float FALL_MAX_VELOCITY = 9f;
         private const float FALL_VELOCITY_DECELERATION = 0.35f;
         private const float DEPTH = 0f;
+        private const float DUCKING_VERTICAL_OFFSET = 8f;
 
         private const float HIT_BOX_WIDTH = 16f;
         private const float HIT_BOX_HEIGHT = 24f;
@@ -32,6 +33,8 @@ namespace SixteenBitNuts
         private float fallCurrentVelocity;
         private bool jumpButtonPressed;
         private bool jumpKeyPressed;
+        private bool attackButtonPressed;
+        private bool attackKeyPressed;
         private bool isFalling;
         private Vector2 position;
         private BoundingBox hitBox;
@@ -45,6 +48,8 @@ namespace SixteenBitNuts
         public bool IsControllable { get; set; }
         public bool IsRunning { get; set; }
         public bool IsJumping { get; set; }
+        public bool IsDucking { get; set; }
+        public bool IsAttacking { get; set; }
         public bool IsFalling
         {
             get
@@ -182,6 +187,8 @@ namespace SixteenBitNuts
 
         private readonly Sprite sprite;
         private readonly Box debugHitBox;
+        private readonly Box debugDistanceBox;
+        private readonly Box debugPreviousFrameHitBox;
 
         #endregion
 
@@ -211,27 +218,37 @@ namespace SixteenBitNuts
 
             // Components
             sprite = new Sprite("gameplay/player", map.Graphics, map.Content);
+            sprite.OnAnimationFinished += SpriteOnAnimationFinished;
             debugHitBox = new Box(map.Graphics, new Rectangle(Position.ToPoint(), HitBoxSize.ToPoint()), 1, Color.Cyan);
+            debugPreviousFrameHitBox = new Box(map.Graphics, new Rectangle(Position.ToPoint(), new Point(16, 24)), 2, Color.DarkOliveGreen);
+            debugDistanceBox = new Box(map.Graphics, new Rectangle(Position.ToPoint(), new Point(16, 16)), 3, Color.DodgerBlue);
         }
+
+        
 
         /// <summary>
         /// Performs player calculations
         /// </summary>
         public void Update()
         {
-            IsRunning = false;
-
             #region Previous HitBoxes
 
-            previousFrameHitBox.Min.X = position.X;
-            previousFrameHitBox.Min.Y = position.Y;
-            previousFrameHitBox.Max.X = position.X + HIT_BOX_WIDTH;
-            previousFrameHitBox.Max.Y = position.Y + HIT_BOX_WIDTH;
+            previousFrameHitBox = hitBox;
 
-            distanceBox.Min.X = position.X;
-            distanceBox.Min.Y = position.Y + (HIT_BOX_HEIGHT - DISTANCE_BOX_HEIGHT);
-            distanceBox.Max.X = position.X + DISTANCE_BOX_WIDTH;
-            distanceBox.Max.Y = position.Y + (HIT_BOX_HEIGHT - DISTANCE_BOX_HEIGHT) + DISTANCE_BOX_HEIGHT;
+            if (IsDucking || IsAttacking)
+            {
+                distanceBox = hitBox;
+            }
+            else
+            {
+                distanceBox.Min.X = Position.X;
+                distanceBox.Min.Y = Position.Y + (HIT_BOX_HEIGHT - DISTANCE_BOX_HEIGHT);
+                distanceBox.Max.X = Position.X + DISTANCE_BOX_WIDTH;
+                distanceBox.Max.Y = Position.Y + (HIT_BOX_HEIGHT - DISTANCE_BOX_HEIGHT) + DISTANCE_BOX_HEIGHT;
+            }
+
+            IsRunning = false;
+            IsDucking = false;
 
             #endregion
 
@@ -239,36 +256,39 @@ namespace SixteenBitNuts
 
             if (IsControllable)
             {
-                // Gamepad
-                if (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.LeftThumbstickLeft) ||
-                    GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.DPadLeft))
+                if (!IsDucking && !IsAttacking)
                 {
-                    position.X -= RUN_SPEED;
-                    IsRunning = true;
-                    Direction = sprite.Direction = Direction.Left;
-                }
+                    // Gamepad
+                    if (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.LeftThumbstickLeft) ||
+                        GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.DPadLeft))
+                    {
+                        position.X -= RUN_SPEED;
+                        IsRunning = true;
+                        Direction = sprite.Direction = Direction.Left;
+                    }
 
-                if (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.LeftThumbstickRight) ||
-                    GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.DPadRight))
-                {
-                    position.X += RUN_SPEED;
-                    IsRunning = true;
-                    Direction = sprite.Direction = Direction.Right;
-                }
+                    if (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.LeftThumbstickRight) ||
+                        GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.DPadRight))
+                    {
+                        position.X += RUN_SPEED;
+                        IsRunning = true;
+                        Direction = sprite.Direction = Direction.Right;
+                    }
 
-                // Keyboard
-                if (Keyboard.GetState().IsKeyDown(Keys.Left))
-                {
-                    position.X -= RUN_SPEED;
-                    IsRunning = true;
-                    Direction = sprite.Direction = Direction.Left;
-                }
+                    // Keyboard
+                    if (Keyboard.GetState().IsKeyDown(Keys.Left))
+                    {
+                        position.X -= RUN_SPEED;
+                        IsRunning = true;
+                        Direction = sprite.Direction = Direction.Left;
+                    }
 
-                if (Keyboard.GetState().IsKeyDown(Keys.Right))
-                {
-                    position.X += RUN_SPEED;
-                    IsRunning = true;
-                    Direction = sprite.Direction = Direction.Right;
+                    if (Keyboard.GetState().IsKeyDown(Keys.Right))
+                    {
+                        position.X += RUN_SPEED;
+                        IsRunning = true;
+                        Direction = sprite.Direction = Direction.Right;
+                    }
                 }
             }
 
@@ -278,7 +298,7 @@ namespace SixteenBitNuts
 
             if (IsControllable)
             {
-                if (!IsJumping && !IsFalling)
+                if (!IsJumping && !IsFalling && !IsDucking && !IsAttacking)
                 {
                     if (!jumpButtonPressed && !jumpKeyPressed)
                     {
@@ -324,6 +344,50 @@ namespace SixteenBitNuts
 
             #endregion
 
+            #region Ducking
+
+            if (IsControllable)
+            {
+                if (!IsAttacking && !IsJumping && !IsFalling)
+                {
+                    // Gamepad
+                    if (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.LeftThumbstickDown) ||
+                        GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.DPadDown))
+                    {
+                        IsDucking = true;
+                    }
+
+                    // Keyboard
+                    if (Keyboard.GetState().IsKeyDown(Keys.Down))
+                    {
+                        IsDucking = true;
+                    }
+                }
+            }
+
+            #endregion
+
+            #region Tail attack
+
+            if (IsControllable)
+            {
+                if (!IsJumping && !IsFalling && IsDucking)
+                {
+                    if (!attackButtonPressed && !attackKeyPressed)
+                    {
+                        if (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.X) ||
+                                Keyboard.GetState().IsKeyDown(Keys.X))
+                        {
+                            attackButtonPressed = true;
+                            attackKeyPressed = true;
+                            IsAttacking = true;
+                        }
+                    }
+                }
+            }
+
+            #endregion
+
             #region Animations
 
             if (IsRunning)
@@ -339,8 +403,16 @@ namespace SixteenBitNuts
             {
                 sprite.AnimationName = "fall";
             }
-            
-            if (!IsRunning && !IsJumping && !IsFalling)
+            else if (IsAttacking)
+            {
+                sprite.AnimationName = "tail";
+            }
+            else if (IsDucking)
+            {
+                sprite.AnimationName = "duck";
+            }
+
+            if (!IsRunning && !IsJumping && !IsFalling && !IsDucking && !IsAttacking)
             {
                 sprite.AnimationName = "idle";
             }
@@ -355,10 +427,10 @@ namespace SixteenBitNuts
         /// </summary>
         public void UpdateHitBoxes()
         {
-            hitBox.Min.X = position.X;
-            hitBox.Min.Y = position.Y;
-            hitBox.Max.X = position.X + HIT_BOX_WIDTH;
-            hitBox.Max.Y = position.Y + HIT_BOX_HEIGHT;
+            hitBox.Min.X = Position.X;
+            hitBox.Min.Y = (IsDucking || IsAttacking) ? Position.Y + 8 : Position.Y;
+            hitBox.Max.X = Position.X + HIT_BOX_WIDTH;
+            hitBox.Max.Y = Position.Y + HIT_BOX_HEIGHT;
         }
 
         /// <summary>
@@ -376,8 +448,23 @@ namespace SixteenBitNuts
         /// </summary>
         public void DebugDraw(Matrix transform)
         {
-            debugHitBox.Bounds = new Rectangle(position.ToPoint(), HitBoxSize.ToPoint());
+            debugHitBox.Bounds = new Rectangle(new Point((int)hitBox.Min.X, (int)hitBox.Min.Y), HitBoxSize.ToPoint());
             debugHitBox.Update();
+
+            debugDistanceBox.Bounds = new Rectangle(
+                new Point((int)distanceBox.Min.X, (int)distanceBox.Min.Y),
+                new Point((int)(distanceBox.Max.X - distanceBox.Min.X), (int)(distanceBox.Max.Y - distanceBox.Min.Y))
+            );
+            debugDistanceBox.Update();
+
+            debugPreviousFrameHitBox.Bounds = new Rectangle(
+                new Point((int)previousFrameHitBox.Min.X, (int)previousFrameHitBox.Min.Y),
+                new Point((int)(previousFrameHitBox.Max.X - previousFrameHitBox.Min.X), (int)(previousFrameHitBox.Max.Y - previousFrameHitBox.Min.Y))
+            );
+            debugPreviousFrameHitBox.Update();
+
+            debugDistanceBox.Draw(transform);
+            debugPreviousFrameHitBox.Draw(transform);
             debugHitBox.Draw(transform);
         }
 
@@ -399,6 +486,17 @@ namespace SixteenBitNuts
         public void MoveDown(float value)
         {
             position.Y += value;
+        }
+
+        private void SpriteOnAnimationFinished(Sprite sender)
+        {
+            if (sender.AnimationName == "tail")
+            {
+                sprite.AnimationName = "idle";
+                IsAttacking = false;
+                attackButtonPressed = false;
+                attackKeyPressed = false;
+            }
         }
     }
 }

@@ -207,7 +207,6 @@ namespace SixteenBitNuts
 
                             // Correct position to prevent intersection
                             Player.Position = CollisionManager.GetCorrectedPosition(Player.HitBox, obstacle.HitBox, side);
-                            Player.UpdateHitBoxes();
                         }
                     }
 
