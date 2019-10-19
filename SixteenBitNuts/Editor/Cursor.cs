@@ -46,7 +46,7 @@ namespace SixteenBitNuts.Editor
         public Cursor(Map map)
         {
             this.map = map;
-            camera = map.Camera;
+            this.camera = camera;
 
             textures[(int)CursorType.Crosshair] = map.Game.Content.Load<Texture2D>("Engine/editor/cursor_crosshair");
             textures[(int)CursorType.ResizeHorizontal] = map.Game.Content.Load<Texture2D>("Engine/editor/cursor_resize_horizontal");

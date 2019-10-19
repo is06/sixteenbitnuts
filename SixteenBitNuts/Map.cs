@@ -94,6 +94,7 @@ namespace SixteenBitNuts
         private readonly MapEditor mapEditor;
         private readonly TransitionGuide transitionGuide;
         private readonly Vector2[] layerOffsetFactors;
+        private Landscape landscape;
 
         #endregion
 
@@ -138,6 +139,8 @@ namespace SixteenBitNuts
             layerOffsetFactors[(int)LayerIndex.Main] = new Vector2(1, 1);
             layerOffsetFactors[(int)LayerIndex.Foreground1] = new Vector2(1.4f, 1.4f);
             layerOffsetFactors[(int)LayerIndex.Foreground2] = new Vector2(1.7f, 1.7f);
+
+            landscape = new Landscape(this);
         }
 
         /// <summary>
@@ -271,7 +274,7 @@ namespace SixteenBitNuts
 
                 #region MapSection Editor
 
-                    if (!keySectionEditModePressed && Keyboard.GetState().IsKeyDown(Keys.F2))
+                if (!keySectionEditModePressed && Keyboard.GetState().IsKeyDown(Keys.F2))
                 {
                     keySectionEditModePressed = true;
 
@@ -423,7 +426,9 @@ namespace SixteenBitNuts
                         0
                     );
 
-                    Game.SpriteBatch.Begin(transformMatrix: layerTransform);
+                    Game.SpriteBatch.Begin(transformMatrix: layerTransform, samplerState: SamplerState.PointWrap);
+
+                    landscape.Draw(layer);
 
                     foreach (KeyValuePair<int, MapSection> section in sections)
                     {
@@ -567,6 +572,19 @@ namespace SixteenBitNuts
 
                 switch (components[0])
                 {
+                    case "bg":
+                        landscape = new Landscape(this)
+                        {
+                            Name = components[1]
+                        };
+                        break;
+                    case "ly":
+                        landscape.Layers.Add(new LandscapeLayer()
+                        {
+                            LayerIndex = (LayerIndex)int.Parse(components[1]),
+                            Texture = Game.Content.Load<Texture2D>("Game/backgrounds/" + components[2])
+                        });
+                        break;
                     case "se":
                         // Begin section
                         sectionIndex++;

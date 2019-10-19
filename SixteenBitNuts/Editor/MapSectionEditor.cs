@@ -41,7 +41,7 @@ namespace SixteenBitNuts.Editor
             Map = map;
 
             toolbar = new Toolbar(this);
-            cursor = new Cursor(map);
+            cursor = new Cursor(map, map.Camera);
             frameTexture = map.Game.Content.Load<Texture2D>("Engine/editor/frame");
             gridTexture = map.Game.Content.Load<Texture2D>("Engine/editor/grid");
         }

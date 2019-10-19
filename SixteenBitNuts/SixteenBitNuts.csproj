@@ -61,6 +61,7 @@
     <Compile Include="Image.cs" />
     <Compile Include="KeyboardDispatcher.cs" />
     <Compile Include="Label.cs" />
+    <Compile Include="Landscape.cs" />
     <Compile Include="Line.cs" />
     <Compile Include="Map.cs" />
     <Compile Include="MapElement.cs" />

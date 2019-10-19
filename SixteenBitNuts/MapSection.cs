@@ -120,12 +120,6 @@ namespace SixteenBitNuts
         /// </summary>
         public void Draw(int layer)
         {
-            // Parallax background
-            if (layer == (int)LayerIndex.Background1)
-            {
-                background.Draw();
-            }
-
             // Main layer drawables
             if (layer == (int)LayerIndex.Main)
             {
@@ -194,6 +188,7 @@ namespace SixteenBitNuts
         {
             if (positionOffset == Point.Zero)
             {
+                Bounds = new Rectangle(Bounds.X, Bounds.Y, size.X, size.Y);
                 return;
             }
 
