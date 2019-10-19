@@ -15,11 +15,11 @@ namespace SixteenBitNuts.Editor
 
             if (type == "spawn")
             {
-                texture = bar.Editor.Map.Content.Load<Texture2D>("Engine/editor/" + type);
+                texture = bar.Editor.Map.Game.Content.Load<Texture2D>("Engine/editor/" + type);
             }
             else
             {
-                texture = bar.Editor.Map.Content.Load<Texture2D>("Game/sprites/entities/" + type);
+                texture = bar.Editor.Map.Game.Content.Load<Texture2D>("Game/sprites/entities/" + type);
             }
         }
 
@@ -28,12 +28,11 @@ namespace SixteenBitNuts.Editor
             base.Draw();
 
             Vector2 position = new Vector2(
-                (Position.X + 2) * 3,
-                (Position.Y + 2) * 3
+                (Position.X + 6) * 3,
+                (Position.Y + 6) * 3
             );
 
-            spriteBatch.Begin(samplerState: SamplerState.PointClamp);
-            spriteBatch.Draw(
+            Toolbar.Editor.Map.Game.SpriteBatch.Draw(
                 texture: texture,
                 position: position,
                 sourceRectangle: new Rectangle(0, 0, 16, 16),
@@ -44,7 +43,6 @@ namespace SixteenBitNuts.Editor
                 effects: SpriteEffects.None,
                 layerDepth: 0f
             );
-            spriteBatch.End();
         }
     }
 }

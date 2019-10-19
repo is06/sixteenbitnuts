@@ -8,7 +8,6 @@ namespace SixteenBitNuts
 
     public class TextBox : IKeyboardSubscriber
     {
-        private readonly SpriteBatch spriteBatch;
         private readonly Texture2D texture;
         private readonly SpriteFont font;
 
@@ -56,12 +55,14 @@ namespace SixteenBitNuts
         bool IKeyboardSubscriber.Selected { get; set; }
 
         private string text;
+        private readonly Game game;
 
         public TextBox(Game game)
         {
+            this.game = game;
+
             Text = "";
 
-            spriteBatch = new SpriteBatch(game.GraphicsDevice);
             texture = new Texture2D(game.GraphicsDevice, 1, 1);
             texture.SetData(new[] { Color.White });
             font = game.Content.Load<SpriteFont>("Engine/fonts/console");
@@ -77,23 +78,20 @@ namespace SixteenBitNuts
             if ((gameTime.TotalGameTime.TotalMilliseconds % 1000) < 500)
                 caretIsVisible = false;
 
-            spriteBatch.Begin();
-            spriteBatch.Draw(texture, Bounds, new Rectangle(0, 0, 1, 1), Color.FromNonPremultiplied(20, 20, 20, 180));
-            spriteBatch.DrawString(font, text, new Vector2(Bounds.X + 4, Bounds.Y + 4), Color.White);
+            game.SpriteBatch.Draw(texture, Bounds, new Rectangle(0, 0, 1, 1), Color.FromNonPremultiplied(20, 20, 20, 180));
+            game.SpriteBatch.DrawString(font, text, new Vector2(Bounds.X + 4, Bounds.Y + 4), Color.White);
 
             Vector2 size = font.MeasureString(text);
 
             if (caretIsVisible)
             {
-                spriteBatch.Draw(
+                game.SpriteBatch.Draw(
                     texture,
                     new Rectangle(Bounds.X + (int)size.X + 4, Bounds.Y + 4, 2, 16),
                     new Rectangle(0, 0, 1, 1),
                     Color.White
                 );
             }
-
-            spriteBatch.End();
         }
 
         void IKeyboardSubscriber.ReceiveTextInput(char inputChar)

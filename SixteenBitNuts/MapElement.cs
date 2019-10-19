@@ -35,13 +35,16 @@ namespace SixteenBitNuts
         #region Fields
 
         private readonly Box debugHitBox;
+        protected readonly Map map;
 
         #endregion
 
-        public MapElement(GraphicsDevice graphicsDevice)
+        public MapElement(Map map)
         {
+            this.map = map;
+
             debugHitBox = new Box(
-                graphicsDevice,
+                map.Game,
                 new Rectangle(Position.ToPoint(), Size.ToPoint()),
                 DEBUG_BOX_THICKNESS,
                 DebugColor
@@ -53,22 +56,22 @@ namespace SixteenBitNuts
 
         }
 
-        public virtual void Draw(Matrix transform)
+        public virtual void Draw()
         {
 
         }
 
-        public virtual void EditorDraw(Matrix transform)
+        public virtual void EditorDraw()
         {
 
         }
 
-        public virtual void DebugDraw(Matrix transform)
+        public virtual void DebugDraw()
         {
             debugHitBox.Color = DebugColor;
             debugHitBox.Bounds = new Rectangle(Position.ToPoint(), Size.ToPoint());
             debugHitBox.Update();
-            debugHitBox.Draw(transform);
+            debugHitBox.Draw();
         }
     }
 }

@@ -65,13 +65,15 @@ namespace SixteenBitNuts
         #region Components
 
         private readonly Texture2D texture;
-        private readonly SpriteBatch spriteBatch;
+        private readonly Game game;
         private readonly Dictionary<string, SpriteAnimation> animations;
 
         #endregion
 
-        public Sprite(string name, GraphicsDevice graphics, ContentManager content)
+        public Sprite(Game game, string name)
         {
+            this.game = game;
+
             // Fields
             currentAnimationName = "idle";
             currentAnimationFrame = 0f;
@@ -80,15 +82,14 @@ namespace SixteenBitNuts
             Direction = Direction.Right;
 
             // Components
-            spriteBatch = new SpriteBatch(graphics);
             animations = new Dictionary<string, SpriteAnimation>();
 
             // Loading sprite descriptor and texture
             LoadFromFile("Data/sprites/" + name + ".sprite");
-            texture = content.Load<Texture2D>("Game/sprites/" + textureName);
+            texture = game.Content.Load<Texture2D>("Game/sprites/" + textureName);
         }
 
-        public void Draw(Vector2 position, float layer, Matrix transform)
+        public void Draw(Vector2 position, float layer)
         {
             Point size = new Point(
                 CurrentAnimation.Size.X,
@@ -100,8 +101,7 @@ namespace SixteenBitNuts
                 CurrentAnimation.DirectionOffsets[Direction].Y
             );
 
-            spriteBatch.Begin(transformMatrix: transform);
-            spriteBatch.Draw(
+            game.SpriteBatch.Draw(
                 texture: texture,
                 position: new Vector2((float)Math.Round(position.X), (float)Math.Round(position.Y)),
                 sourceRectangle: new Rectangle(
@@ -117,7 +117,6 @@ namespace SixteenBitNuts
                 effects: SpriteEffects.None,
                 layerDepth: layer
             );
-            spriteBatch.End();
 
             // Increment animation frame counter
             if (isAnimated)

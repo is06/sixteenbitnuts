@@ -5,8 +5,8 @@ namespace SixteenBitNuts
 {
     public class Image
     {
-        private readonly SpriteBatch spriteBatch;
         private readonly Texture2D texture;
+        private readonly Scene scene;
 
         public Vector2 Position { get; set; }
         public Color Color { get; set; }
@@ -14,8 +14,8 @@ namespace SixteenBitNuts
 
         public Image(Scene scene, Vector2 position, string filePath)
         {
-            spriteBatch = new SpriteBatch(scene.Graphics);
-            texture = scene.Content.Load<Texture2D>(filePath);
+            this.scene = scene;
+            texture = scene.Game.Content.Load<Texture2D>(filePath);
 
             Color = Color.White;
             Scale = Vector2.One;
@@ -24,8 +24,7 @@ namespace SixteenBitNuts
 
         public void Draw()
         {
-            spriteBatch.Begin();
-            spriteBatch.Draw(
+            scene.Game.SpriteBatch.Draw(
                 texture,
                 Position,
                 new Rectangle(0, 0, texture.Width, texture.Height),
@@ -36,7 +35,6 @@ namespace SixteenBitNuts
                 SpriteEffects.None,
                 0
             );
-            spriteBatch.End();
         }
     }
 }

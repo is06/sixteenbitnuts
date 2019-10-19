@@ -8,7 +8,7 @@ namespace SixteenBitNuts.Editor
     {
         #region Constants
 
-        public const int BUTTON_SIZE = 20;
+        public const int BUTTON_SIZE = 60;
 
         #endregion
 
@@ -23,10 +23,10 @@ namespace SixteenBitNuts.Editor
             get
             {
                 return new Rectangle(
-                    (int)Math.Round(Position.X) * (int)Toolbar.Editor.Map.Game.ScreenScale,
-                    (int)Math.Round(Position.Y) * (int)Toolbar.Editor.Map.Game.ScreenScale,
-                    BUTTON_SIZE * (int)Toolbar.Editor.Map.Game.ScreenScale,
-                    BUTTON_SIZE * (int)Toolbar.Editor.Map.Game.ScreenScale
+                    (int)Math.Round(Position.X),
+                    (int)Math.Round(Position.Y),
+                    BUTTON_SIZE,
+                    BUTTON_SIZE
                 );
             }
         }
@@ -35,7 +35,6 @@ namespace SixteenBitNuts.Editor
 
         #region Components
 
-        protected readonly SpriteBatch spriteBatch;
         private readonly Texture2D buttonTexture;
 
         #endregion
@@ -43,21 +42,22 @@ namespace SixteenBitNuts.Editor
         public ToolbarButton(Toolbar bar)
         {
             Toolbar = bar;
-
-            spriteBatch = new SpriteBatch(bar.Editor.Map.Graphics);
-            buttonTexture = bar.Editor.Map.Content.Load<Texture2D>("Engine/editor/entity_button");
+            buttonTexture = bar.Editor.Map.Game.Content.Load<Texture2D>("Engine/editor/entity_button");
         }
 
         public virtual void Draw()
         {
-            spriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: Matrix.CreateScale(3));
-            spriteBatch.Draw(
+            Toolbar.Editor.Map.Game.SpriteBatch.Draw(
                 buttonTexture,
                 Position,
-                new Rectangle(0, 0, BUTTON_SIZE, BUTTON_SIZE),
-                IsSelected ? Color.Lime : Color.White
+                new Rectangle(0, 0, 20, 20),
+                IsSelected ? Color.Lime : Color.White,
+                0,
+                Vector2.Zero,
+                3f,
+                SpriteEffects.None,
+                0
             );
-            spriteBatch.End();
         }
     }
 }

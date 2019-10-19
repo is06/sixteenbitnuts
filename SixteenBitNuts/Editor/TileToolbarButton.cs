@@ -14,11 +14,10 @@ namespace SixteenBitNuts.Editor
             base.Draw();
 
             Toolbar.Editor.Map.CurrentMapSection.Tileset.Draw(
-                Position + new Vector2(2, 2),
+                Position + new Vector2(6, 6),
                 Toolbar.Editor.Map.CurrentMapSection.Tileset.GetSizeFromId(Id),
                 Toolbar.Editor.Map.CurrentMapSection.Tileset.GetOffsetFromId(Id),
-                0,
-                Matrix.CreateScale(Toolbar.Editor.Map.Game.ScreenScale)
+                new Vector2(3, 3)
             );
         }
     }

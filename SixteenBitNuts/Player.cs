@@ -18,7 +18,6 @@ namespace SixteenBitNuts
         private const float FALL_MAX_VELOCITY = 9f;
         private const float FALL_VELOCITY_DECELERATION = 0.35f;
         private const float DEPTH = 0f;
-        private const float DUCKING_VERTICAL_OFFSET = 8f;
 
         private const float HIT_BOX_WIDTH = 16f;
         private const float HIT_BOX_HEIGHT = 24f;
@@ -217,11 +216,11 @@ namespace SixteenBitNuts
             IsControllable = true;
 
             // Components
-            sprite = new Sprite("gameplay/player", map.Graphics, map.Content);
+            sprite = new Sprite(map.Game, "gameplay/player");
             sprite.OnAnimationFinished += SpriteOnAnimationFinished;
-            debugHitBox = new Box(map.Graphics, new Rectangle(Position.ToPoint(), HitBoxSize.ToPoint()), 1, Color.Cyan);
-            debugPreviousFrameHitBox = new Box(map.Graphics, new Rectangle(Position.ToPoint(), new Point(16, 24)), 2, Color.DarkOliveGreen);
-            debugDistanceBox = new Box(map.Graphics, new Rectangle(Position.ToPoint(), new Point(16, 16)), 3, Color.DodgerBlue);
+            debugHitBox = new Box(map.Game, new Rectangle(Position.ToPoint(), HitBoxSize.ToPoint()), 1, Color.Cyan);
+            debugPreviousFrameHitBox = new Box(map.Game, new Rectangle(Position.ToPoint(), new Point(16, 24)), 2, Color.DarkOliveGreen);
+            debugDistanceBox = new Box(map.Game, new Rectangle(Position.ToPoint(), new Point(16, 16)), 3, Color.DodgerBlue);
         }
 
         
@@ -436,17 +435,17 @@ namespace SixteenBitNuts
         /// <summary>
         /// Draw player sprite
         /// </summary>
-        public void Draw(Matrix transform)
+        public void Draw()
         {
             Vector2 drawingPosition = new Vector2((float)Math.Round(position.X), (float)Math.Round(position.Y));
 
-            sprite.Draw(position: drawingPosition - sprite.HitBoxOffset, layer: 0f, transform: transform);
+            sprite.Draw(position: drawingPosition - sprite.HitBoxOffset, layer: 0f);
         }
 
         /// <summary>
         /// Draw debug info of the player sprite
         /// </summary>
-        public void DebugDraw(Matrix transform)
+        public void DebugDraw()
         {
             debugHitBox.Bounds = new Rectangle(new Point((int)hitBox.Min.X, (int)hitBox.Min.Y), HitBoxSize.ToPoint());
             debugHitBox.Update();
@@ -463,9 +462,9 @@ namespace SixteenBitNuts
             );
             debugPreviousFrameHitBox.Update();
 
-            debugDistanceBox.Draw(transform);
-            debugPreviousFrameHitBox.Draw(transform);
-            debugHitBox.Draw(transform);
+            debugDistanceBox.Draw();
+            debugPreviousFrameHitBox.Draw();
+            debugHitBox.Draw();
         }
 
         public void MoveLeft(float value)

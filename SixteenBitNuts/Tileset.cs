@@ -8,54 +8,49 @@ using System.Collections.Generic;
 namespace SixteenBitNuts
 {
     public class Tileset
-    {
-        public GraphicsDevice Graphics { get; private set; }
-
-        private readonly SpriteBatch spriteBatch;
+    {        
         private readonly Texture2D texture;
         private readonly Box debugHitBox;
         private readonly Dictionary<int, TileElement> elements;
 
         public string Name { get; private set; }
+        public Game Game { get; private set; }
 
-        public Tileset(GraphicsDevice graphicsDevice, ContentManager contentManager, string name)
+        public Tileset(Game game, string name)
         {
             // Properties
             Name = name;
-            Graphics = graphicsDevice;
+            Game = game;
 
             // Components
-            spriteBatch = new SpriteBatch(graphicsDevice);
-            texture = contentManager.Load<Texture2D>("Game/tilesets/" + name);
+            texture = game.Content.Load<Texture2D>("Game/tilesets/" + name);
             elements = new Dictionary<int, TileElement>();
-            debugHitBox = new Box(graphicsDevice, new Rectangle(0, 0, 16, 16), 1, Color.DarkRed);
+            debugHitBox = new Box(game, new Rectangle(0, 0, 16, 16), 1, Color.DarkRed);
 
             LoadFromFile("Data/tilesets/" + name + ".tileset");
         }
 
-        public void Draw(Vector2 position, Vector2 size, Vector2 offset, float layer, Matrix transform)
+        public void Draw(Vector2 position, Vector2 size, Vector2 offset, Vector2 scale)
         {
-            spriteBatch.Begin(transformMatrix: transform, samplerState: SamplerState.PointClamp);
-            spriteBatch.Draw(
+            Game.SpriteBatch.Draw(
                 texture: texture,
                 position: new Vector2((float)Math.Round(position.X), (float)Math.Round(position.Y)),
                 sourceRectangle: new Rectangle((int)offset.X, (int)offset.Y, (int)size.X, (int)size.Y),
                 color: Color.White,
                 rotation: 0f,
                 origin: new Vector2(0, 0),
-                scale: Vector2.One,
+                scale: scale,
                 effects: SpriteEffects.None,
-                layerDepth: layer
+                layerDepth: 0
             );
-            spriteBatch.End();
         }
 
-        public void DebugDraw(Point position, Point size, Matrix transform, Color color)
+        public void DebugDraw(Point position, Point size, Color color)
         {
             debugHitBox.Color = color;
             debugHitBox.Bounds = new Rectangle(position, size);
             debugHitBox.Update();
-            debugHitBox.Draw(transform);
+            debugHitBox.Draw();
         }
 
         public Vector2 GetOffsetFromId(int id)

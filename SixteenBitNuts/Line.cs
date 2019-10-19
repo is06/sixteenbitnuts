@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -5,25 +6,24 @@ namespace SixteenBitNuts
 {
     class Line
     {
-        private readonly SpriteBatch spriteBatch;
         private readonly Texture2D texture;
+        private readonly Game game;
 
         public Rectangle Bounds { get; set; }
         public Color Color { get; set; }
 
-        public Line(GraphicsDevice graphicsDevice, Rectangle bounds, Color color)
+        public Line(Game game, Rectangle bounds, Color color)
         {
-            spriteBatch = new SpriteBatch(graphicsDevice);
-            texture = new Texture2D(graphicsDevice, 1, 1);
+            this.game = game;
+            texture = new Texture2D(game.GraphicsDevice, 1, 1);
             texture.SetData(new[] { Color.White });
             Bounds = bounds;
             Color = color;
         }
 
-        public void Draw(Matrix transform)
+        public void Draw()
         {
-            spriteBatch.Begin(transformMatrix: transform);
-            spriteBatch.Draw(
+            game.SpriteBatch.Draw(
                 texture,
                 new Vector2(Bounds.X, Bounds.Y),
                 new Rectangle(0, 0, 1, 1),
@@ -34,7 +34,6 @@ namespace SixteenBitNuts
                 SpriteEffects.None,
                 0
             );
-            spriteBatch.End();
         }
     }
 }

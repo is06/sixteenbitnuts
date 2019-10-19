@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 
 namespace SixteenBitNuts.Editor
@@ -15,24 +16,23 @@ namespace SixteenBitNuts.Editor
         {
             Editor = editor;
             SelectedTileId = 4;
-
             Buttons = new List<ToolbarButton>();
 
-            int position = 64;
+            int position = 256;
             for (int i = 4; i <= 12; i++)
             {
                 Buttons.Add(new TileToolbarButton(this)
                 {
                     Id = i,
-                    Position = new Vector2(position, 4),
+                    Position = new Vector2(position, 16),
                 });
-                position += 22;
+                position += 66;
             }
 
             Buttons.Add(new EntityToolbarButton(this, "spawn")
             {
                 Id = 100,
-                Position = new Vector2(position, 4),
+                Position = new Vector2(position, 16),
             });
         }
 

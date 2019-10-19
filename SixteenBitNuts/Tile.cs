@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace SixteenBitNuts
 {
@@ -13,31 +14,28 @@ namespace SixteenBitNuts
         #region Components
 
         private readonly Tileset tileset;
-        private readonly float layer;
 
         #endregion
 
-        public Tile(Tileset tileset, int id, Vector2 position, Vector2 size, TileType type, float layer) : base(tileset.Graphics)
+        public Tile(Map map, Tileset tileset, int id, Vector2 position, Vector2 size, TileType type) : base(map)
         {
+            this.tileset = tileset;
+
             // Properties
             Id = id;
             Position = position;
             Size = size;
-
-            this.tileset = tileset;
-            this.layer = layer;
-
             IsObstacle = type == TileType.Obstacle;
         }
 
-        public override void Draw(Matrix transform)
+        public override void Draw()
         {
-            tileset.Draw(Position, Size, tileset.GetOffsetFromId(Id), layer, transform);
+            tileset.Draw(Position, Size, tileset.GetOffsetFromId(Id), Vector2.One);
         }
 
-        public override void DebugDraw(Matrix transform)
+        public override void DebugDraw()
         {
-            tileset.DebugDraw(Position.ToPoint(), Size.ToPoint(), transform, DebugColor);
+            tileset.DebugDraw(Position.ToPoint(), Size.ToPoint(), DebugColor);
         }
     }
 }
