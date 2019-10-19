@@ -8,18 +8,6 @@ using System.Linq;
 
 namespace SixteenBitNuts
 {
-    enum LayerIndex
-    {
-        StaticBackground = 0,
-        Background4 = 1,
-        Background3 = 2,
-        Background2 = 3,
-        Background1 = 4,
-        Main = 5,
-        Foreground1 = 6,
-        Foreground2 = 7
-    }
-
     /// <summary>
     /// Class representing an in-game map
     /// </summary>
@@ -271,7 +259,7 @@ namespace SixteenBitNuts
 
                 #region MapSection Editor
 
-                    if (!keySectionEditModePressed && Keyboard.GetState().IsKeyDown(Keys.F2))
+                if (!keySectionEditModePressed && Keyboard.GetState().IsKeyDown(Keys.F2))
                 {
                     keySectionEditModePressed = true;
 
@@ -423,7 +411,7 @@ namespace SixteenBitNuts
                         0
                     );
 
-                    Game.SpriteBatch.Begin(transformMatrix: layerTransform);
+                    Game.SpriteBatch.Begin(transformMatrix: layerTransform, samplerState: SamplerState.PointWrap);
 
                     foreach (KeyValuePair<int, MapSection> section in sections)
                     {
