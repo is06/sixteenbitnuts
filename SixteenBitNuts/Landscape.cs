@@ -27,6 +27,7 @@ namespace SixteenBitNuts
         private readonly Map map;
 
         public List<LandscapeLayer> Layers { get; set; }
+        public string Name { get; set; }
 
         public Landscape(Map map)
         {

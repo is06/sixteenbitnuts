@@ -14,7 +14,6 @@ namespace SixteenBitNuts
         private readonly Map map;
         private readonly Texture2D transitionCornerTexture;
         private readonly string defaultSpawnPointName;
-        private readonly Landscape landscape;
 
         #region Properties
 
@@ -98,8 +97,6 @@ namespace SixteenBitNuts
             Entities = new Dictionary<string, Entity>();
 
             SetTransitionPoints(bounds);
-
-            landscape = new Landscape(map);
         }
 
 
@@ -119,9 +116,6 @@ namespace SixteenBitNuts
         /// </summary>
         public void Draw(int layer)
         {
-            // Parallax background
-            landscape.Draw(layer);
-
             // Main layer drawables
             if (layer == (int)LayerIndex.Main)
             {
@@ -190,6 +184,7 @@ namespace SixteenBitNuts
         {
             if (positionOffset == Point.Zero)
             {
+                Bounds = new Rectangle(Bounds.X, Bounds.Y, size.X, size.Y);
                 return;
             }
 
