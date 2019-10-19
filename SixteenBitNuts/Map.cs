@@ -8,18 +8,6 @@ using System.Linq;
 
 namespace SixteenBitNuts
 {
-    enum LayerIndex
-    {
-        StaticBackground = 0,
-        Background4 = 1,
-        Background3 = 2,
-        Background2 = 3,
-        Background1 = 4,
-        Main = 5,
-        Foreground1 = 6,
-        Foreground2 = 7
-    }
-
     /// <summary>
     /// Class representing an in-game map
     /// </summary>

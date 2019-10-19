@@ -43,7 +43,7 @@ namespace SixteenBitNuts.Editor
             }
         }
 
-        public Cursor(Map map)
+        public Cursor(Map map, Camera camera)
         {
             this.map = map;
             this.camera = camera;
