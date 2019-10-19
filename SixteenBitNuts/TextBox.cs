@@ -57,11 +57,11 @@ namespace SixteenBitNuts
 
         private string text;
 
-        public TextBox(Game game)
+        public TextBox(Game game, SpriteBatch spriteBatch)
         {
             Text = "";
 
-            spriteBatch = new SpriteBatch(game.GraphicsDevice);
+            this.spriteBatch = spriteBatch;
             texture = new Texture2D(game.GraphicsDevice, 1, 1);
             texture.SetData(new[] { Color.White });
             font = game.Content.Load<SpriteFont>("Engine/fonts/console");
@@ -77,7 +77,6 @@ namespace SixteenBitNuts
             if ((gameTime.TotalGameTime.TotalMilliseconds % 1000) < 500)
                 caretIsVisible = false;
 
-            spriteBatch.Begin();
             spriteBatch.Draw(texture, Bounds, new Rectangle(0, 0, 1, 1), Color.FromNonPremultiplied(20, 20, 20, 180));
             spriteBatch.DrawString(font, text, new Vector2(Bounds.X + 4, Bounds.Y + 4), Color.White);
 
@@ -92,8 +91,6 @@ namespace SixteenBitNuts
                     Color.White
                 );
             }
-
-            spriteBatch.End();
         }
 
         void IKeyboardSubscriber.ReceiveTextInput(char inputChar)

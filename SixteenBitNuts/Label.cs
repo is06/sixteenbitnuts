@@ -13,10 +13,10 @@ namespace SixteenBitNuts
         private readonly SpriteBatch spriteBatch;
         private readonly SpriteFont font;
 
-        public Label(Map map)
+        public Label(Map map, SpriteBatch spriteBatch)
         {
-            spriteBatch = new SpriteBatch(map.Graphics);
-            font = map.Content.Load<SpriteFont>("Engine/fonts/numbers");
+            this.spriteBatch = spriteBatch;
+            font = map.Game.Content.Load<SpriteFont>("Engine/fonts/numbers");
         }
 
         public void Update()
@@ -24,13 +24,11 @@ namespace SixteenBitNuts
 
         }
 
-        public void Draw(Matrix transform)
+        public void Draw()
         {
             if (IsVisible)
             {
-                spriteBatch.Begin(transformMatrix: transform);
                 spriteBatch.DrawString(font, Text, Position, Color, 0f, Vector2.Zero, 1f, SpriteEffects.None, 1f);
-                spriteBatch.End();
             }
         }
     }

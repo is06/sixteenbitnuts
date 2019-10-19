@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace SixteenBitNuts.Editor
 {
@@ -51,7 +52,7 @@ namespace SixteenBitNuts.Editor
             }
         }
 
-        public MapSection(Map map, MapEditor editor, int index, Rectangle bounds)
+        public MapSection(Map map, SpriteBatch spriteBatch, MapEditor editor, int index, Rectangle bounds)
         {
             Map = map;
             Index = index;
@@ -60,15 +61,15 @@ namespace SixteenBitNuts.Editor
 
             previousSectionPosition = new Point(0, 0);
 
-            box = new Box(map.Graphics, bounds, 1, Color.Ivory);
-            preview = new MapSectionPreview(this);
-            sizeLabel = new Label(map)
+            box = new Box(map.Game.GraphicsDevice, spriteBatch, bounds, 1, Color.Ivory);
+            preview = new MapSectionPreview(this, spriteBatch);
+            sizeLabel = new Label(map, spriteBatch)
             {
                 Text = "64x128",
                 Color = Color.White,
                 Position = box.Bounds.Location.ToVector2()
             };
-            positionLabel = new Label(map)
+            positionLabel = new Label(map, spriteBatch)
             {
                 Text = "64x128",
                 Color = Color.White,
@@ -334,12 +335,12 @@ namespace SixteenBitNuts.Editor
             box.Update();
         }
 
-        public void Draw(Matrix transform)
+        public void Draw()
         {
-            box.Draw(transform);
-            preview.Draw(transform);
-            sizeLabel.Draw(transform);
-            positionLabel.Draw(transform);
+            box.Draw();
+            preview.Draw();
+            sizeLabel.Draw();
+            positionLabel.Draw();
         }
 
         public void UpdateLayout()

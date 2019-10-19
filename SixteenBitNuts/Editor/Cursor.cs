@@ -44,15 +44,15 @@ namespace SixteenBitNuts.Editor
             }
         }
 
-        public Cursor(Map map, Camera camera)
+        public Cursor(Map map, SpriteBatch spriteBatch, Camera camera)
         {
             this.map = map;
+            this.spriteBatch = spriteBatch;
             this.camera = camera;
-            spriteBatch = new SpriteBatch(map.Graphics);
-            textures[0] = map.Content.Load<Texture2D>("Engine/editor/cursor_crosshair");
-            textures[1] = map.Content.Load<Texture2D>("Engine/editor/cursor_resize_horizontal");
-            textures[2] = map.Content.Load<Texture2D>("Engine/editor/cursor_resize_vertical");
-            textures[3] = map.Content.Load<Texture2D>("Engine/editor/cursor_move");
+            textures[0] = map.Game.Content.Load<Texture2D>("Engine/editor/cursor_crosshair");
+            textures[1] = map.Game.Content.Load<Texture2D>("Engine/editor/cursor_resize_horizontal");
+            textures[2] = map.Game.Content.Load<Texture2D>("Engine/editor/cursor_resize_vertical");
+            textures[3] = map.Game.Content.Load<Texture2D>("Engine/editor/cursor_move");
         }
 
         public void Update()
@@ -63,7 +63,6 @@ namespace SixteenBitNuts.Editor
 
         public void Draw()
         {
-            spriteBatch.Begin(samplerState: SamplerState.PointClamp);
             spriteBatch.Draw(
                 texture: textures[(int)Type],
                 position: Position.ToVector2(),
@@ -75,7 +74,6 @@ namespace SixteenBitNuts.Editor
                 effects: SpriteEffects.None,
                 layerDepth: 0
             );
-            spriteBatch.End();
         }
     }
 }

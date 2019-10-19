@@ -8,6 +8,18 @@ using System.Linq;
 
 namespace SixteenBitNuts
 {
+    enum LayerIndex
+    {
+        StaticBackground = 0,
+        Background4 = 1,
+        Background3 = 2,
+        Background2 = 3,
+        Background1 = 4,
+        Main = 5,
+        Foreground1 = 6,
+        Foreground2 = 7
+    }
+
     /// <summary>
     /// Class representing an in-game map
     /// </summary>
@@ -15,6 +27,8 @@ namespace SixteenBitNuts
     {
         private const float TRANSITION_SPEED = 0.03f;
         private const float NEAR_OBSTACLE_THRESHOLD = 100f;
+
+        public static Matrix[] parallaxTransforms;
 
         #region Fields
 
@@ -75,10 +89,12 @@ namespace SixteenBitNuts
 
         #region Components
 
+        protected readonly SpriteBatch spriteBatch;
         protected readonly Dictionary<int, MapSection> sections;
         protected MapSectionEditor sectionEditor;
         private readonly MapEditor mapEditor;
         private readonly TransitionGuide transitionGuide;
+        private readonly Vector2[] layerOffsetFactors;
 
         #endregion
 
@@ -91,12 +107,12 @@ namespace SixteenBitNuts
         {
             // Fields
             this.name = name;
+            spriteBatch = new SpriteBatch(game.GraphicsDevice);
 
             Camera = new Camera(this, new Vector2(240, 135), new Viewport(0, 0, 480, 270));
 
             // Components
             sections = new Dictionary<int, MapSection>();
-            sectionEditor = new MapSectionEditor(this);
             transitionGuide = new TransitionGuide();
             deathTimer = new Timer()
             {
@@ -110,9 +126,20 @@ namespace SixteenBitNuts
             // Load map descriptor
             LoadFromFile("Data/maps/" + name + ".map");
 
-            Player = new Player(this, CurrentMapSection.DefaultSpawnPoint.Position);
+            Player = new Player(this, spriteBatch, CurrentMapSection.DefaultSpawnPoint.Position);
 
-            mapEditor = new MapEditor(this);
+            mapEditor = new MapEditor(this, spriteBatch);
+
+            // Layer transformations
+            layerOffsetFactors = new Vector2[8];
+            layerOffsetFactors[(int)LayerIndex.StaticBackground] = Vector2.Zero;
+            layerOffsetFactors[(int)LayerIndex.Background4] = new Vector2(0.1f, 0.1f);
+            layerOffsetFactors[(int)LayerIndex.Background3] = new Vector2(0.2f, 0.2f);
+            layerOffsetFactors[(int)LayerIndex.Background2] = new Vector2(0.4f, 0.4f);
+            layerOffsetFactors[(int)LayerIndex.Background1] = new Vector2(0.6f, 0.6f);
+            layerOffsetFactors[(int)LayerIndex.Main] = new Vector2(1, 1);
+            layerOffsetFactors[(int)LayerIndex.Foreground1] = new Vector2(1.4f, 1.4f);
+            layerOffsetFactors[(int)LayerIndex.Foreground2] = new Vector2(1.7f, 1.7f);
         }
 
         /// <summary>
@@ -388,13 +415,30 @@ namespace SixteenBitNuts
                 mapEditor.Draw();
             }
             else
-            { 
-                foreach (KeyValuePair<int, MapSection> section in sections)
+            {
+                for (int layer = 0; layer < 8; layer++)
                 {
-                    section.Value.Draw(Camera.Transform);
-                }
+                    var layerTransform = Matrix.Identity;
+                    layerTransform.Translation = new Vector3(
+                        Camera.Transform.Translation.X * layerOffsetFactors[layer].X,
+                        Camera.Transform.Translation.Y * layerOffsetFactors[layer].Y,
+                        0
+                    );
 
-                Player.Draw(Camera.Transform);
+                    spriteBatch.Begin(transformMatrix: layerTransform);
+
+                    foreach (KeyValuePair<int, MapSection> section in sections)
+                    {
+                        section.Value.Draw(layer);
+                    }
+
+                    if (layer == (int)LayerIndex.Main)
+                    {
+                        Player.Draw();
+                    }
+
+                    spriteBatch.End();
+                }
             }
 
             base.Draw();
@@ -407,12 +451,22 @@ namespace SixteenBitNuts
         {
             if (!isInMapEditMode && isInDebugViewMode)
             {
-                foreach (KeyValuePair<int, MapSection> pair in sections)
+                for (int layer = -4; layer <= 2; layer++)
                 {
-                    pair.Value.DebugDraw(Camera.Transform);
-                }
+                    spriteBatch.Begin(transformMatrix: Camera.Transform * Matrix.Identity);
 
-                Player.DebugDraw(Camera.Transform);
+                    foreach (KeyValuePair<int, MapSection> pair in sections)
+                    {
+                        pair.Value.DebugDraw();
+                    }
+
+                    if (layer == 0)
+                    {
+                        Player.DebugDraw();
+                    }
+
+                    spriteBatch.End();
+                }
             }
 
             base.DebugDraw();
@@ -421,18 +475,20 @@ namespace SixteenBitNuts
         /// <summary>
         /// Draw all design UI elements (HD graphics)
         /// </summary>
-        public override void UIDraw(GameTime gameTime)
+        public override void UIDraw()
         {
             if (!isInMapEditMode && isInSectionEditMode)
             {
+                spriteBatch.Begin(samplerState: SamplerState.PointClamp);
                 sectionEditor.Draw();
+                spriteBatch.End();
             }
             if (isInMapEditMode)
             {
+                spriteBatch.Begin(samplerState: SamplerState.PointClamp);
                 mapEditor.UIDraw();
+                spriteBatch.End();
             }
-
-            base.UIDraw(gameTime);
         }
 
         public void LoadSectionFromIndex(int index)
@@ -523,13 +579,14 @@ namespace SixteenBitNuts
                         sectionIndex++;
                         sections[sectionIndex] = new MapSection(
                             this,
+                            spriteBatch,
                             new Rectangle(
                                 int.Parse(components[1]),
                                 int.Parse(components[2]),
                                 int.Parse(components[3]),
                                 int.Parse(components[4])
                             ),
-                            new Tileset(Game.GraphicsDevice, Game.Content, components[5]),
+                            new Tileset(Game, spriteBatch, components[5]),
                             components[6]
                         );
                         break;
@@ -548,15 +605,14 @@ namespace SixteenBitNuts
                             X = int.Parse(components[2]),
                             Y = int.Parse(components[3])
                         };
-                        float layer = float.Parse(components[4]);
 
                         sections[sectionIndex].Tiles.Add(new Tile(
+                            spriteBatch,
                             sections[sectionIndex].Tileset,
                             elementId,
                             position,
                             sections[sectionIndex].Tileset.GetSizeFromId(elementId),
-                            sections[sectionIndex].Tileset.GetTypeFromId(elementId),
-                            layer
+                            sections[sectionIndex].Tileset.GetTypeFromId(elementId)
                         ));
                         break;
                 }
@@ -569,7 +625,7 @@ namespace SixteenBitNuts
             {
                 case "spawn": // TODO: remove this identifier
                 case "SixteenBitNuts.SpawnPoint":
-                    sections[sectionIndex].Entities[name] = new SpawnPoint(this, name)
+                    sections[sectionIndex].Entities[name] = new SpawnPoint(this, spriteBatch, name)
                     {
                         Position = position
                     };

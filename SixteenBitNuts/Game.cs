@@ -21,12 +21,12 @@ namespace SixteenBitNuts
                 return WindowSize.Width / (float)InternalSize.Width;
             }
         }
+        public SpriteBatch SpriteBatch { get; set; }
 
         #endregion
 
         #region Components
 
-        private SpriteBatch spriteBatch;
         private RenderTarget2D renderSurface;        
         private readonly GraphicsDeviceManager graphics;
 
@@ -56,15 +56,15 @@ namespace SixteenBitNuts
             Content.RootDirectory = "Content";
             TargetElapsedTime = new TimeSpan((int)(1000f / FrameRate * 10000f));
             InGameViewport = new Viewport(0, 0, InternalSize.Width, InternalSize.Height);
+            SpriteBatch = new SpriteBatch(GraphicsDevice);
 
-            spriteBatch = new SpriteBatch(GraphicsDevice);
             renderSurface = new RenderTarget2D(GraphicsDevice, InternalSize.Width, InternalSize.Height);
 
             base.Initialize();
 
             // Debug console
             KeyboardDispatcher keyboardDispatcher = new KeyboardDispatcher(Window);
-            console = new Console(this, keyboardDispatcher);
+            console = new Console(this, SpriteBatch, keyboardDispatcher);
 
             console.OnLoadMap += ConsoleLoadMap;
             console.OnExitGame += ConsoleExitGame;
@@ -122,26 +122,28 @@ namespace SixteenBitNuts
                 GraphicsDevice.SetRenderTarget(null);
 
                 // Render the surface to have the ingame screen
-                spriteBatch.Begin(
+                SpriteBatch.Begin(
                     SpriteSortMode.Immediate,
                     BlendState.AlphaBlend,
                     SamplerState.PointClamp
                 );
-                spriteBatch.Draw(
+                SpriteBatch.Draw(
                     texture: renderSurface,
                     destinationRectangle: new Rectangle(0, 0, WindowSize.Width, WindowSize.Height),
                     sourceRectangle: new Rectangle(0, 0, InGameViewport.Width, InGameViewport.Height),
                     color: Color.White
                 );
-                spriteBatch.End();
+                SpriteBatch.End();
             }
 
             // Hi-res graphics rendering
             {
                 // Render all UI elements in front of the render target texture
-                currentScene.UIDraw(gameTime);
+                currentScene.UIDraw();
 
+                SpriteBatch.Begin();
                 console.Draw(gameTime);
+                SpriteBatch.End();
             }
 
             base.Draw(gameTime);
@@ -154,7 +156,7 @@ namespace SixteenBitNuts
 
         protected override void Dispose(bool disposing)
         {
-            spriteBatch.Dispose();
+            SpriteBatch.Dispose();
             renderSurface.Dispose();
             graphics.Dispose();
 

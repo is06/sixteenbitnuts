@@ -9,17 +9,17 @@ namespace SixteenBitNuts.Editor
 
         public string Type { get; private set; }
 
-        public EntityToolbarButton(Toolbar bar, string type) : base(bar)
+        public EntityToolbarButton(Toolbar bar, SpriteBatch spriteBatch, string type) : base(bar, spriteBatch)
         {
             Type = type;
 
             if (type == "spawn")
             {
-                texture = bar.Editor.Map.Content.Load<Texture2D>("Engine/editor/" + type);
+                texture = bar.Editor.Map.Game.Content.Load<Texture2D>("Engine/editor/" + type);
             }
             else
             {
-                texture = bar.Editor.Map.Content.Load<Texture2D>("Game/sprites/entities/" + type);
+                texture = bar.Editor.Map.Game.Content.Load<Texture2D>("Game/sprites/entities/" + type);
             }
         }
 
@@ -32,7 +32,6 @@ namespace SixteenBitNuts.Editor
                 (Position.Y + 2) * 3
             );
 
-            spriteBatch.Begin(samplerState: SamplerState.PointClamp);
             spriteBatch.Draw(
                 texture: texture,
                 position: position,
@@ -44,7 +43,6 @@ namespace SixteenBitNuts.Editor
                 effects: SpriteEffects.None,
                 layerDepth: 0f
             );
-            spriteBatch.End();
         }
     }
 }

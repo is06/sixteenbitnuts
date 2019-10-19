@@ -81,23 +81,28 @@ namespace SixteenBitNuts
 
         #endregion
 
+        private readonly Image background;
+
         /// <summary>
         /// Constructor
         /// </summary>
-        public MapSection(Map map, Rectangle bounds, Tileset tileset, string defaultSpawnPointName)
+        public MapSection(Map map, SpriteBatch spriteBatch, Rectangle bounds, Tileset tileset, string defaultSpawnPointName)
         {
             this.map = map;
             this.defaultSpawnPointName = defaultSpawnPointName;
-            spriteBatch = new SpriteBatch(map.Graphics);
-            transitionCornerTexture = map.Content.Load<Texture2D>("Engine/editor/transition_corner");
+            this.spriteBatch = spriteBatch;
+            transitionCornerTexture = map.Game.Content.Load<Texture2D>("Engine/editor/transition_corner");
 
             // Properties
             Bounds = bounds;
             Tileset = tileset;
+
             Tiles = new List<Tile>();
             Entities = new Dictionary<string, Entity>();
 
             SetTransitionPoints(bounds);
+
+            background = new Image(map, spriteBatch, new Vector2(0, 0), "Game/backgrounds/forest");
         }
 
 
@@ -115,22 +120,31 @@ namespace SixteenBitNuts
         /// <summary>
         /// Draw all tiles
         /// </summary>
-        public void Draw(Matrix transform)
+        public void Draw(int layer)
         {
-            foreach (Tile tile in Tiles)
+            // Parallax background
+            if (layer == (int)LayerIndex.Background1)
             {
-                tile.Draw(transform);
-            }
-            foreach (KeyValuePair<string, Entity> pair in Entities)
-            {
-                pair.Value.Draw(transform);
+                background.Draw();
             }
 
-            if (map.IsInSectionEditMode)
+            // Main layer drawables
+            if (layer == (int)LayerIndex.Main)
             {
+                foreach (Tile tile in Tiles)
+                {
+                    tile.Draw();
+                }
                 foreach (KeyValuePair<string, Entity> pair in Entities)
                 {
-                    pair.Value.EditorDraw(transform);
+                    pair.Value.Draw();
+                }
+                if (map.IsInSectionEditMode)
+                {
+                    foreach (KeyValuePair<string, Entity> pair in Entities)
+                    {
+                        pair.Value.EditorDraw();
+                    }
                 }
             }
         }
@@ -138,26 +152,24 @@ namespace SixteenBitNuts
         /// <summary>
         /// Draw debug info for in-game elements
         /// </summary>
-        public void DebugDraw(Matrix transform)
+        public void DebugDraw()
         {
             foreach (Tile tile in Tiles)
             {
-                tile.DebugDraw(transform);
+                tile.DebugDraw();
             }
             foreach (KeyValuePair<string, Entity> pair in Entities)
             {
-                pair.Value.DebugDraw(transform);
+                pair.Value.DebugDraw();
             }
             for (int i = 0; i < transitionPoints.Length; i++)
             {
-                spriteBatch.Begin(transformMatrix: transform);
                 spriteBatch.Draw(
                     transitionCornerTexture,
                     new Vector2(transitionPoints[i].X, transitionPoints[i].Y),
                     new Rectangle(0, 0, 16, 16),
                     Color.White
                 );
-                spriteBatch.End();
             }
         }
 

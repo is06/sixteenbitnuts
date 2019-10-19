@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace SixteenBitNuts
 {
@@ -40,11 +41,11 @@ namespace SixteenBitNuts
             }
         }
 
-        public Console(Game game, KeyboardDispatcher keyboardDispatcher)
+        public Console(Game game, SpriteBatch spriteBatch, KeyboardDispatcher keyboardDispatcher)
         {
             this.keyboardDispatcher = keyboardDispatcher;
 
-            textBox = new TextBox(game)
+            textBox = new TextBox(game, spriteBatch)
             {
                 Bounds = new Rectangle(32, 754, 600, 24)
             };

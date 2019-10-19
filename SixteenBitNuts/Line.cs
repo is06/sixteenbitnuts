@@ -11,18 +11,17 @@ namespace SixteenBitNuts
         public Rectangle Bounds { get; set; }
         public Color Color { get; set; }
 
-        public Line(GraphicsDevice graphicsDevice, Rectangle bounds, Color color)
+        public Line(GraphicsDevice graphicsDevice, SpriteBatch spriteBatch, Rectangle bounds, Color color)
         {
-            spriteBatch = new SpriteBatch(graphicsDevice);
+            this.spriteBatch = spriteBatch;
             texture = new Texture2D(graphicsDevice, 1, 1);
             texture.SetData(new[] { Color.White });
             Bounds = bounds;
             Color = color;
         }
 
-        public void Draw(Matrix transform)
+        public void Draw()
         {
-            spriteBatch.Begin(transformMatrix: transform);
             spriteBatch.Draw(
                 texture,
                 new Vector2(Bounds.X, Bounds.Y),
@@ -34,7 +33,6 @@ namespace SixteenBitNuts
                 SpriteEffects.None,
                 0
             );
-            spriteBatch.End();
         }
     }
 }

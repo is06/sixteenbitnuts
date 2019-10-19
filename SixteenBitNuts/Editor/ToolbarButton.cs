@@ -23,10 +23,10 @@ namespace SixteenBitNuts.Editor
             get
             {
                 return new Rectangle(
-                    (int)Math.Round(Position.X) * (int)Toolbar.Editor.Map.Game.ScreenScale,
-                    (int)Math.Round(Position.Y) * (int)Toolbar.Editor.Map.Game.ScreenScale,
-                    BUTTON_SIZE * (int)Toolbar.Editor.Map.Game.ScreenScale,
-                    BUTTON_SIZE * (int)Toolbar.Editor.Map.Game.ScreenScale
+                    (int)Math.Round(Position.X),
+                    (int)Math.Round(Position.Y),
+                    BUTTON_SIZE,
+                    BUTTON_SIZE
                 );
             }
         }
@@ -40,24 +40,27 @@ namespace SixteenBitNuts.Editor
 
         #endregion
 
-        public ToolbarButton(Toolbar bar)
+        public ToolbarButton(Toolbar bar, SpriteBatch spriteBatch)
         {
             Toolbar = bar;
+            this.spriteBatch = spriteBatch;
 
-            spriteBatch = new SpriteBatch(bar.Editor.Map.Graphics);
-            buttonTexture = bar.Editor.Map.Content.Load<Texture2D>("Engine/editor/entity_button");
+            buttonTexture = bar.Editor.Map.Game.Content.Load<Texture2D>("Engine/editor/entity_button");
         }
 
         public virtual void Draw()
         {
-            spriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: Matrix.CreateScale(3));
             spriteBatch.Draw(
                 buttonTexture,
                 Position,
                 new Rectangle(0, 0, BUTTON_SIZE, BUTTON_SIZE),
-                IsSelected ? Color.Lime : Color.White
+                IsSelected ? Color.Lime : Color.White,
+                0,
+                Vector2.Zero,
+                new Vector2(3, 3),
+                SpriteEffects.None,
+                0
             );
-            spriteBatch.End();
         }
     }
 }

@@ -13,23 +13,20 @@ namespace SixteenBitNuts.Editor
         private readonly MapSection section;
         private readonly List<Point> previewTilePositions;
 
-        public MapSectionPreview(MapSection section)
+        public MapSectionPreview(MapSection section, SpriteBatch spriteBatch)
         {
             this.section = section;
+            this.spriteBatch = spriteBatch;
 
             pixel = new Texture2D(section.Map.Game.GraphicsDevice, 1, 1);
             pixel.SetData(new[] { Color.White });
-
-            spriteBatch = new SpriteBatch(section.Map.Game.GraphicsDevice);
 
             previewTilePositions = new List<Point>();
             UpdatePreviewTilesFromRealSection();
         }
 
-        public void Draw(Matrix transform)
+        public void Draw()
         {
-            spriteBatch.Begin(transformMatrix: transform);
-
             foreach (var position in previewTilePositions)
             {
                 spriteBatch.Draw(
@@ -38,8 +35,6 @@ namespace SixteenBitNuts.Editor
                     Color.RosyBrown
                 );
             }
-
-            spriteBatch.End();
         }
 
         public void UpdatePreviewTilesFromRealSection()

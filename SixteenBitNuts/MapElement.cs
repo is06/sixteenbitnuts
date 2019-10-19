@@ -38,10 +38,11 @@ namespace SixteenBitNuts
 
         #endregion
 
-        public MapElement(GraphicsDevice graphicsDevice)
+        public MapElement(GraphicsDevice graphicsDevice, SpriteBatch spriteBatch)
         {
             debugHitBox = new Box(
                 graphicsDevice,
+                spriteBatch,
                 new Rectangle(Position.ToPoint(), Size.ToPoint()),
                 DEBUG_BOX_THICKNESS,
                 DebugColor
@@ -53,22 +54,22 @@ namespace SixteenBitNuts
 
         }
 
-        public virtual void Draw(Matrix transform)
+        public virtual void Draw()
         {
 
         }
 
-        public virtual void EditorDraw(Matrix transform)
+        public virtual void EditorDraw()
         {
 
         }
 
-        public virtual void DebugDraw(Matrix transform)
+        public virtual void DebugDraw()
         {
             debugHitBox.Color = DebugColor;
             debugHitBox.Bounds = new Rectangle(Position.ToPoint(), Size.ToPoint());
             debugHitBox.Update();
-            debugHitBox.Draw(transform);
+            debugHitBox.Draw();
         }
     }
 }

@@ -26,29 +26,29 @@ namespace SixteenBitNuts.Editor
 
         public Cursor Cursor { get; set; }
 
-        public MapEditor(Map map)
+        public MapEditor(Map map, SpriteBatch spriteBatch)
         {
             this.map = map;
+            this.spriteBatch = spriteBatch;
 
             camera = new Camera(map, new Vector2(0, 0), new Viewport(0, 0, 480, 270))
             {
                 CanOverrideLimits = true
             };
-            Cursor = new Cursor(map, camera);
+            Cursor = new Cursor(map, spriteBatch, camera);
             sections = new Dictionary<int, MapSection>();
-            frame = new Image(map, new Vector2(0, 0), "Engine/editor/level_frame")
+            frame = new Image(map, spriteBatch, new Vector2(0, 0), "Engine/editor/level_frame")
             {
                 Color = Color.BlueViolet
             };
-            gridTexture = map.Content.Load<Texture2D>("Engine/editor/grid");
-            spriteBatch = new SpriteBatch(map.Graphics);
+            gridTexture = map.Game.Content.Load<Texture2D>("Engine/editor/grid");
 
             foreach (var section in map.Sections)
             {
-                sections[section.Key] = new MapSection(map, this, section.Key, section.Value.Bounds);
+                sections[section.Key] = new MapSection(map, spriteBatch, this, section.Key, section.Value.Bounds);
             }
 
-            cursorPosition = new Label(map)
+            cursorPosition = new Label(map, spriteBatch)
             {
                 IsVisible = true,
                 Position = new Vector2(8, 256),
@@ -96,13 +96,13 @@ namespace SixteenBitNuts.Editor
                 );
 
                 int nextSectionIndex = sections.Count;
-                sections.Add(nextSectionIndex, new MapSection(map, this, nextSectionIndex, bounds));
+                sections.Add(nextSectionIndex, new MapSection(map, spriteBatch, this, nextSectionIndex, bounds));
 
                 // TODO: retrieve tileset from tileset factory
-                var tileset = new Tileset(map.Graphics, map.Content, "tileset3");
+                var tileset = new Tileset(map.Game, spriteBatch, "tileset3");
 
                 // TODO: create a spawn point for this section
-                map.Sections.Add(nextSectionIndex, new SixteenBitNuts.MapSection(map, bounds, tileset, "spawn02"));
+                map.Sections.Add(nextSectionIndex, new SixteenBitNuts.MapSection(map, spriteBatch, bounds, tileset, "spawn02"));
             }
             if (Keyboard.GetState().IsKeyUp(Keys.Add))
             {
@@ -128,11 +128,12 @@ namespace SixteenBitNuts.Editor
 
         public void Draw()
         {
+            spriteBatch.Begin(transformMatrix: camera.Transform);
+
             var gridOrigin = camera.ViewPort.Bounds.Location - camera.ViewPort.Bounds.Center - (new Point((int)camera.Transform.Translation.X, (int)camera.Transform.Translation.Y));
             var gridDestination = camera.ViewPort.Bounds.Location + camera.ViewPort.Bounds.Size - (new Point((int)camera.Transform.Translation.X, (int)camera.Transform.Translation.Y));
 
             // Draw grid
-            spriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: camera.Transform);
             for (int i = gridOrigin.X / gridZoom; i < gridDestination.X / gridZoom; i++)
             {
                 for (int j = gridOrigin.Y / gridZoom; j < gridDestination.Y / gridZoom; j++)
@@ -150,16 +151,19 @@ namespace SixteenBitNuts.Editor
                     );
                 }
             }
-            spriteBatch.End();
 
             // Draw map sections
             foreach (var section in sections)
             {
-                section.Value.Draw(camera.Transform);
+                section.Value.Draw();
             }
 
+            spriteBatch.End();
+
+            spriteBatch.Begin();
             frame.Draw();
-            cursorPosition.Draw(Matrix.Identity);
+            cursorPosition.Draw();
+            spriteBatch.End();
         }
 
         public void UIDraw()

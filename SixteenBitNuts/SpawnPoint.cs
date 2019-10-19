@@ -9,11 +9,13 @@ namespace SixteenBitNuts
         public string Name { get; private set; }
 
         private readonly Texture2D debugTexture;
+        private readonly SpriteBatch spriteBatch;
 
-        public SpawnPoint(Map map, string name) : base(map)
+        public SpawnPoint(Map map, SpriteBatch spriteBatch, string name) : base(map, spriteBatch)
         {
             Name = name;
-            debugTexture = map.Content.Load<Texture2D>("Engine/editor/spawn");
+            this.spriteBatch = spriteBatch;
+            debugTexture = map.Game.Content.Load<Texture2D>("Engine/editor/spawn");
         }
 
         public override void Update()
@@ -21,21 +23,20 @@ namespace SixteenBitNuts
 
         }
 
-        public override void Draw(Matrix transform)
+        public override void Draw()
         {
-            base.Draw(transform);
+            base.Draw();
         }
 
-        public override void EditorDraw(Matrix transform)
+        public override void EditorDraw()
         {
-            DebugDraw(transform);
+            DebugDraw();
 
-            base.EditorDraw(transform);
+            base.EditorDraw();
         }
 
-        public override void DebugDraw(Matrix transform)
+        public override void DebugDraw()
         {
-            spriteBatch.Begin(transformMatrix: transform);
             spriteBatch.Draw(
                 texture: debugTexture,
                 position: new Vector2((float)Math.Round(Position.X), (float)Math.Round(Position.Y)),
@@ -47,9 +48,8 @@ namespace SixteenBitNuts
                 effects: SpriteEffects.None,
                 layerDepth: 0f
             );
-            spriteBatch.End();
 
-            base.DebugDraw(transform);
+            base.DebugDraw();
         }
     }
 }

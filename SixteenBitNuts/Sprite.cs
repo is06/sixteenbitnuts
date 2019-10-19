@@ -70,7 +70,7 @@ namespace SixteenBitNuts
 
         #endregion
 
-        public Sprite(string name, GraphicsDevice graphics, ContentManager content)
+        public Sprite(ContentManager content, SpriteBatch spriteBatch, string name)
         {
             // Fields
             currentAnimationName = "idle";
@@ -80,7 +80,7 @@ namespace SixteenBitNuts
             Direction = Direction.Right;
 
             // Components
-            spriteBatch = new SpriteBatch(graphics);
+            this.spriteBatch = spriteBatch;
             animations = new Dictionary<string, SpriteAnimation>();
 
             // Loading sprite descriptor and texture
@@ -88,7 +88,7 @@ namespace SixteenBitNuts
             texture = content.Load<Texture2D>("Game/sprites/" + textureName);
         }
 
-        public void Draw(Vector2 position, float layer, Matrix transform)
+        public void Draw(Vector2 position, float layer)
         {
             Point size = new Point(
                 CurrentAnimation.Size.X,
@@ -100,7 +100,6 @@ namespace SixteenBitNuts
                 CurrentAnimation.DirectionOffsets[Direction].Y
             );
 
-            spriteBatch.Begin(transformMatrix: transform);
             spriteBatch.Draw(
                 texture: texture,
                 position: new Vector2((float)Math.Round(position.X), (float)Math.Round(position.Y)),
@@ -117,7 +116,6 @@ namespace SixteenBitNuts
                 effects: SpriteEffects.None,
                 layerDepth: layer
             );
-            spriteBatch.End();
 
             // Increment animation frame counter
             if (isAnimated)
