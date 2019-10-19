@@ -28,8 +28,8 @@ namespace SixteenBitNuts.Editor
             base.Draw();
 
             Vector2 position = new Vector2(
-                (Position.X + 2) * 3,
-                (Position.Y + 2) * 3
+                (Position.X + 6) * 3,
+                (Position.Y + 6) * 3
             );
 
             spriteBatch.Draw(

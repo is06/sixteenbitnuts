@@ -8,7 +8,7 @@ namespace SixteenBitNuts.Editor
     {
         #region Constants
 
-        public const int BUTTON_SIZE = 20;
+        public const int BUTTON_SIZE = 60;
 
         #endregion
 
@@ -53,11 +53,11 @@ namespace SixteenBitNuts.Editor
             spriteBatch.Draw(
                 buttonTexture,
                 Position,
-                new Rectangle(0, 0, BUTTON_SIZE, BUTTON_SIZE),
+                new Rectangle(0, 0, 20, 20),
                 IsSelected ? Color.Lime : Color.White,
                 0,
                 Vector2.Zero,
-                new Vector2(3, 3),
+                3f,
                 SpriteEffects.None,
                 0
             );
