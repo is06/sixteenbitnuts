@@ -9,7 +9,7 @@ namespace SixteenBitNuts.Editor
 
         public string Type { get; private set; }
 
-        public EntityToolbarButton(Toolbar bar, SpriteBatch spriteBatch, string type) : base(bar, spriteBatch)
+        public EntityToolbarButton(Toolbar bar, string type) : base(bar)
         {
             Type = type;
 
@@ -32,7 +32,7 @@ namespace SixteenBitNuts.Editor
                 (Position.Y + 6) * 3
             );
 
-            spriteBatch.Draw(
+            Toolbar.Editor.Map.Game.SpriteBatch.Draw(
                 texture: texture,
                 position: position,
                 sourceRectangle: new Rectangle(0, 0, 16, 16),

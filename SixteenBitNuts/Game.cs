@@ -64,7 +64,7 @@ namespace SixteenBitNuts
 
             // Debug console
             KeyboardDispatcher keyboardDispatcher = new KeyboardDispatcher(Window);
-            console = new Console(this, SpriteBatch, keyboardDispatcher);
+            console = new Console(this, keyboardDispatcher);
 
             console.OnLoadMap += ConsoleLoadMap;
             console.OnExitGame += ConsoleExitGame;

@@ -29,7 +29,6 @@ namespace SixteenBitNuts.Editor
         #region Components
 
         protected Toolbar toolbar;
-        protected readonly SpriteBatch spriteBatch;
 
         private readonly Cursor cursor;
         private readonly Texture2D frameTexture;
@@ -37,14 +36,12 @@ namespace SixteenBitNuts.Editor
 
         #endregion
 
-        public MapSectionEditor(Map map, SpriteBatch spriteBatch)
+        public MapSectionEditor(Map map)
         {
-            this.spriteBatch = spriteBatch;
-
             Map = map;
 
-            toolbar = new Toolbar(this, spriteBatch);
-            cursor = new Cursor(map, spriteBatch, map.Camera);
+            toolbar = new Toolbar(this);
+            cursor = new Cursor(map);
             frameTexture = map.Game.Content.Load<Texture2D>("Engine/editor/frame");
             gridTexture = map.Game.Content.Load<Texture2D>("Engine/editor/grid");
         }
@@ -86,7 +83,7 @@ namespace SixteenBitNuts.Editor
                     if (toolbar.SelectedButtonType == typeof(TileToolbarButton) && !TileAlreadyAtPosition(drawerPosition))
                     {
                         Map.CurrentMapSection.Tiles.Add(new Tile(
-                            spriteBatch,
+                            Map,
                             Map.CurrentMapSection.Tileset,
                             toolbar.SelectedTileId,
                             drawerPosition,
@@ -166,12 +163,12 @@ namespace SixteenBitNuts.Editor
         public void Draw()
         {
             // Draw grid
-            spriteBatch.Begin(transformMatrix: Map.Camera.UITransform);
+            Map.Game.SpriteBatch.Begin(transformMatrix: Map.Camera.UITransform);
             for (int i = Map.CurrentMapSection.Bounds.X / GRID_SIZE; i < (Map.CurrentMapSection.Bounds.X + Map.CurrentMapSection.Bounds.Width) / GRID_SIZE + 1; i++)
             {
                 for (int j = Map.CurrentMapSection.Bounds.Y / GRID_SIZE; j < (Map.CurrentMapSection.Bounds.Y + Map.CurrentMapSection.Bounds.Height) / GRID_SIZE + 1; j++)
                 {
-                    spriteBatch.Draw(
+                    Map.Game.SpriteBatch.Draw(
                         gridTexture,
                         new Vector2(i * (GRID_SIZE * Map.Game.ScreenScale), j * (GRID_SIZE * Map.Game.ScreenScale)),
                         new Rectangle(0, 0, GRID_SIZE, GRID_SIZE),
@@ -184,15 +181,15 @@ namespace SixteenBitNuts.Editor
                     );
                 }
             }
-            spriteBatch.End();
+            Map.Game.SpriteBatch.End();
 
-            spriteBatch.Begin(samplerState: SamplerState.PointClamp);
+            Map.Game.SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
 
             toolbar.Draw();
             cursor.Draw();
 
             // Draw frame
-            spriteBatch.Draw(
+            Map.Game.SpriteBatch.Draw(
                 frameTexture,
                 new Vector2(0, 0),
                 new Rectangle(0, 0, 480, 270),
@@ -204,7 +201,7 @@ namespace SixteenBitNuts.Editor
                 0
             );
 
-            spriteBatch.End();
+            Map.Game.SpriteBatch.End();
         }
 
         protected virtual void AddEntity(string entityType, Vector2 position)
@@ -219,7 +216,7 @@ namespace SixteenBitNuts.Editor
             switch (entityType)
             {
                 case "spawn":
-                    Map.CurrentMapSection.Entities.Add(name, new SpawnPoint(Map, spriteBatch, name)
+                    Map.CurrentMapSection.Entities.Add(name, new SpawnPoint(Map, name)
                     {
                         Position = position
                     });

@@ -9,12 +9,10 @@ namespace SixteenBitNuts
         public string Name { get; private set; }
 
         private readonly Texture2D debugTexture;
-        private readonly SpriteBatch spriteBatch;
 
-        public SpawnPoint(Map map, SpriteBatch spriteBatch, string name) : base(map, spriteBatch)
+        public SpawnPoint(Map map, string name) : base(map)
         {
             Name = name;
-            this.spriteBatch = spriteBatch;
             debugTexture = map.Game.Content.Load<Texture2D>("Engine/editor/spawn");
         }
 
@@ -37,7 +35,7 @@ namespace SixteenBitNuts
 
         public override void DebugDraw()
         {
-            spriteBatch.Draw(
+            map.Game.SpriteBatch.Draw(
                 texture: debugTexture,
                 position: new Vector2((float)Math.Round(Position.X), (float)Math.Round(Position.Y)),
                 sourceRectangle: new Rectangle(0, 0, 16, 16),

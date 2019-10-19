@@ -196,7 +196,7 @@ namespace SixteenBitNuts
         /// </summary>
         /// <param name="map"></param>
         /// <param name="position"></param>
-        public Player(Map map, SpriteBatch spriteBatch, Vector2 position)
+        public Player(Map map, Vector2 position)
         {
             // Fields
             jumpCurrentVelocity = JUMP_VELOCITY;
@@ -216,11 +216,11 @@ namespace SixteenBitNuts
             IsControllable = true;
 
             // Components
-            sprite = new Sprite(map.Game.Content, spriteBatch, "gameplay/player");
+            sprite = new Sprite(map.Game, "gameplay/player");
             sprite.OnAnimationFinished += SpriteOnAnimationFinished;
-            debugHitBox = new Box(map.Game.GraphicsDevice, spriteBatch, new Rectangle(Position.ToPoint(), HitBoxSize.ToPoint()), 1, Color.Cyan);
-            debugPreviousFrameHitBox = new Box(map.Game.GraphicsDevice, spriteBatch, new Rectangle(Position.ToPoint(), new Point(16, 24)), 2, Color.DarkOliveGreen);
-            debugDistanceBox = new Box(map.Game.GraphicsDevice, spriteBatch, new Rectangle(Position.ToPoint(), new Point(16, 16)), 3, Color.DodgerBlue);
+            debugHitBox = new Box(map.Game, new Rectangle(Position.ToPoint(), HitBoxSize.ToPoint()), 1, Color.Cyan);
+            debugPreviousFrameHitBox = new Box(map.Game, new Rectangle(Position.ToPoint(), new Point(16, 24)), 2, Color.DarkOliveGreen);
+            debugDistanceBox = new Box(map.Game, new Rectangle(Position.ToPoint(), new Point(16, 16)), 3, Color.DodgerBlue);
         }
 
         

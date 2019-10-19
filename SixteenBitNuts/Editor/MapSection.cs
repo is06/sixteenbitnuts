@@ -52,7 +52,7 @@ namespace SixteenBitNuts.Editor
             }
         }
 
-        public MapSection(Map map, SpriteBatch spriteBatch, MapEditor editor, int index, Rectangle bounds)
+        public MapSection(Map map, MapEditor editor, int index, Rectangle bounds)
         {
             Map = map;
             Index = index;
@@ -61,15 +61,15 @@ namespace SixteenBitNuts.Editor
 
             previousSectionPosition = new Point(0, 0);
 
-            box = new Box(map.Game.GraphicsDevice, spriteBatch, bounds, 1, Color.Ivory);
-            preview = new MapSectionPreview(this, spriteBatch);
-            sizeLabel = new Label(map, spriteBatch)
+            box = new Box(map.Game, bounds, 1, Color.Ivory);
+            preview = new MapSectionPreview(this);
+            sizeLabel = new Label(map)
             {
                 Text = "64x128",
                 Color = Color.White,
                 Position = box.Bounds.Location.ToVector2()
             };
-            positionLabel = new Label(map, spriteBatch)
+            positionLabel = new Label(map)
             {
                 Text = "64x128",
                 Color = Color.White,

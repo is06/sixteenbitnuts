@@ -8,9 +8,7 @@ using System.Collections.Generic;
 namespace SixteenBitNuts
 {
     public class Tileset
-    {
-        private readonly SpriteBatch spriteBatch;
-        
+    {        
         private readonly Texture2D texture;
         private readonly Box debugHitBox;
         private readonly Dictionary<int, TileElement> elements;
@@ -18,24 +16,23 @@ namespace SixteenBitNuts
         public string Name { get; private set; }
         public Game Game { get; private set; }
 
-        public Tileset(Game game, SpriteBatch spriteBatch, string name)
+        public Tileset(Game game, string name)
         {
             // Properties
             Name = name;
             Game = game;
 
             // Components
-            this.spriteBatch = spriteBatch;
             texture = game.Content.Load<Texture2D>("Game/tilesets/" + name);
             elements = new Dictionary<int, TileElement>();
-            debugHitBox = new Box(game.GraphicsDevice, spriteBatch, new Rectangle(0, 0, 16, 16), 1, Color.DarkRed);
+            debugHitBox = new Box(game, new Rectangle(0, 0, 16, 16), 1, Color.DarkRed);
 
             LoadFromFile("Data/tilesets/" + name + ".tileset");
         }
 
         public void Draw(Vector2 position, Vector2 size, Vector2 offset, Vector2 scale)
         {
-            spriteBatch.Draw(
+            Game.SpriteBatch.Draw(
                 texture: texture,
                 position: new Vector2((float)Math.Round(position.X), (float)Math.Round(position.Y)),
                 sourceRectangle: new Rectangle((int)offset.X, (int)offset.Y, (int)size.X, (int)size.Y),

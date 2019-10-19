@@ -5,12 +5,8 @@ namespace SixteenBitNuts
 {
     public class Entity : MapElement
     {
-        protected readonly Map map;
-
-        public Entity(Map map, SpriteBatch spriteBatch) : base(map.Game.GraphicsDevice, spriteBatch)
+        public Entity(Map map) : base(map)
         {
-            this.map = map;
-
             DebugColor = Color.Orange;
         }
 

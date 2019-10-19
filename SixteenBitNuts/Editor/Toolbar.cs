@@ -12,7 +12,7 @@ namespace SixteenBitNuts.Editor
         public int SelectedTileId { get; set; }
         public string SelectedEntityType { get; set; }
 
-        public Toolbar(MapSectionEditor editor, SpriteBatch spriteBatch)
+        public Toolbar(MapSectionEditor editor)
         {
             Editor = editor;
             SelectedTileId = 4;
@@ -21,7 +21,7 @@ namespace SixteenBitNuts.Editor
             int position = 256;
             for (int i = 4; i <= 12; i++)
             {
-                Buttons.Add(new TileToolbarButton(this, spriteBatch)
+                Buttons.Add(new TileToolbarButton(this)
                 {
                     Id = i,
                     Position = new Vector2(position, 16),
@@ -29,7 +29,7 @@ namespace SixteenBitNuts.Editor
                 position += 66;
             }
 
-            Buttons.Add(new EntityToolbarButton(this, spriteBatch, "spawn")
+            Buttons.Add(new EntityToolbarButton(this, "spawn")
             {
                 Id = 100,
                 Position = new Vector2(position, 16),

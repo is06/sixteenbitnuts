@@ -41,11 +41,11 @@ namespace SixteenBitNuts
             }
         }
 
-        public Console(Game game, SpriteBatch spriteBatch, KeyboardDispatcher keyboardDispatcher)
+        public Console(Game game, KeyboardDispatcher keyboardDispatcher)
         {
             this.keyboardDispatcher = keyboardDispatcher;
 
-            textBox = new TextBox(game, spriteBatch)
+            textBox = new TextBox(game)
             {
                 Bounds = new Rectangle(32, 754, 600, 24)
             };

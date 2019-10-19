@@ -11,17 +11,17 @@ namespace SixteenBitNuts
         public int Thickness { get; set; }
         public Color Color { get; set; }
 
-        public Box(GraphicsDevice graphicsDevice, SpriteBatch spriteBatch, Rectangle bounds, int thickness, Color color)
+        public Box(Game game, Rectangle bounds, int thickness, Color color)
         {
             Bounds = bounds;
             Thickness = thickness;
             Color = color;
 
             lines = new Line[4];
-            lines[0] = new Line(graphicsDevice, spriteBatch, new Rectangle(0, 0, 1, 1), color);
-            lines[1] = new Line(graphicsDevice, spriteBatch, new Rectangle(0, 0, 1, 1), color);
-            lines[2] = new Line(graphicsDevice, spriteBatch, new Rectangle(0, 0, 1, 1), color);
-            lines[3] = new Line(graphicsDevice, spriteBatch, new Rectangle(0, 0, 1, 1), color);
+            lines[0] = new Line(game, new Rectangle(0, 0, 1, 1), color);
+            lines[1] = new Line(game, new Rectangle(0, 0, 1, 1), color);
+            lines[2] = new Line(game, new Rectangle(0, 0, 1, 1), color);
+            lines[3] = new Line(game, new Rectangle(0, 0, 1, 1), color);
         }
 
         public void Update()

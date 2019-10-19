@@ -17,15 +17,14 @@ namespace SixteenBitNuts
 
         #endregion
 
-        public Tile(SpriteBatch spriteBatch, Tileset tileset, int id, Vector2 position, Vector2 size, TileType type) : base(tileset.Game.GraphicsDevice, spriteBatch)
+        public Tile(Map map, Tileset tileset, int id, Vector2 position, Vector2 size, TileType type) : base(map)
         {
+            this.tileset = tileset;
+
             // Properties
             Id = id;
             Position = position;
             Size = size;
-
-            this.tileset = tileset;
-
             IsObstacle = type == TileType.Obstacle;
         }
 

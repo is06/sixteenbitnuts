@@ -17,7 +17,6 @@ namespace SixteenBitNuts.Editor
         private readonly Map map;
         private readonly Camera camera;
         private readonly Texture2D[] textures = new Texture2D[4];
-        private readonly SpriteBatch spriteBatch;
         private Point position;
 
         public CursorType Type { get; set; }
@@ -44,15 +43,15 @@ namespace SixteenBitNuts.Editor
             }
         }
 
-        public Cursor(Map map, SpriteBatch spriteBatch, Camera camera)
+        public Cursor(Map map)
         {
             this.map = map;
-            this.spriteBatch = spriteBatch;
-            this.camera = camera;
-            textures[0] = map.Game.Content.Load<Texture2D>("Engine/editor/cursor_crosshair");
-            textures[1] = map.Game.Content.Load<Texture2D>("Engine/editor/cursor_resize_horizontal");
-            textures[2] = map.Game.Content.Load<Texture2D>("Engine/editor/cursor_resize_vertical");
-            textures[3] = map.Game.Content.Load<Texture2D>("Engine/editor/cursor_move");
+            camera = map.Camera;
+
+            textures[(int)CursorType.Crosshair] = map.Game.Content.Load<Texture2D>("Engine/editor/cursor_crosshair");
+            textures[(int)CursorType.ResizeHorizontal] = map.Game.Content.Load<Texture2D>("Engine/editor/cursor_resize_horizontal");
+            textures[(int)CursorType.ResizeVertical] = map.Game.Content.Load<Texture2D>("Engine/editor/cursor_resize_vertical");
+            textures[(int)CursorType.Move] = map.Game.Content.Load<Texture2D>("Engine/editor/cursor_move");
         }
 
         public void Update()
@@ -63,7 +62,7 @@ namespace SixteenBitNuts.Editor
 
         public void Draw()
         {
-            spriteBatch.Draw(
+            map.Game.SpriteBatch.Draw(
                 texture: textures[(int)Type],
                 position: Position.ToVector2(),
                 sourceRectangle: new Rectangle(0, 0, 32, 32),

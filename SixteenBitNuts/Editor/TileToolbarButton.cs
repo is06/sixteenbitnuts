@@ -1,11 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace SixteenBitNuts.Editor
 {
     public class TileToolbarButton : ToolbarButton
     {
-        public TileToolbarButton(Toolbar bar, SpriteBatch spriteBatch) : base(bar, spriteBatch)
+        public TileToolbarButton(Toolbar bar) : base(bar)
         {
 
         }

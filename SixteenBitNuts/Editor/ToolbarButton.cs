@@ -35,22 +35,19 @@ namespace SixteenBitNuts.Editor
 
         #region Components
 
-        protected readonly SpriteBatch spriteBatch;
         private readonly Texture2D buttonTexture;
 
         #endregion
 
-        public ToolbarButton(Toolbar bar, SpriteBatch spriteBatch)
+        public ToolbarButton(Toolbar bar)
         {
             Toolbar = bar;
-            this.spriteBatch = spriteBatch;
-
             buttonTexture = bar.Editor.Map.Game.Content.Load<Texture2D>("Engine/editor/entity_button");
         }
 
         public virtual void Draw()
         {
-            spriteBatch.Draw(
+            Toolbar.Editor.Map.Game.SpriteBatch.Draw(
                 buttonTexture,
                 Position,
                 new Rectangle(0, 0, 20, 20),

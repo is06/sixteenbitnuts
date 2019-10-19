@@ -35,14 +35,16 @@ namespace SixteenBitNuts
         #region Fields
 
         private readonly Box debugHitBox;
+        protected readonly Map map;
 
         #endregion
 
-        public MapElement(GraphicsDevice graphicsDevice, SpriteBatch spriteBatch)
+        public MapElement(Map map)
         {
+            this.map = map;
+
             debugHitBox = new Box(
-                graphicsDevice,
-                spriteBatch,
+                map.Game,
                 new Rectangle(Position.ToPoint(), Size.ToPoint()),
                 DEBUG_BOX_THICKNESS,
                 DebugColor

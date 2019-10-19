@@ -8,15 +8,13 @@ namespace SixteenBitNuts.Editor
     {
         public Point Position { get; set; }
 
-        private readonly SpriteBatch spriteBatch;
         private readonly Texture2D pixel;
         private readonly MapSection section;
         private readonly List<Point> previewTilePositions;
 
-        public MapSectionPreview(MapSection section, SpriteBatch spriteBatch)
+        public MapSectionPreview(MapSection section)
         {
             this.section = section;
-            this.spriteBatch = spriteBatch;
 
             pixel = new Texture2D(section.Map.Game.GraphicsDevice, 1, 1);
             pixel.SetData(new[] { Color.White });
@@ -29,7 +27,7 @@ namespace SixteenBitNuts.Editor
         {
             foreach (var position in previewTilePositions)
             {
-                spriteBatch.Draw(
+                section.Map.Game.SpriteBatch.Draw(
                     pixel,
                     position.ToVector2() + Position.ToVector2(),
                     Color.RosyBrown

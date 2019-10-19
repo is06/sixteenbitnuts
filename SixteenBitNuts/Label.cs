@@ -10,13 +10,13 @@ namespace SixteenBitNuts
         public Color Color { get; set; }
         public bool IsVisible { get; set; }
 
-        private readonly SpriteBatch spriteBatch;
         private readonly SpriteFont font;
+        private readonly Scene scene;
 
-        public Label(Map map, SpriteBatch spriteBatch)
+        public Label(Scene scene)
         {
-            this.spriteBatch = spriteBatch;
-            font = map.Game.Content.Load<SpriteFont>("Engine/fonts/numbers");
+            this.scene = scene;
+            font = scene.Game.Content.Load<SpriteFont>("Engine/fonts/numbers");
         }
 
         public void Update()
@@ -28,7 +28,7 @@ namespace SixteenBitNuts
         {
             if (IsVisible)
             {
-                spriteBatch.DrawString(font, Text, Position, Color, 0f, Vector2.Zero, 1f, SpriteEffects.None, 1f);
+                scene.Game.SpriteBatch.DrawString(font, Text, Position, Color, 0f, Vector2.Zero, 1f, SpriteEffects.None, 1f);
             }
         }
     }
