@@ -33,8 +33,14 @@ namespace SixteenBitNuts.Editor
             {
                 CanOverrideLimits = true
             };
-            Cursor = new Cursor(map);
             sections = new Dictionary<int, MapSection>();
+            cursorPosition = new Label(map)
+            {
+                IsVisible = true,
+                Position = new Vector2(8, 256),
+                Color = Color.White,
+                Text = "0;0"
+            };
             frame = new Image(map, new Vector2(0, 0), "Engine/editor/level_frame")
             {
                 Color = Color.BlueViolet
@@ -46,13 +52,7 @@ namespace SixteenBitNuts.Editor
                 sections[section.Key] = new MapSection(map, this, section.Key, section.Value.Bounds);
             }
 
-            cursorPosition = new Label(map)
-            {
-                IsVisible = true,
-                Position = new Vector2(8, 256),
-                Color = Color.White,
-                Text = "0;0"
-            };
+            Cursor = new Cursor(map, camera);
         }
 
         public void Update()
