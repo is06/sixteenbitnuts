@@ -6,13 +6,10 @@ namespace SixteenBitNuts
 {
     public class SpawnPoint : Entity
     {
-        public string Name { get; private set; }
-
         private readonly Texture2D debugTexture;
 
-        public SpawnPoint(Map map, string name) : base(map)
+        public SpawnPoint(Map map, string name) : base(map, name)
         {
-            Name = name;
             IsVisible = false;
             debugTexture = LoadTexture("Engine/editor/spawn");
         }

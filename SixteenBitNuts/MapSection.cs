@@ -22,51 +22,21 @@ namespace SixteenBitNuts
         public List<Tile> Tiles { get; set; }
         public Dictionary<string, Entity> Entities { get; set; }
 
-        public List<MapElement> Obstacles
+        public List<MapElement> Elements
         {
             get
             {
-                var obstacles = new List<MapElement>();
+                var elements = new List<MapElement>();
                 foreach (var tile in Tiles)
                 {
-                    if (tile.IsObstacle)
-                    {
-                        obstacles.Add(tile);
-                    }
+                    elements.Add(tile);
                 }
                 foreach (var entity in Entities)
                 {
-                    if (entity.Value.IsObstacle)
-                    {
-                        obstacles.Add(entity.Value);
-                    }
+                    elements.Add(entity.Value);
                 }
 
-                return obstacles;
-            }
-        }
-
-        public List<MapElement> Platforms
-        {
-            get
-            {
-                var platforms = new List<MapElement>();
-                foreach (var tile in Tiles)
-                {
-                    if (tile.IsPlatform)
-                    {
-                        platforms.Add(tile);
-                    }
-                }
-                foreach (var entity in Entities)
-                {
-                    if (entity.Value.IsPlatform)
-                    {
-                        platforms.Add(entity.Value);
-                    }
-                }
-
-                return platforms;
+                return elements;
             }
         }
 

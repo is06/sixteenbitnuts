@@ -8,13 +8,15 @@ using System.Linq;
 
 namespace SixteenBitNuts
 {
+    public delegate void CollisionHandler(Entity entity);
+
     /// <summary>
     /// Class representing an in-game map
     /// </summary>
     public class Map : Scene
     {
         private const float TRANSITION_SPEED = 0.03f;
-        private const float NEAR_OBSTACLE_THRESHOLD = 100f;
+        private const float NEAR_ELEMENT_THRESHOLD = 100f;
 
         public static Matrix[] parallaxTransforms;
 
@@ -83,6 +85,12 @@ namespace SixteenBitNuts
         private readonly TransitionGuide transitionGuide;
         private readonly Vector2[] layerOffsetFactors;
         private Landscape landscape;
+
+        #endregion
+
+        #region Events
+
+        public event CollisionHandler OnCollisionWithEntity;
 
         #endregion
 
@@ -166,78 +174,97 @@ namespace SixteenBitNuts
 
                 #endregion
 
-                #region Player collision detection
+                #region MapElement handle
+
+                IEnumerable<MapElement> nearElements = new List<MapElement>();
+                if (!isInSectionEditMode)
+                {
+                    foreach (var element in CurrentMapSection.Elements)
+                    {
+                        element.DebugColor = Color.LimeGreen;
+                        if (element is Entity && element.IsDestroying)
+                        {
+                            CurrentMapSection.Entities.Remove(((Entity)element).Name);
+                        }
+                    }
+
+                    nearElements = CurrentMapSection.Elements.Where(element =>
+                    {
+                        return Vector2.Distance(Player.Position, element.Position) <= NEAR_ELEMENT_THRESHOLD;
+                    });
+                    foreach (var element in nearElements)
+                    {
+                        element.DebugColor = Color.Orange;
+                    }
+                }
+
+                #endregion
+
+                #region Collision detection
 
                 if (!isInSectionEditMode)
                 {
-                    foreach (var obstacle in CurrentMapSection.Obstacles)
-                    {
-                        obstacle.DebugColor = Color.LimeGreen;
-                    }
-
-                    var nearObstacles = CurrentMapSection.Obstacles.Where(obstacle =>
-                    {
-                        return Vector2.Distance(Player.Position, obstacle.Position) <= NEAR_OBSTACLE_THRESHOLD;
-                    });
-                    foreach (var obstacle in nearObstacles)
-                    {
-                        obstacle.DebugColor = Color.Orange;
-                    }
-
                     // Get the nearest obstacles to test intersection
-                    int nearestObstacleLimit = nearObstacles.Aggregate(0, (limit, obstacle) =>
+                    int nearestElementLimit = nearElements.Aggregate(0, (limit, element) =>
                     {
-                        if (Player.NextFrameHitBox.Intersects(obstacle.HitBox))
+                        if (Player.NextFrameHitBox.Intersects(element.HitBox))
                         {
                             limit++;
                         }
 
                         return limit;
                     });
-                    if (nearestObstacleLimit >= 2)
+                    if (nearestElementLimit >= 2)
                     {
-                        nearestObstacleLimit -= 1;
+                        nearestElementLimit -= 1;
                     }
+                    var nearestElements = GetNearestElementsFromHitBox(Player.DistanceBox, nearElements, nearestElementLimit);
 
-                    var nearestObstacles = GetNearestObstaclesFromHitBox(Player.DistanceBox, nearObstacles, nearestObstacleLimit);
-
-                    foreach (var obstacle in nearestObstacles)
+                    foreach (var element in nearestElements)
                     {
-                        obstacle.DebugColor = Color.Red;
+                        element.DebugColor = Color.Red;
 
-                        if (Player.HitBox.Intersects(obstacle.HitBox))
+                        if (Player.HitBox.Intersects(element.HitBox))
                         {
-                            // Detect the collision side of the obstacle
-                            CollisionSide side = CollisionManager.GetCollisionSide(
-                                moving: Player.PreviousFrameHitBox,
-                                stopped: obstacle.HitBox,
-                                movingVelocity: Player.Velocity
-                            );
-
-                            // Change player fall state
-                            if (Player.IsFalling && side == CollisionSide.Top)
+                            if (element is Entity)
                             {
-                                Player.IsFalling = false;
-                                Player.WasOnPlatform = true;
+                                OnCollisionWithEntity?.Invoke((Entity)element);
                             }
 
-                            // Correct position to prevent intersection
-                            Player.Position = CollisionManager.GetCorrectedPosition(Player.HitBox, obstacle.HitBox, side);
+                            // Detect the collision side of the obstacle
+                            if (element.IsObstacle)
+                            {
+                                CollisionSide side = CollisionManager.GetCollisionSide(
+                                    moving: Player.PreviousFrameHitBox,
+                                    stopped: element.HitBox,
+                                    movingVelocity: Player.Velocity
+                                );
+
+                                // Change player fall state
+                                if (Player.IsFalling && side == CollisionSide.Top)
+                                {
+                                    Player.IsFalling = false;
+                                    Player.WasOnPlatform = true;
+                                }
+
+                                // Correct position to prevent intersection
+                                Player.Position = CollisionManager.GetCorrectedPosition(Player.HitBox, element.HitBox, side);
+                            }
                         }
                     }
 
                     // Check for intersection for ground existence
-                    bool playerIsIntersectingWithNothing = true;
-                    foreach (var obstacle in CurrentMapSection.Obstacles)
+                    bool playerIsNotIntersectingWithObstacle = true;
+                    foreach (var element in CurrentMapSection.Elements)
                     {
-                        if (Player.HitBox.Intersects(obstacle.HitBox))
+                        if (element.IsObstacle && Player.HitBox.Intersects(element.HitBox))
                         {
-                            playerIsIntersectingWithNothing = false;
+                            playerIsNotIntersectingWithObstacle = false;
                             break;
                         }
                     }
                     // No ground under player's feet: falling
-                    if (playerIsIntersectingWithNothing && Player.WasOnPlatform && !Player.IsJumping)
+                    if (playerIsNotIntersectingWithObstacle && Player.WasOnPlatform && !Player.IsJumping)
                     {
                         Player.WasOnPlatform = false;
                         Player.IsFalling = true;
@@ -486,35 +513,35 @@ namespace SixteenBitNuts
         }
 
         /// <summary>
-        /// Get the list of the nearest tiles (1 or 2 at equal distance) from the specified hit box
+        /// Get the list of the nearest elements (1 or 2 at equal distance) from the specified hit box
         /// </summary>
         /// <param name="hitBox">The hitbox of the moving object</param>
-        /// <param name="obstacles">List of obstacles</param>
-        /// <param name="limit">Limit count of nearest obstacles</param>
-        /// <returns>The list of the nearest obstacles from the specified hit box</returns>
-        private List<MapElement> GetNearestObstaclesFromHitBox(BoundingBox hitBox, IEnumerable<MapElement> obstacles, int limit)
+        /// <param name="elements">List of elements</param>
+        /// <param name="limit">Limit count of nearest elements</param>
+        /// <returns>The list of the nearest elements from the specified hit box</returns>
+        private List<MapElement> GetNearestElementsFromHitBox(BoundingBox hitBox, IEnumerable<MapElement> elements, int limit)
         {
-            var nearestTiles = new List<MapElement>();
+            var nearestElements = new List<MapElement>();
             var distances = new List<float>();
 
-            foreach (var obstacle in obstacles)
+            foreach (var element in elements)
             {
-                distances.Add(CollisionManager.GetDistance(hitBox, obstacle.HitBox));
+                distances.Add(CollisionManager.GetDistance(hitBox, element.HitBox));
             }
             distances.Sort();
 
             foreach (float distance in distances.GetRange(0, limit))
             {
-                foreach (var obstacle in obstacles)
+                foreach (var element in elements)
                 {
-                    if (distance == CollisionManager.GetDistance(hitBox, obstacle.HitBox))
+                    if (distance == CollisionManager.GetDistance(hitBox, element.HitBox))
                     {
-                        nearestTiles.Add(obstacle);
+                        nearestElements.Add(element);
                     }
                 }
             }
 
-            return nearestTiles;
+            return nearestElements;
         }
 
         private int GetNextSectionIndex()

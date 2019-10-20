@@ -5,11 +5,14 @@ namespace SixteenBitNuts
 {
     public class Entity : MapElement
     {
+        public string Name { get; private set; }
+
         protected Texture2D texture;
         protected Vector2 drawPosition;
 
-        public Entity(Map map) : base(map)
+        public Entity(Map map, string name) : base(map)
         {
+            Name = name;
             DebugColor = Color.Orange;
         }
 
@@ -38,6 +41,11 @@ namespace SixteenBitNuts
             }
 
             base.Draw();
+        }
+
+        public void Destroy()
+        {
+            IsDestroying = true;
         }
     }
 }
