@@ -22,7 +22,6 @@ namespace SixteenBitNuts.Editor
 
         public bool IsMovingSection { get; set; }
         public bool IsResizingSection { get; set; }
-
         public Cursor Cursor { get; set; }
 
         public MapEditor(Map map)
@@ -55,7 +54,7 @@ namespace SixteenBitNuts.Editor
             Cursor = new Cursor(map, camera);
         }
 
-        public void Update()
+        public void Update(GameTime gameTime)
         {
             Cursor.Type = CursorType.Crosshair;
 
@@ -120,7 +119,7 @@ namespace SixteenBitNuts.Editor
             cursorPosition.Text = (int)Cursor.InGamePosition.X * SCALE + ";" + (int)Cursor.InGamePosition.Y * SCALE;
             cursorPosition.Update();
 
-            camera.Update();
+            camera.Update(gameTime);
             Cursor.Update();
         }
 

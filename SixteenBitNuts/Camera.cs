@@ -72,7 +72,7 @@ namespace SixteenBitNuts
             this.viewPort = viewPort;
         }
 
-        public void Update()
+        public void Update(GameTime gameTime)
         {
             if (!CanOverrideLimits)
             {

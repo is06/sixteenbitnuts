@@ -228,7 +228,7 @@ namespace SixteenBitNuts
         /// <summary>
         /// Performs player calculations
         /// </summary>
-        public void Update()
+        public void Update(GameTime gameTime)
         {
             #region Previous HitBoxes
 

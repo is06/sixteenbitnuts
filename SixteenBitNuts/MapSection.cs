@@ -11,12 +11,12 @@ namespace SixteenBitNuts
     public class MapSection
     {
         private Vector2[] transitionPoints;
-        private readonly Map map;
         private readonly Texture2D transitionCornerTexture;
         private readonly string defaultSpawnPointName;
 
         #region Properties
 
+        public Map Map { get; private set; }
         public Rectangle Bounds { get; set; }
         public Tileset Tileset { get; private set; }
         public List<Tile> Tiles { get; set; }
@@ -80,14 +80,12 @@ namespace SixteenBitNuts
 
         #endregion
 
-        private readonly Image background;
-
         /// <summary>
         /// Constructor
         /// </summary>
         public MapSection(Map map, Rectangle bounds, Tileset tileset, string defaultSpawnPointName)
         {
-            this.map = map;
+            Map = map;
             this.defaultSpawnPointName = defaultSpawnPointName;
             transitionCornerTexture = map.Game.Content.Load<Texture2D>("Engine/editor/transition_corner");
 
@@ -99,19 +97,17 @@ namespace SixteenBitNuts
             Entities = new Dictionary<string, Entity>();
 
             SetTransitionPoints(bounds);
-
-            background = new Image(map, new Vector2(0, 0), "Game/backgrounds/forest");
         }
 
 
         /// <summary>
         /// Performs calculations for the map section
         /// </summary>
-        public void Update()
+        public void Update(GameTime gameTime)
         {
             foreach (KeyValuePair<string, Entity> pair in Entities)
             {
-                pair.Value.Update();
+                pair.Value.Update(gameTime);
             }
         }
 
@@ -131,7 +127,7 @@ namespace SixteenBitNuts
                 {
                     pair.Value.Draw();
                 }
-                if (map.IsInSectionEditMode)
+                if (Map.IsInSectionEditMode)
                 {
                     foreach (KeyValuePair<string, Entity> pair in Entities)
                     {
@@ -156,7 +152,7 @@ namespace SixteenBitNuts
             }
             for (int i = 0; i < transitionPoints.Length; i++)
             {
-                map.Game.SpriteBatch.Draw(
+                Map.Game.SpriteBatch.Draw(
                     transitionCornerTexture,
                     new Vector2(transitionPoints[i].X, transitionPoints[i].Y),
                     new Rectangle(0, 0, 16, 16),
@@ -193,15 +189,15 @@ namespace SixteenBitNuts
             }
 
             // Move player if inside the section
-            if (Bounds.Contains(map.Player.Position))
+            if (Bounds.Contains(Map.Player.Position))
             {
-                map.Player.Position = new Vector2(map.Player.Position.X + positionOffset.X, map.Player.Position.Y + positionOffset.Y);
+                Map.Player.Position = new Vector2(Map.Player.Position.X + positionOffset.X, Map.Player.Position.Y + positionOffset.Y);
             }
 
             // Move camera if inside the section
-            if (Bounds.Contains(map.Camera.Position))
+            if (Bounds.Contains(Map.Camera.Position))
             {
-                map.Camera.Position = new Vector2(map.Camera.Position.X + positionOffset.X, map.Camera.Position.Y + positionOffset.Y);
+                Map.Camera.Position = new Vector2(Map.Camera.Position.X + positionOffset.X, Map.Camera.Position.Y + positionOffset.Y);
             }
 
             // Move bounds of map section

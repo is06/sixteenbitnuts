@@ -142,7 +142,7 @@ namespace SixteenBitNuts
 
             if (isInMapEditMode)
             {
-                mapEditor.Update();
+                mapEditor.Update(gameTime);
             }
             else
             {
@@ -150,15 +150,15 @@ namespace SixteenBitNuts
 
                 foreach (KeyValuePair<int, MapSection> pair in sections)
                 {
-                    pair.Value.Update();
+                    pair.Value.Update(gameTime);
                 }
 
                 // Player
-                Player.Update();
+                Player.Update(gameTime);
 
                 // Camera
                 Camera.Position = Player.Position - new Vector2(-8, -12);
-                Camera.Update();
+                Camera.Update(gameTime);
                 if (!Camera.IsMovingToNextSection)
                 {
                     transitionGuide.Position = Camera.Position;
@@ -360,7 +360,7 @@ namespace SixteenBitNuts
                     nextSectionIndex = -1;
 
                     transitionGuide.Position = CurrentMapSection.Bounds.Center.ToVector2();
-                    Camera.Update();
+                    Camera.Update(gameTime);
 
                     transitionIsFinished = false;
                 }
@@ -570,7 +570,7 @@ namespace SixteenBitNuts
                         landscape.Layers.Add(new LandscapeLayer()
                         {
                             LayerIndex = (LayerIndex)int.Parse(components[1]),
-                            Texture = Game.Content.Load<Texture2D>("Game/backgrounds/" + components[2])
+                            Texture = Game.Content.Load<Texture2D>(components[2])
                         });
                         break;
                     case "se":
@@ -633,12 +633,18 @@ namespace SixteenBitNuts
 
         private void SaveToFile(string filePath)
         {
-            List<string> contents = new List<string>
+            var contents = new List<string>
             {
-                "map " + name
+                "map " + name,
+                "bg " + landscape.Name,
             };
 
-            foreach (KeyValuePair<int, MapSection> section in sections)
+            foreach (var layer in landscape.Layers)
+            {
+                contents.Add("ly " + (int)layer.LayerIndex + " " + layer.Texture.Name);
+            }
+
+            foreach (var section in sections)
             {
                 contents.Add(
                     "se " + section.Value.Bounds.X +
@@ -649,7 +655,7 @@ namespace SixteenBitNuts
                     " " + section.Value.DefaultSpawnPoint.Name
                 );
 
-                foreach (Tile tile in section.Value.Tiles)
+                foreach (var tile in section.Value.Tiles)
                 {
                     contents.Add(
                         "ti " + tile.Id +
@@ -658,7 +664,7 @@ namespace SixteenBitNuts
                         " 0"
                     );
                 }
-                foreach (KeyValuePair<string, Entity> entity in section.Value.Entities)
+                foreach (var entity in section.Value.Entities)
                 {
                     contents.Add(
                         "en " + entity.Value.GetType() +

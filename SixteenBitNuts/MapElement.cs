@@ -14,8 +14,10 @@ namespace SixteenBitNuts
         #region Properties
 
         public Color DebugColor { get; set; }
+        public bool IsVisible { get; set; }
         public bool IsObstacle { get; set; }
         public bool IsPlatform { get; set; }
+        public bool IsCollectable { get; set; }
         public Vector2 Position { get; set; }
         public Vector2 Size { get; set; }
         public BoundingBox HitBox
@@ -49,9 +51,11 @@ namespace SixteenBitNuts
                 DEBUG_BOX_THICKNESS,
                 DebugColor
             );
+
+            IsVisible = true;
         }
 
-        public virtual void Update()
+        public virtual void Update(GameTime gameTime)
         {
 
         }
@@ -72,6 +76,11 @@ namespace SixteenBitNuts
             debugHitBox.Bounds = new Rectangle(Position.ToPoint(), Size.ToPoint());
             debugHitBox.Update();
             debugHitBox.Draw();
+        }
+
+        protected Texture2D LoadTexture(string textureName)
+        {
+            return map.Game.Content.Load<Texture2D>(textureName);
         }
     }
 }

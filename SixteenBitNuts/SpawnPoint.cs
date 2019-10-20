@@ -13,10 +13,11 @@ namespace SixteenBitNuts
         public SpawnPoint(Map map, string name) : base(map)
         {
             Name = name;
-            debugTexture = map.Game.Content.Load<Texture2D>("Engine/editor/spawn");
+            IsVisible = false;
+            debugTexture = LoadTexture("Engine/editor/spawn");
         }
 
-        public override void Update()
+        public override void Update(GameTime gameTime)
         {
 
         }
