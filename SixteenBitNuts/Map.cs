@@ -459,6 +459,11 @@ namespace SixteenBitNuts
                 }
             }
 
+            if (!isInMapEditMode && isInSectionEditMode)
+            {
+                sectionEditor.Draw();
+            }
+
             base.Draw();
         }
 
@@ -496,7 +501,7 @@ namespace SixteenBitNuts
         {
             if (!isInMapEditMode && isInSectionEditMode)
             {
-                sectionEditor.Draw();
+                sectionEditor.UIDraw();
             }
             if (isInMapEditMode)
             {

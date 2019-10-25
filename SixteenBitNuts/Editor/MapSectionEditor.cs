@@ -163,26 +163,29 @@ namespace SixteenBitNuts.Editor
         public void Draw()
         {
             // Draw grid
-            Map.Game.SpriteBatch.Begin(transformMatrix: Map.Camera.UITransform);
+            Map.Game.SpriteBatch.Begin(transformMatrix: Map.Camera.Transform);
             for (int i = Map.CurrentMapSection.Bounds.X / GRID_SIZE; i < (Map.CurrentMapSection.Bounds.X + Map.CurrentMapSection.Bounds.Width) / GRID_SIZE + 1; i++)
             {
                 for (int j = Map.CurrentMapSection.Bounds.Y / GRID_SIZE; j < (Map.CurrentMapSection.Bounds.Y + Map.CurrentMapSection.Bounds.Height) / GRID_SIZE + 1; j++)
                 {
                     Map.Game.SpriteBatch.Draw(
                         gridTexture,
-                        new Vector2(i * (GRID_SIZE * Map.Game.ScreenScale), j * (GRID_SIZE * Map.Game.ScreenScale)),
+                        new Vector2(i * GRID_SIZE, j * GRID_SIZE),
                         new Rectangle(0, 0, GRID_SIZE, GRID_SIZE),
                         Color.FromNonPremultiplied(50, 50, 50, 100),
                         0,
                         new Vector2(0, 0),
-                        3,
+                        1,
                         SpriteEffects.None,
                         0
                     );
                 }
             }
             Map.Game.SpriteBatch.End();
+        }
 
+        public void UIDraw()
+        {
             Map.Game.SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
 
             toolbar.Draw();
