@@ -27,6 +27,7 @@ namespace SixteenBitNuts
         private const float ATTACK_BOX_HEIGHT = 14f;
         private const float ATTACK_BOX_OFFSET = 2f;
         private const float ATTACK_BOX_DISTANCE = 20f;
+        private const float ATTACK_START_DELAY = 4f;
 
         #endregion
 
@@ -42,6 +43,7 @@ namespace SixteenBitNuts
         private Vector2 position;
 
         // Attack
+        private float attackDelay;
         private float attackPositionDelta;
         private Direction attackDirection;
 
@@ -345,80 +347,70 @@ namespace SixteenBitNuts
                             attackButtonPressed = true;
                             attackKeyPressed = true;
                             IsAttacking = true;
-                            attackPositionDelta = 0;
+                            attackDelay = 0f;
+                            attackPositionDelta = 0f;
                             attackDirection = Direction;
                         }
                     }
                 }
 
+                debugAttackBox.Color = Color.Yellow;
+
                 if (IsAttacking)
                 {
+                    debugAttackBox.Color = Color.Red;
+
                     if (attackDirection == Direction.Right)
                     {
-                        attackPositionDelta += 4f;
-
+                        if (attackDelay >= ATTACK_START_DELAY)
+                            attackPositionDelta += 4f;
                         if (attackPositionDelta > ATTACK_BOX_DISTANCE)
-                        {
                             attackDirection = Direction.Left;
-                        }
                         if (Direction == Direction.Left && attackPositionDelta >= 0)
-                        {
                             attackDirection = Direction.None;
-                        }
                     }
-
                     if (attackDirection == Direction.Left)
                     {
-                        attackPositionDelta -= 4f;
-
+                        if (attackDelay >= ATTACK_START_DELAY)
+                            attackPositionDelta -= 4f;
                         if (attackPositionDelta <= -ATTACK_BOX_DISTANCE)
-                        {
                             attackDirection = Direction.Right;
-                        }
                         if (Direction == Direction.Right && attackPositionDelta <= 0)
-                        {
                             attackDirection = Direction.None;
-                        }
                     }
 
                     if (attackDirection == Direction.Right)
                     {
                         if (attackPositionDelta > 0)
-                        {
                             AttackBox = new BoundingBox
                             {
                                 Min = new Vector3(Position.X, Position.Y + ATTACK_BOX_OFFSET, 0),
                                 Max = new Vector3(Position.X + HIT_BOX_WIDTH + attackPositionDelta, Position.Y + ATTACK_BOX_HEIGHT, 0)
                             };
-                        }
                         else
-                        {
                             AttackBox = new BoundingBox
                             {
                                 Min = new Vector3(Position.X + attackPositionDelta, Position.Y + ATTACK_BOX_OFFSET, 0),
                                 Max = new Vector3(Position.X + HIT_BOX_WIDTH, Position.Y + ATTACK_BOX_HEIGHT, 0)
                             };
-                        }
                     }
                     else
                     {
                         if (attackPositionDelta < 0)
-                        {
                             AttackBox = new BoundingBox
                             {
                                 Min = new Vector3(Position.X + attackPositionDelta, Position.Y + ATTACK_BOX_OFFSET, 0),
                                 Max = new Vector3(Position.X + HIT_BOX_WIDTH, Position.Y + ATTACK_BOX_HEIGHT, 0)
                             };
-                        }
                         else
-                        {
                             AttackBox = new BoundingBox
                             {
                                 Min = new Vector3(Position.X, Position.Y + ATTACK_BOX_OFFSET, 0),
                                 Max = new Vector3(Position.X + HIT_BOX_WIDTH + attackPositionDelta, Position.Y + ATTACK_BOX_HEIGHT, 0)
                             };
-                        }
                     }
+
+                    attackDelay++;
                 }
             }
 
@@ -496,11 +488,7 @@ namespace SixteenBitNuts
             debugDistanceBox.Draw();
             debugPreviousFrameHitBox.Draw();
             debugHitBox.Draw();
-
-            if (IsAttacking)
-            {
-                debugAttackBox.Draw();
-            }
+            debugAttackBox.Draw();
         }
 
         public void MoveLeft(float value)

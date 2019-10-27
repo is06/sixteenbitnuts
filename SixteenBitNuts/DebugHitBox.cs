@@ -6,6 +6,18 @@ namespace SixteenBitNuts
     {
         private readonly Box graphicBox;
 
+        public Color Color
+        {
+            get
+            {
+                return graphicBox.Color;
+            }
+            set
+            {
+                graphicBox.Color = value;
+            }
+        }
+
         public DebugHitBox(Game game, int thickness, Color color)
         {
             graphicBox = new Box(

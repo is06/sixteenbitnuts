@@ -45,15 +45,6 @@ namespace SixteenBitNuts
                 return Matrix.CreateTranslation((float)Math.Round(translation.X), (float)Math.Round(translation.Y), 0);
             }
         }
-        public Matrix UITransform
-        {
-            get
-            {
-                Vector2 viewPortCenter = new Vector2(viewPort.Width / 2, viewPort.Height / 2);
-                Vector2 translation = (position * -3) + (viewPortCenter * 3);
-                return Matrix.CreateTranslation((float)Math.Round(translation.X), (float)Math.Round(translation.Y), 0);
-            }
-        }
         public Viewport ViewPort
         {
             get

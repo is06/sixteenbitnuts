@@ -177,25 +177,41 @@ namespace SixteenBitNuts
 
                 #region MapElement handle
 
-                IEnumerable<MapElement> nearElements = new List<MapElement>();
+                var nearElements = new List<MapElement>();
                 if (!isInSectionEditMode)
                 {
+                    // First collision detection pass:
+                    // We take only elements that are at below a certain distance from the player
                     foreach (var element in CurrentMapSection.Elements)
                     {
-                        element.DebugColor = Color.LimeGreen;
+                        // If element has destroying flag: remove it from the list
                         if (element is Entity && element.IsDestroying)
                         {
                             CurrentMapSection.Entities.Remove(((Entity)element).Name);
                         }
+
+                        element.DebugColor = Color.LimeGreen;
+
+                        if (Vector2.Distance(Player.Position, element.Position) <= NEAR_ELEMENT_THRESHOLD)
+                        {
+                            nearElements.Add(element);
+                        }
                     }
 
-                    nearElements = CurrentMapSection.Elements.Where(element =>
-                    {
-                        return Vector2.Distance(Player.Position, element.Position) <= NEAR_ELEMENT_THRESHOLD;
-                    });
+                    // Second collision detection pass:
+                    // We check for attacks
                     foreach (var element in nearElements)
                     {
                         element.DebugColor = Color.Orange;
+
+                        // Attack collisions
+                        if (Player.IsAttacking && Player.AttackBox.Intersects(element.HitBox))
+                        {
+                            if (element is Entity)
+                            {
+                                OnAttackEntity?.Invoke((Entity)element);
+                            }
+                        }
                     }
                 }
 
@@ -224,15 +240,6 @@ namespace SixteenBitNuts
                     foreach (var element in nearestElements)
                     {
                         element.DebugColor = Color.Red;
-
-                        // Attack collisions
-                        if (Player.IsAttacking && Player.AttackBox.Intersects(element.HitBox))
-                        {
-                            if (element is Entity)
-                            {
-                                OnAttackEntity?.Invoke((Entity)element);
-                            }
-                        }
 
                         // Player collisions
                         if (Player.HitBox.Intersects(element.HitBox))
@@ -416,7 +423,10 @@ namespace SixteenBitNuts
                 #endregion
             }
 
-            Player.UpdateDebugHitBoxes();
+            if (isInDebugViewMode)
+            {
+                Player.UpdateDebugHitBoxes();
+            }
 
             #region Map Editor
 
