@@ -45,6 +45,7 @@
     <Compile Include="Camera.cs" />
     <Compile Include="CollisionManager.cs" />
     <Compile Include="Console.cs" />
+    <Compile Include="DebugHitBox.cs" />
     <Compile Include="Direction.cs" />
     <Compile Include="Editor\Cursor.cs" />
     <Compile Include="Editor\EntityToolbarButton.cs" />

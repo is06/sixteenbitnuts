@@ -36,9 +36,6 @@ namespace SixteenBitNuts
         private bool attackKeyPressed;
         private bool isFalling;
         private Vector2 position;
-        private BoundingBox hitBox;
-        private BoundingBox previousFrameHitBox;
-        private BoundingBox distanceBox;
 
         #endregion
 
@@ -63,47 +60,18 @@ namespace SixteenBitNuts
         }
         public bool WasOnPlatform { get; set; }
         public Direction Direction { get; set; }
-        public BoundingBox HitBox
-        {
-            get
-            {
-                return hitBox;
-            }
-            set
-            {
-                hitBox = value;
-            }
-        }
-        public BoundingBox PreviousFrameHitBox
-        {
-            get
-            {
-                return previousFrameHitBox;
-            }
-            set
-            {
-                previousFrameHitBox = value;
-            }
-        }
+        public BoundingBox HitBox { get; set; }
+        public BoundingBox PreviousFrameHitBox { get; set; }
+        public BoundingBox DistanceBox { get; set; }
+        public BoundingBox AttackBox { get; set; }
         public BoundingBox NextFrameHitBox
         {
             get
             {
                 return new BoundingBox(
-                    hitBox.Min + new Vector3(Velocity.X, Velocity.Y, 0),
-                    hitBox.Max + new Vector3(Velocity.X, Velocity.Y, 0)
+                    HitBox.Min + new Vector3(Velocity.X, Velocity.Y, 0),
+                    HitBox.Max + new Vector3(Velocity.X, Velocity.Y, 0)
                 );
-            }
-        }
-        public BoundingBox DistanceBox
-        {
-            get
-            {
-                return distanceBox;
-            }
-            set
-            {
-                distanceBox = value;
             }
         }
         public Vector2 Position
@@ -115,51 +83,39 @@ namespace SixteenBitNuts
             set
             {
                 position = value;
-                hitBox = new BoundingBox()
+                HitBox = new BoundingBox()
                 {
                     Min = new Vector3(position.X, position.Y, 0),
-                    Max = new Vector3(position.X + (hitBox.Max.X - hitBox.Min.X), position.Y + (hitBox.Max.Y - hitBox.Min.Y), 0)
+                    Max = new Vector3(position.X + (HitBox.Max.X - HitBox.Min.X), position.Y + (HitBox.Max.Y - HitBox.Min.Y), 0)
                 };
             }
         }
-
-        public Vector2 HitBoxSize
-        {
-            get
-            {
-                return new Vector2(
-                    hitBox.Max.X - hitBox.Min.X,
-                    hitBox.Max.Y - hitBox.Min.Y
-                );
-            }
-        }
-
         public float Left
         {
             get
             {
-                return hitBox.Min.X;
+                return HitBox.Min.X;
             }
         }
         public float Right
         {
             get
             {
-                return hitBox.Max.X;
+                return HitBox.Max.X;
             }
         }
         public float Top
         {
             get
             {
-                return hitBox.Min.Y;
+                return HitBox.Min.Y;
             }
         }
         public float Bottom
         {
             get
             {
-                return hitBox.Max.Y;
+                return HitBox.Max.Y;
             }
         }
         public Vector2 Velocity
@@ -168,13 +124,13 @@ namespace SixteenBitNuts
             {
                 // Previous frame hit box
                 Vector2 previousFrameHitBoxPosition = new Vector2(
-                    previousFrameHitBox.Min.X,
-                    previousFrameHitBox.Min.Y
+                    PreviousFrameHitBox.Min.X,
+                    PreviousFrameHitBox.Min.Y
                 );
                 // Current frame hit box
                 Vector2 currentFrameHitBoxPosition = new Vector2(
-                    hitBox.Min.X,
-                    hitBox.Min.Y
+                    HitBox.Min.X,
+                    HitBox.Min.Y
                 );
                 return currentFrameHitBoxPosition - previousFrameHitBoxPosition;
             }
@@ -185,9 +141,9 @@ namespace SixteenBitNuts
         #region Components
 
         private readonly Sprite sprite;
-        private readonly Box debugHitBox;
-        private readonly Box debugDistanceBox;
-        private readonly Box debugPreviousFrameHitBox;
+        private readonly DebugHitBox debugHitBox;
+        private readonly DebugHitBox debugDistanceBox;
+        private readonly DebugHitBox debugPreviousFrameHitBox;
 
         #endregion
 
@@ -202,11 +158,11 @@ namespace SixteenBitNuts
             jumpCurrentVelocity = JUMP_VELOCITY;
             Direction = Direction.Right;
             this.position = position;
-            hitBox = previousFrameHitBox = new BoundingBox(
+            HitBox = PreviousFrameHitBox = new BoundingBox(
                 new Vector3(position.X, position.Y, DEPTH),
                 new Vector3(position.X + HIT_BOX_WIDTH, position.Y + HIT_BOX_HEIGHT, DEPTH)
             );
-            distanceBox = new BoundingBox(
+            DistanceBox = new BoundingBox(
                 new Vector3(position.X, position.Y + (HIT_BOX_HEIGHT - DISTANCE_BOX_HEIGHT), DEPTH),
                 new Vector3(position.X + DISTANCE_BOX_WIDTH, position.Y + DISTANCE_BOX_HEIGHT, DEPTH)
             );
@@ -218,12 +174,10 @@ namespace SixteenBitNuts
             // Components
             sprite = new Sprite(map.Game, "gameplay/player");
             sprite.OnAnimationFinished += SpriteOnAnimationFinished;
-            debugHitBox = new Box(map.Game, new Rectangle(Position.ToPoint(), HitBoxSize.ToPoint()), 1, Color.Cyan);
-            debugPreviousFrameHitBox = new Box(map.Game, new Rectangle(Position.ToPoint(), new Point(16, 24)), 2, Color.DarkOliveGreen);
-            debugDistanceBox = new Box(map.Game, new Rectangle(Position.ToPoint(), new Point(16, 16)), 3, Color.DodgerBlue);
+            debugHitBox = new DebugHitBox(map.Game, HitBox, 1, Color.Cyan);
+            debugPreviousFrameHitBox = new DebugHitBox(map.Game, PreviousFrameHitBox, 2, Color.DarkOliveGreen);
+            debugDistanceBox = new DebugHitBox(map.Game, DistanceBox, 3, Color.DodgerBlue);
         }
-
-        
 
         /// <summary>
         /// Performs player calculations
@@ -232,18 +186,19 @@ namespace SixteenBitNuts
         {
             #region Previous HitBoxes
 
-            previousFrameHitBox = hitBox;
+            PreviousFrameHitBox = HitBox;
 
             if (IsDucking || IsAttacking)
             {
-                distanceBox = hitBox;
+                DistanceBox = HitBox;
             }
             else
             {
-                distanceBox.Min.X = Position.X;
-                distanceBox.Min.Y = Position.Y + (HIT_BOX_HEIGHT - DISTANCE_BOX_HEIGHT);
-                distanceBox.Max.X = Position.X + DISTANCE_BOX_WIDTH;
-                distanceBox.Max.Y = Position.Y + (HIT_BOX_HEIGHT - DISTANCE_BOX_HEIGHT) + DISTANCE_BOX_HEIGHT;
+                DistanceBox = new BoundingBox
+                {
+                    Min = new Vector3(Position.X, Position.Y + (HIT_BOX_HEIGHT - DISTANCE_BOX_HEIGHT), 0),
+                    Max = new Vector3(Position.X + DISTANCE_BOX_WIDTH, Position.Y + (HIT_BOX_HEIGHT - DISTANCE_BOX_HEIGHT) + DISTANCE_BOX_HEIGHT, 0)
+                };
             }
 
             IsRunning = false;
@@ -383,6 +338,11 @@ namespace SixteenBitNuts
                         }
                     }
                 }
+
+                if (IsAttacking)
+                {
+
+                }
             }
 
             #endregion
@@ -426,10 +386,11 @@ namespace SixteenBitNuts
         /// </summary>
         public void UpdateHitBoxes()
         {
-            hitBox.Min.X = Position.X;
-            hitBox.Min.Y = (IsDucking || IsAttacking) ? Position.Y + 8 : Position.Y;
-            hitBox.Max.X = Position.X + HIT_BOX_WIDTH;
-            hitBox.Max.Y = Position.Y + HIT_BOX_HEIGHT;
+            HitBox = new BoundingBox
+            {
+                Min = new Vector3(Position.X, (IsDucking || IsAttacking) ? Position.Y + 8 : Position.Y, 0),
+                Max = new Vector3(Position.X + HIT_BOX_WIDTH, Position.Y + HIT_BOX_HEIGHT, 0)
+            };
         }
 
         /// <summary>
@@ -447,21 +408,6 @@ namespace SixteenBitNuts
         /// </summary>
         public void DebugDraw()
         {
-            debugHitBox.Bounds = new Rectangle(new Point((int)hitBox.Min.X, (int)hitBox.Min.Y), HitBoxSize.ToPoint());
-            debugHitBox.Update();
-
-            debugDistanceBox.Bounds = new Rectangle(
-                new Point((int)distanceBox.Min.X, (int)distanceBox.Min.Y),
-                new Point((int)(distanceBox.Max.X - distanceBox.Min.X), (int)(distanceBox.Max.Y - distanceBox.Min.Y))
-            );
-            debugDistanceBox.Update();
-
-            debugPreviousFrameHitBox.Bounds = new Rectangle(
-                new Point((int)previousFrameHitBox.Min.X, (int)previousFrameHitBox.Min.Y),
-                new Point((int)(previousFrameHitBox.Max.X - previousFrameHitBox.Min.X), (int)(previousFrameHitBox.Max.Y - previousFrameHitBox.Min.Y))
-            );
-            debugPreviousFrameHitBox.Update();
-
             debugDistanceBox.Draw();
             debugPreviousFrameHitBox.Draw();
             debugHitBox.Draw();
