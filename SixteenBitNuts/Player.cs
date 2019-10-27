@@ -352,6 +352,14 @@ namespace SixteenBitNuts
                             attackDirection = Direction;
                         }
                     }
+                    if (GamePad.GetState(PlayerIndex.One).IsButtonUp(Buttons.X))
+                    {
+                        attackButtonPressed = false;
+                    }
+                    if (Keyboard.GetState().IsKeyUp(Keys.X))
+                    {
+                        attackKeyPressed = false;
+                    }
                 }
 
                 debugAttackBox.Color = Color.Yellow;
@@ -517,7 +525,6 @@ namespace SixteenBitNuts
             {
                 sprite.AnimationName = "idle";
                 IsAttacking = false;
-                attackButtonPressed = false;
                 attackKeyPressed = false;
             }
         }
