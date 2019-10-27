@@ -3,6 +3,7 @@ namespace SixteenBitNuts
 {
     public enum Direction
     {
+        None = -1,
         Right = 0,
         TopRight = 1,
         Top = 2,

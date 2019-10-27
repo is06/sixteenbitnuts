@@ -91,6 +91,7 @@ namespace SixteenBitNuts
         #region Events
 
         public event CollisionHandler OnCollisionWithEntity;
+        public event CollisionHandler OnAttackEntity;
 
         #endregion
 
@@ -224,6 +225,16 @@ namespace SixteenBitNuts
                     {
                         element.DebugColor = Color.Red;
 
+                        // Attack collisions
+                        if (Player.IsAttacking && Player.AttackBox.Intersects(element.HitBox))
+                        {
+                            if (element is Entity)
+                            {
+                                OnAttackEntity?.Invoke((Entity)element);
+                            }
+                        }
+
+                        // Player collisions
                         if (Player.HitBox.Intersects(element.HitBox))
                         {
                             if (element is Entity)
@@ -404,6 +415,8 @@ namespace SixteenBitNuts
 
                 #endregion
             }
+
+            Player.UpdateDebugHitBoxes();
 
             #region Map Editor
 

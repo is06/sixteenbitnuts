@@ -6,17 +6,23 @@ namespace SixteenBitNuts
     {
         private readonly Box graphicBox;
 
-        public DebugHitBox(Game game, BoundingBox hitBox, int thickness, Color color)
+        public DebugHitBox(Game game, int thickness, Color color)
         {
             graphicBox = new Box(
                 game,
-                new Rectangle(
-                    new Point((int)hitBox.Min.X, (int)hitBox.Min.Y),
-                    new Point((int)(hitBox.Max.X - hitBox.Min.X), (int)(hitBox.Max.Y - hitBox.Min.Y))
-                ),
+                new Rectangle(0, 0, 0, 0),
                 thickness,
                 color
             );
+        }
+
+        public void Update(BoundingBox hitBox)
+        {
+            graphicBox.Bounds = new Rectangle(
+                new Point((int)hitBox.Min.X, (int)hitBox.Min.Y),
+                new Point((int)(hitBox.Max.X - hitBox.Min.X), (int)(hitBox.Max.Y - hitBox.Min.Y))
+            );
+            graphicBox.Update();
         }
 
         public void Draw()

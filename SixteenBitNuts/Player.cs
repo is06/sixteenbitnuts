@@ -24,6 +24,10 @@ namespace SixteenBitNuts
         private const float DISTANCE_BOX_WIDTH = 16f;
         private const float DISTANCE_BOX_HEIGHT = 16f;
 
+        private const float ATTACK_BOX_HEIGHT = 14f;
+        private const float ATTACK_BOX_OFFSET = 2f;
+        private const float ATTACK_BOX_DISTANCE = 20f;
+
         #endregion
 
         #region Fields
@@ -36,6 +40,10 @@ namespace SixteenBitNuts
         private bool attackKeyPressed;
         private bool isFalling;
         private Vector2 position;
+
+        // Attack
+        private float attackPositionDelta;
+        private Direction attackDirection;
 
         #endregion
 
@@ -144,6 +152,7 @@ namespace SixteenBitNuts
         private readonly DebugHitBox debugHitBox;
         private readonly DebugHitBox debugDistanceBox;
         private readonly DebugHitBox debugPreviousFrameHitBox;
+        private readonly DebugHitBox debugAttackBox;
 
         #endregion
 
@@ -174,9 +183,10 @@ namespace SixteenBitNuts
             // Components
             sprite = new Sprite(map.Game, "gameplay/player");
             sprite.OnAnimationFinished += SpriteOnAnimationFinished;
-            debugHitBox = new DebugHitBox(map.Game, HitBox, 1, Color.Cyan);
-            debugPreviousFrameHitBox = new DebugHitBox(map.Game, PreviousFrameHitBox, 2, Color.DarkOliveGreen);
-            debugDistanceBox = new DebugHitBox(map.Game, DistanceBox, 3, Color.DodgerBlue);
+            debugHitBox = new DebugHitBox(map.Game, 1, Color.Cyan);
+            debugPreviousFrameHitBox = new DebugHitBox(map.Game, 2, Color.DarkOliveGreen);
+            debugDistanceBox = new DebugHitBox(map.Game, 3, Color.DodgerBlue);
+            debugAttackBox = new DebugHitBox(map.Game, 1, Color.Red);
         }
 
         /// <summary>
@@ -330,18 +340,85 @@ namespace SixteenBitNuts
                     if (!attackButtonPressed && !attackKeyPressed)
                     {
                         if (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.X) ||
-                                Keyboard.GetState().IsKeyDown(Keys.X))
+                            Keyboard.GetState().IsKeyDown(Keys.X))
                         {
                             attackButtonPressed = true;
                             attackKeyPressed = true;
                             IsAttacking = true;
+                            attackPositionDelta = 0;
+                            attackDirection = Direction;
                         }
                     }
                 }
 
                 if (IsAttacking)
                 {
+                    if (attackDirection == Direction.Right)
+                    {
+                        attackPositionDelta += 4f;
 
+                        if (attackPositionDelta > ATTACK_BOX_DISTANCE)
+                        {
+                            attackDirection = Direction.Left;
+                        }
+                        if (Direction == Direction.Left && attackPositionDelta >= 0)
+                        {
+                            attackDirection = Direction.None;
+                        }
+                    }
+
+                    if (attackDirection == Direction.Left)
+                    {
+                        attackPositionDelta -= 4f;
+
+                        if (attackPositionDelta <= -ATTACK_BOX_DISTANCE)
+                        {
+                            attackDirection = Direction.Right;
+                        }
+                        if (Direction == Direction.Right && attackPositionDelta <= 0)
+                        {
+                            attackDirection = Direction.None;
+                        }
+                    }
+
+                    if (attackDirection == Direction.Right)
+                    {
+                        if (attackPositionDelta > 0)
+                        {
+                            AttackBox = new BoundingBox
+                            {
+                                Min = new Vector3(Position.X, Position.Y + ATTACK_BOX_OFFSET, 0),
+                                Max = new Vector3(Position.X + HIT_BOX_WIDTH + attackPositionDelta, Position.Y + ATTACK_BOX_HEIGHT, 0)
+                            };
+                        }
+                        else
+                        {
+                            AttackBox = new BoundingBox
+                            {
+                                Min = new Vector3(Position.X + attackPositionDelta, Position.Y + ATTACK_BOX_OFFSET, 0),
+                                Max = new Vector3(Position.X + HIT_BOX_WIDTH, Position.Y + ATTACK_BOX_HEIGHT, 0)
+                            };
+                        }
+                    }
+                    else
+                    {
+                        if (attackPositionDelta < 0)
+                        {
+                            AttackBox = new BoundingBox
+                            {
+                                Min = new Vector3(Position.X + attackPositionDelta, Position.Y + ATTACK_BOX_OFFSET, 0),
+                                Max = new Vector3(Position.X + HIT_BOX_WIDTH, Position.Y + ATTACK_BOX_HEIGHT, 0)
+                            };
+                        }
+                        else
+                        {
+                            AttackBox = new BoundingBox
+                            {
+                                Min = new Vector3(Position.X, Position.Y + ATTACK_BOX_OFFSET, 0),
+                                Max = new Vector3(Position.X + HIT_BOX_WIDTH + attackPositionDelta, Position.Y + ATTACK_BOX_HEIGHT, 0)
+                            };
+                        }
+                    }
                 }
             }
 
@@ -393,6 +470,14 @@ namespace SixteenBitNuts
             };
         }
 
+        public void UpdateDebugHitBoxes()
+        {
+            debugAttackBox.Update(AttackBox);
+            debugDistanceBox.Update(DistanceBox);
+            debugHitBox.Update(HitBox);
+            debugPreviousFrameHitBox.Update(PreviousFrameHitBox);
+        }
+
         /// <summary>
         /// Draw player sprite
         /// </summary>
@@ -411,6 +496,11 @@ namespace SixteenBitNuts
             debugDistanceBox.Draw();
             debugPreviousFrameHitBox.Draw();
             debugHitBox.Draw();
+
+            if (IsAttacking)
+            {
+                debugAttackBox.Draw();
+            }
         }
 
         public void MoveLeft(float value)
