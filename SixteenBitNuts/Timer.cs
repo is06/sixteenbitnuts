@@ -1,13 +1,15 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 
 namespace SixteenBitNuts
 {
-    class Timer
+    public delegate void TimerHandler();
+
+    public class Timer
     {
         public double Duration { get; set; }
         public bool Active { get; set; }
-        public Action Callback { get; set; }
+
+        public event TimerHandler OnTimerFinished;
 
         private double elapsed;
 
@@ -23,7 +25,7 @@ namespace SixteenBitNuts
                 elapsed += gameTime.ElapsedGameTime.TotalSeconds;
                 if (elapsed >= Duration)
                 {
-                    Callback.Invoke();
+                    OnTimerFinished?.Invoke();
                     Active = false;
                     elapsed = 0;
                 }

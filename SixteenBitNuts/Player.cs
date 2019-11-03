@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 
@@ -29,23 +28,34 @@ namespace SixteenBitNuts
         private const float ATTACK_BOX_DISTANCE = 20f;
         private const float ATTACK_START_DELAY = 4f;
 
+        private const float DASH_SPEED = 6f;
+        private const float DASH_DELAY = 0.1f;
+
         #endregion
 
         #region Fields
 
         private float jumpCurrentVelocity;
         private float fallCurrentVelocity;
+        private bool isFalling;
         private bool jumpButtonPressed;
         private bool jumpKeyPressed;
+
         private bool attackButtonPressed;
         private bool attackKeyPressed;
-        private bool isFalling;
+
+        private bool dashButtonPressed;
+        private bool dashKeyPressed;
+
         private Vector2 position;
 
         // Attack
         private float attackDelay;
         private float attackPositionDelta;
         private Direction attackDirection;
+
+        // Dash
+        private readonly Timer dashDelayTimer;
 
         #endregion
 
@@ -56,6 +66,9 @@ namespace SixteenBitNuts
         public bool IsJumping { get; set; }
         public bool IsDucking { get; set; }
         public bool IsAttacking { get; set; }
+        public bool IsDashing { get; set; }
+        public bool IsDashFalling { get; set; }
+        public bool IsDashBouncing { get; set; }
         public bool IsFalling
         {
             get
@@ -98,6 +111,13 @@ namespace SixteenBitNuts
                     Min = new Vector3(position.X, position.Y, 0),
                     Max = new Vector3(position.X + (HitBox.Max.X - HitBox.Min.X), position.Y + (HitBox.Max.Y - HitBox.Min.Y), 0)
                 };
+            }
+        }
+        public Vector2 DrawingPosition
+        {
+            get
+            {
+                return new Vector2((float)Math.Round(position.X), (float)Math.Round(position.Y));
             }
         }
         public float Left
@@ -169,6 +189,8 @@ namespace SixteenBitNuts
             jumpCurrentVelocity = JUMP_VELOCITY;
             Direction = Direction.Right;
             this.position = position;
+
+            // Hitboxes
             HitBox = PreviousFrameHitBox = new BoundingBox(
                 new Vector3(position.X, position.Y, DEPTH),
                 new Vector3(position.X + HIT_BOX_WIDTH, position.Y + HIT_BOX_HEIGHT, DEPTH)
@@ -182,9 +204,15 @@ namespace SixteenBitNuts
             IsFalling = true;
             IsControllable = true;
 
-            // Components
+            // Sprites
             sprite = new Sprite(map.Game, "gameplay/player");
-            sprite.OnAnimationFinished += SpriteOnAnimationFinished;
+            sprite.OnAnimationFinished += Sprite_OnAnimationFinished;
+
+            // Dashing
+            dashDelayTimer = new Timer { Duration = DASH_DELAY };
+            dashDelayTimer.OnTimerFinished += DashDelayTimer_OnTimerFinished;
+
+            // Debug
             debugHitBox = new DebugHitBox(map.Game, 1, Color.Cyan);
             debugPreviousFrameHitBox = new DebugHitBox(map.Game, 2, Color.DarkOliveGreen);
             debugDistanceBox = new DebugHitBox(map.Game, 3, Color.DodgerBlue);
@@ -424,6 +452,50 @@ namespace SixteenBitNuts
 
             #endregion
 
+            #region Down punch (dashing)
+
+            if (IsControllable)
+            {
+                if (!IsDashing && !IsDashFalling && (IsJumping || IsFalling))
+                {
+                    if (!dashKeyPressed && !dashButtonPressed)
+                    {
+                        if (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.LeftThumbstickDown) ||
+                            GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.DPadDown) ||
+                            Keyboard.GetState().IsKeyDown(Keys.Down))
+                        {
+                            IsDashing = true;
+                            IsJumping = false;
+                            IsFalling = false;
+                            IsControllable = false;
+                            Direction = Direction.Bottom;
+                            dashButtonPressed = true;
+                            dashKeyPressed = true;
+                            dashDelayTimer.Active = true;
+                        }
+                    }
+                    if (GamePad.GetState(PlayerIndex.One).IsButtonUp(Buttons.LeftThumbstickDown) &&
+                        GamePad.GetState(PlayerIndex.One).IsButtonUp(Buttons.DPadDown))
+                    {
+                        dashButtonPressed = false;
+                    }
+                    if (Keyboard.GetState().IsKeyUp(Keys.Down))
+                    {
+                        dashKeyPressed = false;
+                    }
+                }
+            }
+            if (IsDashFalling)
+            {
+                position.Y += DASH_SPEED;
+            }
+            if (IsDashBouncing)
+            {
+                //position.Y -= 2f;
+            }
+
+            #endregion
+
             #region Animations
 
             if (IsRunning)
@@ -443,17 +515,23 @@ namespace SixteenBitNuts
             {
                 sprite.AnimationName = "tail";
             }
+            else if (IsDashing)
+            {
+                sprite.AnimationName = "dash";
+            }
             else if (IsDucking)
             {
                 sprite.AnimationName = "duck";
             }
 
-            if (!IsRunning && !IsJumping && !IsFalling && !IsDucking && !IsAttacking)
+            if (!IsRunning && !IsJumping && !IsFalling && !IsDucking && !IsAttacking && !IsDashing)
             {
                 sprite.AnimationName = "idle";
             }
 
             #endregion
+
+            dashDelayTimer.Update(gameTime);
 
             UpdateHitBoxes();
         }
@@ -483,9 +561,7 @@ namespace SixteenBitNuts
         /// </summary>
         public void Draw()
         {
-            Vector2 drawingPosition = new Vector2((float)Math.Round(position.X), (float)Math.Round(position.Y));
-
-            sprite.Draw(position: drawingPosition - sprite.HitBoxOffset, layer: 0f);
+            sprite.Draw(position: DrawingPosition - sprite.HitBoxOffset, layer: 0f);
         }
 
         /// <summary>
@@ -519,7 +595,7 @@ namespace SixteenBitNuts
             position.Y += value;
         }
 
-        private void SpriteOnAnimationFinished(Sprite sender)
+        private void Sprite_OnAnimationFinished(Sprite sender)
         {
             if (sender.AnimationName == "tail")
             {
@@ -527,6 +603,11 @@ namespace SixteenBitNuts
                 IsAttacking = false;
                 attackKeyPressed = false;
             }
+        }
+
+        private void DashDelayTimer_OnTimerFinished()
+        {
+            IsDashFalling = true;
         }
     }
 }

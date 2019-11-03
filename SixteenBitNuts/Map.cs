@@ -92,6 +92,7 @@ namespace SixteenBitNuts
 
         public event CollisionHandler OnCollisionWithEntity;
         public event CollisionHandler OnAttackEntity;
+        public event CollisionHandler OnDashWithEntity;
 
         #endregion
 
@@ -105,19 +106,13 @@ namespace SixteenBitNuts
             // Fields
             this.name = name;
 
-            Camera = new Camera(this, new Vector2(240, 135), new Viewport(0, 0, 480, 270));
+            Camera = new Camera(this, new Vector2(240, 135), new Viewport(0, 0, Game.InternalSize.Width, Game.InternalSize.Height));
 
             // Components
             sections = new Dictionary<int, MapSection>();
             transitionGuide = new TransitionGuide();
-            deathTimer = new Timer()
-            {
-                Duration = 2,
-                Callback = () => {
-                    Player.Position = CurrentMapSection.DefaultSpawnPoint.Position;
-                    Player.IsControllable = true;
-                }
-            };
+            deathTimer = new Timer { Duration = 2 };
+            deathTimer.OnTimerFinished += DeathTimer_OnTimerFinished;
 
             // Load map descriptor
             LoadFromFile("Data/maps/" + name + ".map");
@@ -138,6 +133,12 @@ namespace SixteenBitNuts
             layerOffsetFactors[(int)LayerIndex.Foreground2] = new Vector2(1.7f, 1.7f);
 
             landscape = new Landscape(this);
+        }
+
+        private void DeathTimer_OnTimerFinished()
+        {
+            Player.Position = CurrentMapSection.DefaultSpawnPoint.Position;
+            Player.IsControllable = true;
         }
 
         /// <summary>
@@ -244,9 +245,30 @@ namespace SixteenBitNuts
                         // Player collisions
                         if (Player.HitBox.Intersects(element.HitBox))
                         {
+                            // Entity collision event
                             if (element is Entity)
                             {
-                                OnCollisionWithEntity?.Invoke((Entity)element);
+                                if (Player.IsDashFalling)
+                                {
+                                    OnDashWithEntity?.Invoke((Entity)element);
+                                    OnCollisionWithEntity?.Invoke((Entity)element);
+                                }
+                                else
+                                {
+                                    OnCollisionWithEntity?.Invoke((Entity)element);
+                                }
+                            }
+
+                            // If player was dashing when colliding with some obstacle,
+                            // player is controllable again
+                            if (Player.IsDashFalling)
+                            {
+                                if (element.IsObstacle || element.IsPlatform)
+                                {
+                                    Player.IsDashing = false;
+                                    Player.IsDashFalling = false;
+                                    Player.IsControllable = true;
+                                }
                             }
 
                             // Detect the collision side of the obstacle
@@ -347,7 +369,7 @@ namespace SixteenBitNuts
                         Player.Left < CurrentMapSection.Bounds.Left)
                     {
                         transitionProgression = 0;
-                        nextSectionIndex = GetNextSectionIndex();
+                        nextSectionIndex = GetTransitionNextSectionIndex();
                         if (nextSectionIndex != -1)
                         {
                             Player.IsControllable = false;
@@ -572,21 +594,25 @@ namespace SixteenBitNuts
             return nearestElements;
         }
 
-        private int GetNextSectionIndex()
+        /// <summary>
+        /// Return the index of the next section for the transition
+        /// </summary>
+        /// <returns>Integer representing the index</returns>
+        private int GetTransitionNextSectionIndex()
         {
-            foreach (KeyValuePair<int, MapSection> pair in sections)
+            foreach (var section in sections)
             {
-                if (pair.Value != CurrentMapSection)
+                if (section.Value != CurrentMapSection)
                 {
                     BoundingBox sectionHitBox = new BoundingBox()
                     {
-                        Min = new Vector3(pair.Value.Bounds.X, pair.Value.Bounds.Y, 0),
-                        Max = new Vector3(pair.Value.Bounds.X + pair.Value.Bounds.Width, pair.Value.Bounds.Y + pair.Value.Bounds.Height, 0)
+                        Min = new Vector3(section.Value.Bounds.X, section.Value.Bounds.Y, 0),
+                        Max = new Vector3(section.Value.Bounds.X + section.Value.Bounds.Width, section.Value.Bounds.Y + section.Value.Bounds.Height, 0)
                     };
 
                     if (Player.HitBox.Intersects(sectionHitBox))
                     {
-                        return pair.Key;
+                        return section.Key;
                     }
                 }
             }
@@ -624,8 +650,9 @@ namespace SixteenBitNuts
                     case "ly":
                         landscape.Layers.Add(new LandscapeLayer()
                         {
-                            LayerIndex = (LayerIndex)int.Parse(components[1]),
-                            Texture = Game.Content.Load<Texture2D>(components[2])
+                            Name = components[2],
+                            Index = (LayerIndex)int.Parse(components[1]),
+                            Texture = Game.Content.Load<Texture2D>("Game/backgrounds/" + components[2])
                         });
                         break;
                     case "se":
@@ -676,8 +703,7 @@ namespace SixteenBitNuts
         {
             switch (type)
             {
-                case "spawn": // TODO: remove this identifier
-                case "SixteenBitNuts.SpawnPoint":
+                case "spawn":
                     sections[sectionIndex].Entities[name] = new SpawnPoint(this, name)
                     {
                         Position = position
@@ -696,7 +722,7 @@ namespace SixteenBitNuts
 
             foreach (var layer in landscape.Layers)
             {
-                contents.Add("ly " + (int)layer.LayerIndex + " " + layer.Texture.Name);
+                contents.Add("ly " + (int)layer.Index + " " + layer.Name);
             }
 
             foreach (var section in sections)
@@ -722,7 +748,7 @@ namespace SixteenBitNuts
                 foreach (var entity in section.Value.Entities)
                 {
                     contents.Add(
-                        "en " + entity.Value.GetType() +
+                        "en " + entity.Value.GetType().Name +
                         " " + entity.Key +
                         " " + entity.Value.Position.X +
                         " " + entity.Value.Position.Y
