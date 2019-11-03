@@ -18,8 +18,9 @@ namespace SixteenBitNuts
 
     struct LandscapeLayer
     {
+        public string Name;
+        public LayerIndex Index;
         public Texture2D Texture;
-        public LayerIndex LayerIndex;
     }
 
     class Landscape
@@ -32,21 +33,14 @@ namespace SixteenBitNuts
         public Landscape(Map map)
         {
             this.map = map;
-            Layers = new List<LandscapeLayer>
-            {
-                new LandscapeLayer()
-                {
-                    Texture = map.Game.Content.Load<Texture2D>("Game/backgrounds/forest"),
-                    LayerIndex = LayerIndex.Background1
-                }
-            };
+            Layers = new List<LandscapeLayer>();
         }
 
         public void Draw(int layerIndex)
         {
             foreach (var layer in Layers)
             {
-                if ((int)layer.LayerIndex == layerIndex)
+                if ((int)layer.Index == layerIndex)
                 {
                     map.Game.SpriteBatch.Draw(
                         texture: layer.Texture,
