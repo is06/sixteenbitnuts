@@ -9,10 +9,9 @@ namespace SixteenBitNuts
     {
         #region Properties
 
-        protected Rectangle WindowSize { get; set; }
-        protected Rectangle InternalSize { get; set; }
-        protected int FrameRate { get; set; }
-
+        public Rectangle WindowSize { get; protected set; }
+        public Rectangle InternalSize { get; protected set; }
+        public int FrameRate { get; protected set; }
         public Viewport InGameViewport { get; private set; }
         public float ScreenScale
         {
