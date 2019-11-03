@@ -1,4 +1,5 @@
 /.vs
+/packages
 /SixteenBitNuts/bin/*
 /SixteenBitNuts/obj
 /SixteenBitNutsTests/bin/*

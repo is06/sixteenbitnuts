@@ -12,9 +12,9 @@ namespace SixteenBitNutsTests
         {
             var game = new MockedGame();
             var map = new MockedMap(game, "test_map");
-            game.Tick();
+            map.Update(new GameTime());
 
-            Vector2 expected = new Vector2(0, 0);
+            Vector2 expected = new Vector2(20, 0);
             Vector2 actual = map.Player.Position;
 
             Assert.AreEqual(expected, actual);
