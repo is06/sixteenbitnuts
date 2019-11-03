@@ -1,3 +1,5 @@
 /.vs
 /SixteenBitNuts/bin/*
 /SixteenBitNuts/obj
+/SixteenBitNutsTests/bin/*
+/SixteenBitNutsTests/obj
