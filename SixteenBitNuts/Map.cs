@@ -131,8 +131,6 @@ namespace SixteenBitNuts
             layerOffsetFactors[(int)LayerIndex.Main] = new Vector2(1, 1);
             layerOffsetFactors[(int)LayerIndex.Foreground1] = new Vector2(1.4f, 1.4f);
             layerOffsetFactors[(int)LayerIndex.Foreground2] = new Vector2(1.7f, 1.7f);
-
-            landscape = new Landscape(this);
         }
 
         private void DeathTimer_OnTimerFinished()
