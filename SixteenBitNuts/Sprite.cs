@@ -64,7 +64,7 @@ namespace SixteenBitNuts
 
         #region Components
 
-        private readonly Texture2D texture;
+        private Texture2D texture;
         private readonly Game game;
         private readonly Dictionary<string, SpriteAnimation> animations;
 
@@ -86,6 +86,12 @@ namespace SixteenBitNuts
 
             // Loading sprite descriptor and texture
             LoadFromFile("Data/sprites/" + name + ".sprite");
+
+            LoadTexture();
+        }
+
+        protected virtual void LoadTexture()
+        {
             texture = game.Content.Load<Texture2D>("Game/sprites/" + textureName);
         }
 
@@ -144,7 +150,7 @@ namespace SixteenBitNuts
             // TODO: The problem is the variety of sprite size in animations
         }
 
-        private void LoadFromFile(string fileName)
+        protected virtual void LoadFromFile(string fileName)
         {
             string animationName = "";
 

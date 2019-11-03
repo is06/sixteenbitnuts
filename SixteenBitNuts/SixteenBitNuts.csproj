@@ -60,6 +60,9 @@
     <Compile Include="EventInput.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Image.cs" />
+    <Compile Include="Interfaces\IEntity.cs" />
+    <Compile Include="Interfaces\IMapElement.cs" />
+    <Compile Include="Interfaces\ISpawnPoint.cs" />
     <Compile Include="KeyboardDispatcher.cs" />
     <Compile Include="Label.cs" />
     <Compile Include="Landscape.cs" />

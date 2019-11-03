@@ -1,9 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using SixteenBitNuts.Interfaces;
 
 namespace SixteenBitNuts
 {
-    public class Entity : MapElement
+    public class Entity : MapElement, IEntity
     {
         public string Name { get; private set; }
 

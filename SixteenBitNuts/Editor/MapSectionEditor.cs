@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using SixteenBitNuts.Interfaces;
 
 namespace SixteenBitNuts.Editor
 {
@@ -108,7 +109,7 @@ namespace SixteenBitNuts.Editor
             {
                 Vector2 eraserPosition = GetGridSnapedPosition();
 
-                foreach (KeyValuePair<string, Entity> entity in Map.CurrentMapSection.Entities)
+                foreach (KeyValuePair<string, IEntity> entity in Map.CurrentMapSection.Entities)
                 {
                     if (entity.Value.Position == eraserPosition)
                     {
@@ -253,7 +254,7 @@ namespace SixteenBitNuts.Editor
 
         private bool EntityAlreadyAtPosition(Vector2 position)
         {
-            foreach (KeyValuePair<string, Entity> entity in Map.CurrentMapSection.Entities)
+            foreach (KeyValuePair<string, IEntity> entity in Map.CurrentMapSection.Entities)
             {
                 if (entity.Value.Position == position)
                 {

@@ -9,8 +9,8 @@ namespace SixteenBitNuts
 {
     public class Tileset
     {        
-        private readonly Texture2D texture;
-        private readonly Box debugHitBox;
+        private Texture2D texture;
+        private Box debugHitBox;
         private readonly Dictionary<int, TileElement> elements;
 
         public string Name { get; private set; }
@@ -23,11 +23,22 @@ namespace SixteenBitNuts
             Game = game;
 
             // Components
-            texture = game.Content.Load<Texture2D>("Game/tilesets/" + name);
+            LoadTexture(name);
+            InitDebugHitBox();
+            
             elements = new Dictionary<int, TileElement>();
-            debugHitBox = new Box(game, new Rectangle(0, 0, 16, 16), 1, Color.DarkRed);
-
+            
             LoadFromFile("Data/tilesets/" + name + ".tileset");
+        }
+
+        protected virtual void LoadTexture(string name)
+        {
+            texture = Game.Content.Load<Texture2D>("Game/tilesets/" + name);
+        }
+
+        protected virtual void InitDebugHitBox()
+        {
+            debugHitBox = new Box(Game, new Rectangle(0, 0, 16, 16), 1, Color.DarkRed);
         }
 
         public void Draw(Vector2 position, Vector2 size, Vector2 offset, Vector2 scale)
@@ -82,7 +93,7 @@ namespace SixteenBitNuts
             return elements[id].Type;
         }
 
-        private void LoadFromFile(string fileName)
+        protected virtual void LoadFromFile(string fileName)
         {
             int index = 0;
             foreach (string line in File.ReadAllLines(fileName))

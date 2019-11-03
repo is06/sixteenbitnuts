@@ -1,9 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using SixteenBitNuts.Interfaces;
 
 namespace SixteenBitNuts
 {
-    public class MapElement
+    public class MapElement : IMapElement
     {
         #region Constants
 
@@ -37,7 +38,7 @@ namespace SixteenBitNuts
 
         #region Fields
 
-        private readonly Box debugHitBox;
+        private Box debugHitBox;
         protected readonly Map map;
 
         #endregion
@@ -45,15 +46,18 @@ namespace SixteenBitNuts
         public MapElement(Map map)
         {
             this.map = map;
+            InitDebugHitBox();
+            IsVisible = true;
+        }
 
+        protected virtual void InitDebugHitBox()
+        {
             debugHitBox = new Box(
                 map.Game,
                 new Rectangle(Position.ToPoint(), Size.ToPoint()),
                 DEBUG_BOX_THICKNESS,
                 DebugColor
             );
-
-            IsVisible = true;
         }
 
         public virtual void Update(GameTime gameTime)
@@ -79,7 +83,7 @@ namespace SixteenBitNuts
             debugHitBox.Draw();
         }
 
-        protected Texture2D LoadTexture(string textureName)
+        protected Texture2D GetTexture(string textureName)
         {
             return map.Game.Content.Load<Texture2D>(textureName);
         }

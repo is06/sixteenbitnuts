@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using SixteenBitNuts.Interfaces;
 
 namespace SixteenBitNuts
 {
@@ -11,7 +12,7 @@ namespace SixteenBitNuts
     public class MapSection
     {
         private Vector2[] transitionPoints;
-        private readonly Texture2D transitionCornerTexture;
+        private Texture2D transitionCornerTexture;
         private readonly string defaultSpawnPointName;
 
         #region Properties
@@ -20,13 +21,13 @@ namespace SixteenBitNuts
         public Rectangle Bounds { get; set; }
         public Tileset Tileset { get; private set; }
         public List<Tile> Tiles { get; set; }
-        public Dictionary<string, Entity> Entities { get; set; }
+        public Dictionary<string, IEntity> Entities { get; set; }
 
-        public List<MapElement> Elements
+        public List<IMapElement> Elements
         {
             get
             {
-                var elements = new List<MapElement>();
+                var elements = new List<IMapElement>();
                 foreach (var tile in Tiles)
                 {
                     elements.Add(tile);
@@ -40,11 +41,11 @@ namespace SixteenBitNuts
             }
         }
 
-        public SpawnPoint DefaultSpawnPoint
+        public ISpawnPoint DefaultSpawnPoint
         {
             get
             {
-                return (SpawnPoint)Entities[defaultSpawnPointName];
+                return (ISpawnPoint)Entities[defaultSpawnPointName];
             }
         }
 
@@ -57,16 +58,21 @@ namespace SixteenBitNuts
         {
             Map = map;
             this.defaultSpawnPointName = defaultSpawnPointName;
-            transitionCornerTexture = map.Game.Content.Load<Texture2D>("Engine/editor/transition_corner");
+            LoadTransitionCornerTexture();
 
             // Properties
             Bounds = bounds;
             Tileset = tileset;
 
             Tiles = new List<Tile>();
-            Entities = new Dictionary<string, Entity>();
+            Entities = new Dictionary<string, IEntity>();
 
             SetTransitionPoints(bounds);
+        }
+
+        protected virtual void LoadTransitionCornerTexture()
+        {
+            transitionCornerTexture = Map.Game.Content.Load<Texture2D>("Engine/editor/transition_corner");
         }
 
 
@@ -75,7 +81,7 @@ namespace SixteenBitNuts
         /// </summary>
         public void Update(GameTime gameTime)
         {
-            foreach (KeyValuePair<string, Entity> pair in Entities)
+            foreach (KeyValuePair<string, IEntity> pair in Entities)
             {
                 pair.Value.Update(gameTime);
             }
@@ -93,13 +99,13 @@ namespace SixteenBitNuts
                 {
                     tile.Draw();
                 }
-                foreach (KeyValuePair<string, Entity> pair in Entities)
+                foreach (KeyValuePair<string, IEntity> pair in Entities)
                 {
                     pair.Value.Draw();
                 }
                 if (Map.IsInSectionEditMode)
                 {
-                    foreach (KeyValuePair<string, Entity> pair in Entities)
+                    foreach (KeyValuePair<string, IEntity> pair in Entities)
                     {
                         pair.Value.EditorDraw();
                     }
@@ -116,7 +122,7 @@ namespace SixteenBitNuts
             {
                 tile.DebugDraw();
             }
-            foreach (KeyValuePair<string, Entity> pair in Entities)
+            foreach (KeyValuePair<string, IEntity> pair in Entities)
             {
                 pair.Value.DebugDraw();
             }
@@ -183,7 +189,7 @@ namespace SixteenBitNuts
             }
 
             // Move entities in the section
-            foreach (KeyValuePair<string, Entity> entity in Entities)
+            foreach (KeyValuePair<string, IEntity> entity in Entities)
             {
                 entity.Value.Position = new Vector2(
                     entity.Value.Position.X + positionOffset.X,

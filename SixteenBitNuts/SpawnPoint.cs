@@ -1,17 +1,23 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using SixteenBitNuts.Interfaces;
 
 namespace SixteenBitNuts
 {
-    public class SpawnPoint : Entity
+    public class SpawnPoint : Entity, ISpawnPoint
     {
-        private readonly Texture2D debugTexture;
+        private Texture2D debugTexture;
 
         public SpawnPoint(Map map, string name) : base(map, name)
         {
             IsVisible = false;
-            debugTexture = LoadTexture("Engine/editor/spawn");
+            LoadDebugTexture();
+        }
+
+        protected virtual void LoadDebugTexture()
+        {
+            debugTexture = GetTexture("Engine/editor/spawn");
         }
 
         public override void Update(GameTime gameTime)

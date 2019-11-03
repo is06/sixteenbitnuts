@@ -170,11 +170,11 @@ namespace SixteenBitNuts
 
         #region Components
 
-        private readonly Sprite sprite;
-        private readonly DebugHitBox debugHitBox;
-        private readonly DebugHitBox debugDistanceBox;
-        private readonly DebugHitBox debugPreviousFrameHitBox;
-        private readonly DebugHitBox debugAttackBox;
+        protected Sprite sprite;
+        protected DebugHitBox debugHitBox;
+        protected DebugHitBox debugDistanceBox;
+        protected DebugHitBox debugPreviousFrameHitBox;
+        protected DebugHitBox debugAttackBox;
 
         #endregion
 
@@ -205,14 +205,24 @@ namespace SixteenBitNuts
             IsControllable = true;
 
             // Sprites
-            sprite = new Sprite(map.Game, "gameplay/player");
-            sprite.OnAnimationFinished += Sprite_OnAnimationFinished;
+            InitSprites(map);
 
             // Dashing
             dashDelayTimer = new Timer { Duration = DASH_DELAY };
             dashDelayTimer.OnTimerFinished += DashDelayTimer_OnTimerFinished;
 
             // Debug
+            InitDebugBoxes(map);
+        }
+
+        protected virtual void InitSprites(Map map)
+        {
+            sprite = new Sprite(map.Game, "gameplay/player");
+            sprite.OnAnimationFinished += Sprite_OnAnimationFinished;
+        }
+
+        protected virtual void InitDebugBoxes(Map map)
+        {
             debugHitBox = new DebugHitBox(map.Game, 1, Color.Cyan);
             debugPreviousFrameHitBox = new DebugHitBox(map.Game, 2, Color.DarkOliveGreen);
             debugDistanceBox = new DebugHitBox(map.Game, 3, Color.DodgerBlue);

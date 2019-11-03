@@ -5,6 +5,7 @@ using SixteenBitNuts.Editor;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
+using SixteenBitNuts.Interfaces;
 
 namespace SixteenBitNuts
 {
@@ -64,7 +65,7 @@ namespace SixteenBitNuts
                 return sections[currentSectionIndex];
             }
         }
-        public Player Player { get; private set; }
+        public Player Player { get; protected set; }
         public Camera Camera { get; private set; }
         public int EntityLastIndex { get; set; }
         public bool IsInSectionEditMode
@@ -81,7 +82,7 @@ namespace SixteenBitNuts
 
         protected readonly Dictionary<int, MapSection> sections;
         protected MapSectionEditor sectionEditor;
-        private readonly MapEditor mapEditor;
+        private MapEditor mapEditor;
         private readonly TransitionGuide transitionGuide;
         private readonly Vector2[] layerOffsetFactors;
         private Landscape landscape;
@@ -117,9 +118,9 @@ namespace SixteenBitNuts
             // Load map descriptor
             LoadFromFile("Data/maps/" + name + ".map");
 
-            Player = new Player(this, CurrentMapSection.DefaultSpawnPoint.Position);
+            InitPlayer();
 
-            mapEditor = new MapEditor(this);
+            InitMapEditor();
 
             // Layer transformations
             layerOffsetFactors = new Vector2[8];
@@ -131,6 +132,16 @@ namespace SixteenBitNuts
             layerOffsetFactors[(int)LayerIndex.Main] = new Vector2(1, 1);
             layerOffsetFactors[(int)LayerIndex.Foreground1] = new Vector2(1.4f, 1.4f);
             layerOffsetFactors[(int)LayerIndex.Foreground2] = new Vector2(1.7f, 1.7f);
+        }
+
+        protected virtual void InitPlayer()
+        {
+            Player = new Player(this, CurrentMapSection.DefaultSpawnPoint.Position);
+        }
+
+        protected virtual void InitMapEditor()
+        {
+            mapEditor = new MapEditor(this);
         }
 
         private void DeathTimer_OnTimerFinished()
@@ -176,7 +187,7 @@ namespace SixteenBitNuts
 
                 #region MapElement handle
 
-                var nearElements = new List<MapElement>();
+                var nearElements = new List<IMapElement>();
                 if (!isInSectionEditMode)
                 {
                     // First collision detection pass:
@@ -567,9 +578,9 @@ namespace SixteenBitNuts
         /// <param name="elements">List of elements</param>
         /// <param name="limit">Limit count of nearest elements</param>
         /// <returns>The list of the nearest elements from the specified hit box</returns>
-        private List<MapElement> GetNearestElementsFromHitBox(BoundingBox hitBox, IEnumerable<MapElement> elements, int limit)
+        private List<IMapElement> GetNearestElementsFromHitBox(BoundingBox hitBox, IEnumerable<IMapElement> elements, int limit)
         {
-            var nearestElements = new List<MapElement>();
+            var nearestElements = new List<IMapElement>();
             var distances = new List<float>();
 
             foreach (var element in elements)
@@ -622,7 +633,7 @@ namespace SixteenBitNuts
         /// Load map data from a file and parse it
         /// </summary>
         /// <param name="fileName">The file name of the map</param>
-        private void LoadFromFile(string fileName)
+        protected virtual void LoadFromFile(string fileName)
         {
             string[] lines = File.ReadAllLines(fileName);
 

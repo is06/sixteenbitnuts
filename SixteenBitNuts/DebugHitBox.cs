@@ -4,7 +4,7 @@ namespace SixteenBitNuts
 {
     public class DebugHitBox
     {
-        private readonly Box graphicBox;
+        protected Box graphicBox;
 
         public Color Color
         {
@@ -19,6 +19,11 @@ namespace SixteenBitNuts
         }
 
         public DebugHitBox(Game game, int thickness, Color color)
+        {
+            InitGraphicBox(game, thickness, color);
+        }
+
+        protected virtual void InitGraphicBox(Game game, int thickness, Color color)
         {
             graphicBox = new Box(
                 game,
