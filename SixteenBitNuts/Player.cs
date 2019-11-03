@@ -69,7 +69,6 @@ namespace SixteenBitNuts
         public bool IsAttacking { get; set; }
         public bool IsDashing { get; set; }
         public bool IsDashFalling { get; set; }
-        public bool IsDashBouncing { get; set; }
         public bool IsFalling
         {
             get
@@ -293,7 +292,7 @@ namespace SixteenBitNuts
 
             if (IsControllable)
             {
-                if (!IsJumping && !IsFalling && !IsDucking && !IsAttacking)
+                if (!IsJumping && !IsFalling && !IsDucking && !IsAttacking && !IsDashing)
                 {
                     if (!jumpButtonPressed && !jumpKeyPressed)
                     {
@@ -470,6 +469,7 @@ namespace SixteenBitNuts
                             IsFalling = false;
                             IsControllable = false;
                             Direction = Direction.Bottom;
+
                             dashButtonPressed = true;
                             dashKeyPressed = true;
                             dashDelayTimer.Active = true;
@@ -489,10 +489,6 @@ namespace SixteenBitNuts
             if (IsDashFalling)
             {
                 position.Y += DASH_SPEED;
-            }
-            if (IsDashBouncing)
-            {
-                //position.Y -= 2f;
             }
 
             #endregion
@@ -531,6 +527,11 @@ namespace SixteenBitNuts
             }
 
             #endregion
+
+            if (sprite.AnimationName == "fall")
+            {
+                System.Console.WriteLine("");
+            }
 
             dashDelayTimer.Update(gameTime);
 

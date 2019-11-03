@@ -304,7 +304,7 @@ namespace SixteenBitNuts
                         }
                     }
                     // No ground under player's feet: falling
-                    if (playerIsNotIntersectingWithObstacle && Player.WasOnPlatform && !Player.IsJumping)
+                    if (playerIsNotIntersectingWithObstacle && Player.WasOnPlatform && !Player.IsJumping && !Player.IsDashing)
                     {
                         Player.WasOnPlatform = false;
                         Player.IsFalling = true;
