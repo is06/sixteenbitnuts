@@ -30,6 +30,7 @@ namespace SixteenBitNuts
 
         private const float DASH_SPEED = 6f;
         private const float DASH_DELAY = 0.1f;
+        private const float DASH_BOUNCE_VELOCITY = 4f;
 
         #endregion
 
@@ -593,6 +594,12 @@ namespace SixteenBitNuts
         public void MoveDown(float value)
         {
             position.Y += value;
+        }
+
+        public void DashBounce()
+        {
+            jumpCurrentVelocity = DASH_BOUNCE_VELOCITY;
+            IsJumping = true;
         }
 
         private void Sprite_OnAnimationFinished(Sprite sender)
