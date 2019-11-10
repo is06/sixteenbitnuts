@@ -153,8 +153,18 @@ namespace SixteenBitNuts
         protected virtual void LoadFromFile(string fileName)
         {
             string animationName = "";
+            string[] lines;
 
-            foreach (string line in File.ReadAllLines(fileName))
+            try
+            {
+                lines = File.ReadAllLines(fileName);
+            }
+            catch (DirectoryNotFoundException)
+            {
+                throw new GameException("Unable to find sprite descriptor file " + fileName);
+            }
+
+            foreach (string line in lines)
             {
                 string[] components = line.Split(' ');
 

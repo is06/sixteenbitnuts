@@ -11,7 +11,7 @@ namespace SixteenBitNuts
     {        
         private Texture2D texture;
         private Box debugHitBox;
-        private readonly Dictionary<int, TileElement> elements;
+        protected readonly Dictionary<int, TileElement> elements;
 
         public string Name { get; private set; }
         public Game Game { get; private set; }
@@ -96,7 +96,17 @@ namespace SixteenBitNuts
         protected virtual void LoadFromFile(string fileName)
         {
             int index = 0;
-            foreach (string line in File.ReadAllLines(fileName))
+            string[] lines;
+            try
+            {
+                lines = File.ReadAllLines(fileName);
+            }
+            catch (DirectoryNotFoundException)
+            {
+                throw new GameException("Unable to find tileset descriptor file " + fileName);
+            }
+
+            foreach (string line in lines)
             {
                 string[] components = line.Split(' ');
 

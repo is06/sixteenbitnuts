@@ -9,7 +9,7 @@ namespace SixteenBitNuts
         Platform = 2
     }
 
-    struct TileElement
+    public struct TileElement
     {
         public Vector2 Size;
         public Vector2 Offset;

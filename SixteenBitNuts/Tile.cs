@@ -1,21 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+using SixteenBitNuts.Interfaces;
 
 namespace SixteenBitNuts
 {
-    public class Tile : MapElement
+    public class Tile : MapElement, ITile
     {
-        #region Properties
-
-        public int Id { get; }
-
-        #endregion
-
-        #region Components
+        public int Id { get; private set; }
 
         private readonly Tileset tileset;
-
-        #endregion
 
         public Tile(Map map, Tileset tileset, int id, Vector2 position, Vector2 size, TileType type) : base(map)
         {

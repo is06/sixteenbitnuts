@@ -196,7 +196,7 @@ namespace SixteenBitNuts.Editor
             Map.Game.SpriteBatch.Draw(
                 frameTexture,
                 new Vector2(0, 0),
-                new Rectangle(0, 0, 480, 270),
+                new Rectangle(0, 0, Map.Game.InternalSize.Width, Map.Game.InternalSize.Height),
                 Color.LimeGreen,
                 0,
                 new Vector2(0, 0),

@@ -9,8 +9,8 @@ namespace SixteenBitNuts
     {
         #region Properties
 
-        public Rectangle WindowSize { get; protected set; }
-        public Rectangle InternalSize { get; protected set; }
+        public Size WindowSize { get; protected set; }
+        public Size InternalSize { get; protected set; }
         public int FrameRate { get; protected set; }
         public Viewport InGameViewport { get; private set; }
         public float ScreenScale
@@ -61,6 +61,7 @@ namespace SixteenBitNuts
 
             base.Initialize();
 
+#if WINDOWS
             // Debug console
             KeyboardDispatcher keyboardDispatcher = new KeyboardDispatcher(Window);
             console = new Console(this, keyboardDispatcher);
@@ -69,6 +70,7 @@ namespace SixteenBitNuts
             console.OnExitGame += ConsoleExitGame;
             console.OnEditSection += ConsoleEditSection;
             console.OnEditMap += ConsoleEditMap;
+#endif
         }
 
         protected override void LoadContent()
@@ -83,8 +85,7 @@ namespace SixteenBitNuts
 
         protected override void Update(GameTime gameTime)
         {
-            #region Debug console
-
+#if WINDOWS
             if (!keyConsolePressed && Keyboard.GetState().IsKeyDown(Keys.F4))
             {
                 keyConsolePressed = true;
@@ -97,10 +98,11 @@ namespace SixteenBitNuts
             }
 
             console.Update();
-
-            #endregion
+#endif
 
             base.Update(gameTime);
+
+            currentScene.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
@@ -140,9 +142,11 @@ namespace SixteenBitNuts
                 // Render all UI elements in front of the render target texture
                 currentScene.UIDraw();
 
+#if WINDOWS
                 SpriteBatch.Begin();
                 console.Draw(gameTime);
                 SpriteBatch.End();
+#endif
             }
 
             base.Draw(gameTime);

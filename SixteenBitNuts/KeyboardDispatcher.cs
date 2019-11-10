@@ -45,11 +45,9 @@ namespace SixteenBitNuts
 
         public KeyboardDispatcher(GameWindow window)
         {
-#if WINDOWS
             EventInput.Initialize(window);
             EventInput.CharEntered += CharEntered;
             EventInput.KeyDown += KeyDown;
-#endif
         }
 
         void KeyDown(object sender, KeyEventArgs args)

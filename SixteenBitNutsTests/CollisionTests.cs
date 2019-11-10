@@ -7,17 +7,47 @@ namespace SixteenBitNutsTests
     [TestClass]
     public class CollisionTests
     {
-        [TestMethod]
-        public void TestMapCollision()
+        private MockedGame game;
+        private GameTime gameTime;
+        private MockedMap map;
+
+        [TestInitialize]
+        public void Initialize()
         {
-            var game = new MockedGame();
-            var map = new MockedMap(game, "test_map");
-            map.Update(new GameTime());
+            game = new MockedGame();
+            gameTime = new GameTime();
+            map = new MockedMap(game, "test_map");
+        }
 
-            Vector2 expected = new Vector2(20, 0);
-            Vector2 actual = map.Player.Position;
+        [TestMethod]
+        public void PlayerShouldBeAtPositionZeroOnStart()
+        {
+            map.Update(gameTime);
 
-            Assert.AreEqual(expected, actual);
+            Assert.AreEqual(new Vector2(0, 0), map.Player.Position);
+        }
+
+        [TestMethod]
+        public void PlayerShouldBeStoppedWhenFallingOnAnObstacle()
+        {
+            map.LoadMockFromFile("player_stopped_on_obstacle");
+
+            map.Update(gameTime);
+            map.Update(gameTime);
+
+            Assert.AreEqual(new Vector2(64, 40), map.Player.Position);
+        }
+
+        [TestMethod]
+        public void PlayerShouldBeStoppedWhenRunningAgainstAWall()
+        {
+
+        }
+
+        [TestCleanup]
+        public void Cleanup()
+        {
+            game.Dispose();
         }
     }
 }

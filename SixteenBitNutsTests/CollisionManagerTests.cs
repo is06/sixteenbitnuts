@@ -10,13 +10,13 @@ namespace SixteenBitNutsTests
         [TestMethod]
         public void TestDistance()
         {
-            BoundingBox first = new BoundingBox(
-                new Vector3(0, 0, 0),
-                new Vector3(5, 5, 0)
+            var first = new HitBox(
+                new Vector2(0, 0),
+                new Vector2(5, 5)
             );
-            BoundingBox second = new BoundingBox(
-                new Vector3(10, 0, 0),
-                new Vector3(15, 5, 0)
+            var second = new HitBox(
+                new Vector2(10, 0),
+                new Vector2(5, 5)
             );
 
             Assert.AreEqual(10, CollisionManager.GetDistance(first, second));
@@ -25,13 +25,13 @@ namespace SixteenBitNutsTests
         [TestMethod]
         public void TestGetCollisionSideTopIntersection()
         {
-            BoundingBox moving = new BoundingBox(
-                new Vector3(0, 0, 0),
-                new Vector3(5, 5, 0)
+            var moving = new HitBox(
+                new Vector2(0, 0),
+                new Vector2(5, 5)
             );
-            BoundingBox stopped = new BoundingBox(
-                new Vector3(0, 6, 0),
-                new Vector3(5, 11, 0)
+            var stopped = new HitBox(
+                new Vector2(0, 6),
+                new Vector2(5, 5)
             );
             Vector2 movingVelocity = new Vector2(0, 0.5f);
 
@@ -43,13 +43,13 @@ namespace SixteenBitNutsTests
         [TestMethod]
         public void TestGetCollisionSideAlreadyIntersecting()
         {
-            BoundingBox moving = new BoundingBox(
-                new Vector3(0, 0, 0),
-                new Vector3(5, 5, 0)
+            var moving = new HitBox(
+                new Vector2(0, 0),
+                new Vector2(5, 5)
             );
-            BoundingBox stopped = new BoundingBox(
-                new Vector3(0, 4, 0),
-                new Vector3(5, 9, 0)
+            var stopped = new HitBox(
+                new Vector2(0, 4),
+                new Vector2(5, 5)
             );
             Vector2 movingVelocity = new Vector2(0, 0.5f);
 

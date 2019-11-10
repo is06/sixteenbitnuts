@@ -22,15 +22,11 @@ namespace SixteenBitNuts
         public bool IsDestroying { get; set; }
         public Vector2 Position { get; set; }
         public Vector2 Size { get; set; }
-        public BoundingBox HitBox
+        public HitBox HitBox
         {
             get
             {
-                return new BoundingBox
-                {
-                    Min = new Vector3(Position.X, Position.Y, 0),
-                    Max = new Vector3(Position.X + Size.X, Position.Y + Size.Y, 0)
-                };
+                return new HitBox(Position, Size);
             }
         }
 

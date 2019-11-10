@@ -33,12 +33,9 @@ namespace SixteenBitNuts
             );
         }
 
-        public void Update(BoundingBox hitBox)
+        public void Update(HitBox hitBox)
         {
-            graphicBox.Bounds = new Rectangle(
-                new Point((int)hitBox.Min.X, (int)hitBox.Min.Y),
-                new Point((int)(hitBox.Max.X - hitBox.Min.X), (int)(hitBox.Max.Y - hitBox.Min.Y))
-            );
+            graphicBox.Bounds = new Rectangle(hitBox.Position.ToPoint(), hitBox.Size.ToPoint());
             graphicBox.Update();
         }
 

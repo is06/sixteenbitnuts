@@ -20,7 +20,7 @@ namespace SixteenBitNuts
         public Map Map { get; private set; }
         public Rectangle Bounds { get; set; }
         public Tileset Tileset { get; private set; }
-        public List<Tile> Tiles { get; set; }
+        public List<ITile> Tiles { get; set; }
         public Dictionary<string, IEntity> Entities { get; set; }
 
         public List<IMapElement> Elements
@@ -64,7 +64,7 @@ namespace SixteenBitNuts
             Bounds = bounds;
             Tileset = tileset;
 
-            Tiles = new List<Tile>();
+            Tiles = new List<ITile>();
             Entities = new Dictionary<string, IEntity>();
 
             SetTransitionPoints(bounds);
@@ -201,10 +201,10 @@ namespace SixteenBitNuts
         private void SetTransitionPoints(Rectangle bounds)
         {
             transitionPoints = new Vector2[] {
-                new Vector2(bounds.X + 240, bounds.Y + 135),
-                new Vector2(bounds.X + bounds.Width - 240, bounds.Y + 135),
-                new Vector2(bounds.X + 240, bounds.Y + bounds.Height - 135),
-                new Vector2(bounds.X + bounds.Width - 240, bounds.Y + bounds.Height - 135)
+                new Vector2(bounds.X + Map.Game.InternalSize.Width / 2, bounds.Y + Map.Game.InternalSize.Height / 2),
+                new Vector2(bounds.X + bounds.Width - Map.Game.InternalSize.Width / 2, bounds.Y + Map.Game.InternalSize.Height / 2),
+                new Vector2(bounds.X + Map.Game.InternalSize.Width / 2, bounds.Y + bounds.Height - Map.Game.InternalSize.Height / 2),
+                new Vector2(bounds.X + bounds.Width - Map.Game.InternalSize.Width / 2, bounds.Y + bounds.Height - Map.Game.InternalSize.Height / 2)
             };
         }
     }

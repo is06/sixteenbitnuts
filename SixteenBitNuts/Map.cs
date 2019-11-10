@@ -107,7 +107,11 @@ namespace SixteenBitNuts
             // Fields
             this.name = name;
 
-            Camera = new Camera(this, new Vector2(240, 135), new Viewport(0, 0, Game.InternalSize.Width, Game.InternalSize.Height));
+            Camera = new Camera(
+                this,
+                new Vector2(Game.InternalSize.Width / 2, Game.InternalSize.Height / 2),
+                new Viewport(0, 0, Game.InternalSize.Width, Game.InternalSize.Height)
+            );
 
             // Components
             sections = new Dictionary<int, MapSection>();
@@ -118,8 +122,9 @@ namespace SixteenBitNuts
             // Load map descriptor
             LoadFromFile("Data/maps/" + name + ".map");
 
+            // Overridable initializers
             InitPlayer();
-
+            InitMapSectionEditor();
             InitMapEditor();
 
             // Layer transformations
@@ -142,6 +147,11 @@ namespace SixteenBitNuts
         protected virtual void InitMapEditor()
         {
             mapEditor = new MapEditor(this);
+        }
+
+        protected virtual void InitMapSectionEditor()
+        {
+            sectionEditor = new MapSectionEditor(this);
         }
 
         private void DeathTimer_OnTimerFinished()
@@ -260,12 +270,8 @@ namespace SixteenBitNuts
                                 if (Player.IsDashFalling)
                                 {
                                     OnDashWithEntity?.Invoke((Entity)element);
-                                    OnCollisionWithEntity?.Invoke((Entity)element);
                                 }
-                                else
-                                {
-                                    OnCollisionWithEntity?.Invoke((Entity)element);
-                                }
+                                OnCollisionWithEntity?.Invoke((Entity)element);
                             }
 
                             // If player was dashing when colliding with some obstacle,
@@ -497,7 +503,10 @@ namespace SixteenBitNuts
 
                     Game.SpriteBatch.Begin(transformMatrix: layerTransform, samplerState: SamplerState.PointWrap);
 
-                    landscape.Draw(layer);
+                    if (landscape != null)
+                    {
+                        landscape.Draw(layer);
+                    }
 
                     foreach (KeyValuePair<int, MapSection> section in sections)
                     {
@@ -578,7 +587,7 @@ namespace SixteenBitNuts
         /// <param name="elements">List of elements</param>
         /// <param name="limit">Limit count of nearest elements</param>
         /// <returns>The list of the nearest elements from the specified hit box</returns>
-        private List<IMapElement> GetNearestElementsFromHitBox(BoundingBox hitBox, IEnumerable<IMapElement> elements, int limit)
+        private List<IMapElement> GetNearestElementsFromHitBox(HitBox hitBox, IEnumerable<IMapElement> elements, int limit)
         {
             var nearestElements = new List<IMapElement>();
             var distances = new List<float>();
@@ -613,12 +622,10 @@ namespace SixteenBitNuts
             {
                 if (section.Value != CurrentMapSection)
                 {
-                    BoundingBox sectionHitBox = new BoundingBox()
-                    {
-                        Min = new Vector3(section.Value.Bounds.X, section.Value.Bounds.Y, 0),
-                        Max = new Vector3(section.Value.Bounds.X + section.Value.Bounds.Width, section.Value.Bounds.Y + section.Value.Bounds.Height, 0)
-                    };
-
+                    var sectionHitBox = new HitBox(
+                        section.Value.Bounds.Location.ToVector2(),
+                        section.Value.Bounds.Size.ToVector2()
+                    );
                     if (Player.HitBox.Intersects(sectionHitBox))
                     {
                         return section.Key;
@@ -635,11 +642,20 @@ namespace SixteenBitNuts
         /// <param name="fileName">The file name of the map</param>
         protected virtual void LoadFromFile(string fileName)
         {
-            string[] lines = File.ReadAllLines(fileName);
+            string[] lines;
+
+            try
+            {
+                lines = File.ReadAllLines(fileName);
+            }
+            catch (DirectoryNotFoundException)
+            {
+                throw new GameException("Unable to find the map file " + fileName);
+            }
 
             if (lines.Length == 0)
             {
-                throw new MapException("Map file '" + name + ".map' is empty");
+                throw new GameException("Map file '" + name + ".map' is empty");
             }
 
             int sectionIndex = -1;
@@ -667,17 +683,24 @@ namespace SixteenBitNuts
                     case "se":
                         // Begin section
                         sectionIndex++;
-                        sections[sectionIndex] = new MapSection(
-                            this,
-                            new Rectangle(
-                                int.Parse(components[1]),
-                                int.Parse(components[2]),
-                                int.Parse(components[3]),
-                                int.Parse(components[4])
-                            ),
-                            new Tileset(Game, components[5]),
-                            components[6]
-                        );
+                        //try
+                        //{
+                            sections[sectionIndex] = new MapSection(
+                                this,
+                                new Rectangle(
+                                    int.Parse(components[1]),
+                                    int.Parse(components[2]),
+                                    int.Parse(components[3]),
+                                    int.Parse(components[4])
+                                ),
+                                new Tileset(Game, components[5]),
+                                components[6]
+                            );
+                        //}
+                        //catch (System.Exception)
+                        //{
+                        //    throw new GameException("Section deleclaration doest not conform to correct syntax: se x y width height tileset_name default_spawn");
+                        //}
                         break;
                     case "en":
                         // Entities

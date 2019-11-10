@@ -12,7 +12,7 @@ namespace SixteenBitNuts.Interfaces
         bool IsDestroying { get; set; }
         Vector2 Position { get; set; }
         Vector2 Size { get; set; }
-        BoundingBox HitBox { get; }
+        HitBox HitBox { get; }
 
         void Update(GameTime gameTime);
         void Draw();

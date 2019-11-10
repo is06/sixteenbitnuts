@@ -66,12 +66,16 @@
     <Compile Include="Mocks\Player.cs" />
     <Compile Include="Mocks\SpawnPoint.cs" />
     <Compile Include="Mocks\Sprite.cs" />
+    <Compile Include="Mocks\Tile.cs" />
     <Compile Include="Mocks\Tileset.cs" />
     <Compile Include="CollisionTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CollisionManagerTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Data\mocks\maps\player_stopped_on_obstacle.map">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />

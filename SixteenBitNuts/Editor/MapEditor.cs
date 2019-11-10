@@ -14,21 +14,21 @@ namespace SixteenBitNuts.Editor
         private readonly Dictionary<int, MapSection> sections;
         private readonly Image frame;
         private readonly Texture2D gridTexture;
-        private readonly Map map;
         private readonly Label cursorPosition;
 
         private readonly int gridZoom = 4;
         private bool isKeyAddPressed = false;
 
+        public Map Map { get; private set; }
         public bool IsMovingSection { get; set; }
         public bool IsResizingSection { get; set; }
         public Cursor Cursor { get; set; }
 
         public MapEditor(Map map)
         {
-            this.map = map;
+            Map = map;
 
-            camera = new Camera(map, new Vector2(0, 0), new Viewport(0, 0, 480, 270))
+            camera = new Camera(map, new Vector2(0, 0), new Viewport(0, 0, map.Game.InternalSize.Width, map.Game.InternalSize.Height))
             {
                 CanOverrideLimits = true
             };
@@ -88,18 +88,18 @@ namespace SixteenBitNuts.Editor
                 var bounds = new Rectangle(
                     (int)(Cursor.InGamePosition.X * SCALE),
                     (int)(Cursor.InGamePosition.Y * SCALE),
-                    480,
-                    270
+                    Map.Game.InternalSize.Width,
+                    Map.Game.InternalSize.Height
                 );
 
                 int nextSectionIndex = sections.Count;
-                sections.Add(nextSectionIndex, new MapSection(map, this, nextSectionIndex, bounds));
+                sections.Add(nextSectionIndex, new MapSection(Map, this, nextSectionIndex, bounds));
 
                 // TODO: retrieve tileset from tileset factory
-                var tileset = new Tileset(map.Game, "tileset3");
+                var tileset = new Tileset(Map.Game, "tileset3");
 
                 // TODO: create a spawn point for this section
-                map.Sections.Add(nextSectionIndex, new SixteenBitNuts.MapSection(map, bounds, tileset, "spawn02"));
+                Map.Sections.Add(nextSectionIndex, new SixteenBitNuts.MapSection(Map, bounds, tileset, "spawn02"));
             }
             if (Keyboard.GetState().IsKeyUp(Keys.Add))
             {
@@ -128,14 +128,14 @@ namespace SixteenBitNuts.Editor
             var gridOrigin = camera.ViewPort.Bounds.Location - camera.ViewPort.Bounds.Center - (new Point((int)camera.Transform.Translation.X, (int)camera.Transform.Translation.Y));
             var gridDestination = camera.ViewPort.Bounds.Location + camera.ViewPort.Bounds.Size - (new Point((int)camera.Transform.Translation.X, (int)camera.Transform.Translation.Y));
 
-            map.Game.SpriteBatch.Begin(transformMatrix: camera.Transform);
+            Map.Game.SpriteBatch.Begin(transformMatrix: camera.Transform);
 
             // Draw grid
             for (int i = gridOrigin.X / gridZoom; i < gridDestination.X / gridZoom; i++)
             {
                 for (int j = gridOrigin.Y / gridZoom; j < gridDestination.Y / gridZoom; j++)
                 {
-                    map.Game.SpriteBatch.Draw(
+                    Map.Game.SpriteBatch.Draw(
                         texture: gridTexture,
                         position: new Vector2(i * gridZoom, j * gridZoom),
                         sourceRectangle: new Rectangle(0, 0, 16, 16),
@@ -155,19 +155,19 @@ namespace SixteenBitNuts.Editor
                 section.Value.Draw();
             }
 
-            map.Game.SpriteBatch.End();
+            Map.Game.SpriteBatch.End();
 
-            map.Game.SpriteBatch.Begin();
+            Map.Game.SpriteBatch.Begin();
             frame.Draw();
             cursorPosition.Draw();
-            map.Game.SpriteBatch.End();
+            Map.Game.SpriteBatch.End();
         }
 
         public void UIDraw()
         {
-            map.Game.SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
+            Map.Game.SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
             Cursor.Draw();
-            map.Game.SpriteBatch.End();
+            Map.Game.SpriteBatch.End();
         }
 
         public void UpdateLayout()
@@ -180,7 +180,7 @@ namespace SixteenBitNuts.Editor
 
         public void LoadSection(MapSection section)
         {
-            map.LoadSectionFromIndex(section.Index);
+            Map.LoadSectionFromIndex(section.Index);
         }
     }
 }

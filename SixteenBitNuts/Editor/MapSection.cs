@@ -239,13 +239,13 @@ namespace SixteenBitNuts.Editor
                         int distance = bounds.X - cursorPosition;
                         int width = bounds.Width + distance;
 
-                        if (width >= 480)
+                        if (width >= editor.Map.Game.InternalSize.Width)
                         {
                             bounds.X = cursorPosition;
                         }
-                        if (width < 480)
+                        if (width < editor.Map.Game.InternalSize.Width)
                         {
-                            width = 480;
+                            width = editor.Map.Game.InternalSize.Width;
                         }
 
                         bounds.Width = width;
@@ -254,7 +254,7 @@ namespace SixteenBitNuts.Editor
                     {
                         editor.Cursor.Type = CursorType.ResizeHorizontal;
                         int width = (((int)cursorInMapPosition.X / SCALE) * SCALE) - bounds.X;
-                        if (width < 480) width = 480;
+                        if (width < editor.Map.Game.InternalSize.Width) width = editor.Map.Game.InternalSize.Width;
                         bounds.Width = width;
                     }
                     if (resizeSide == ResizeSide.Top)
@@ -265,13 +265,13 @@ namespace SixteenBitNuts.Editor
                         int distance = bounds.Y - cursorPosition;
                         int height = bounds.Height + distance;
 
-                        if (height >= 270)
+                        if (height >= editor.Map.Game.InternalSize.Height)
                         {
                             bounds.Y = cursorPosition;
                         }
-                        if (height < 270)
+                        if (height < editor.Map.Game.InternalSize.Height)
                         {
-                            height = 270;
+                            height = editor.Map.Game.InternalSize.Height;
                         }
 
                         bounds.Height = height;
@@ -280,7 +280,7 @@ namespace SixteenBitNuts.Editor
                     {
                         editor.Cursor.Type = CursorType.ResizeVertical;
                         int height = (((int)cursorInMapPosition.Y / SCALE) * SCALE) - bounds.Y;
-                        if (height < 270) height = 270;
+                        if (height < editor.Map.Game.InternalSize.Height) height = editor.Map.Game.InternalSize.Height;
                         bounds.Height = height;
                     }
 

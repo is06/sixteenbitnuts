@@ -30,7 +30,7 @@ namespace SixteenBitNuts
         /// <param name="stopped">The static object hitbox</param>
         /// <param name="movingVelocity">The velocity vector</param>
         /// <returns>CollisionSide value</returns>
-        public static CollisionSide GetCollisionSide(BoundingBox moving, BoundingBox stopped, Vector2 movingVelocity)
+        public static CollisionSide GetCollisionSide(HitBox moving, HitBox stopped, Vector2 movingVelocity)
         {
             double velocityRatio = movingVelocity.Y / movingVelocity.X;
 
@@ -39,40 +39,40 @@ namespace SixteenBitNuts
             double cornerVectorRise;
             double cornerVectorRun;
 
-            if (moving.Max.X <= stopped.Min.X)
+            if (moving.Right <= stopped.Left)
             {
                 side |= CollisionSide.Left;
-                cornerVectorRun = stopped.Min.X - moving.Max.X;
+                cornerVectorRun = stopped.Left - moving.Right;
 
-                if (moving.Max.Y <= stopped.Min.Y)
+                if (moving.Bottom <= stopped.Top)
                 {
                     side |= CollisionSide.Top;
-                    cornerVectorRise = stopped.Min.Y - moving.Max.Y;
+                    cornerVectorRise = stopped.Top - moving.Bottom;
                 }
-                else if (moving.Min.Y >= stopped.Max.Y)
+                else if (moving.Top >= stopped.Bottom)
                 {
                     side |= CollisionSide.Bottom;
-                    cornerVectorRise = stopped.Max.Y - moving.Min.Y;
+                    cornerVectorRise = stopped.Bottom - moving.Top;
                 }
                 else
                 {
                     return CollisionSide.Left;
                 }
             }
-            else if (moving.Min.X >= stopped.Max.X)
+            else if (moving.Left >= stopped.Right)
             {
                 side |= CollisionSide.Right;
-                cornerVectorRun = moving.Min.X - stopped.Max.X;
+                cornerVectorRun = moving.Left - stopped.Right;
 
-                if (moving.Max.Y <= stopped.Min.Y)
+                if (moving.Bottom <= stopped.Top)
                 {
                     side |= CollisionSide.Top;
-                    cornerVectorRise = moving.Max.Y - stopped.Min.Y;
+                    cornerVectorRise = moving.Bottom - stopped.Top;
                 }
-                else if (moving.Min.Y >= stopped.Max.Y)
+                else if (moving.Top >= stopped.Bottom)
                 {
                     side |= CollisionSide.Bottom;
-                    cornerVectorRise = moving.Min.Y - stopped.Max.Y;
+                    cornerVectorRise = moving.Top - stopped.Bottom;
                 }
                 else
                 {
@@ -81,11 +81,11 @@ namespace SixteenBitNuts
             }
             else
             {
-                if (moving.Max.Y <= stopped.Min.Y)
+                if (moving.Bottom <= stopped.Top)
                 {
                     return CollisionSide.Top;
                 }
-                if (moving.Min.Y >= stopped.Max.Y)
+                if (moving.Top >= stopped.Bottom)
                 {
                     return CollisionSide.Bottom;
                 }
@@ -137,22 +137,22 @@ namespace SixteenBitNuts
         /// <param name="stopped">Current frame static object hitbox</param>
         /// <param name="side">Collision side detected</param>
         /// <returns>Point</returns>
-        public static Vector2 GetCorrectedPosition(BoundingBox moving, BoundingBox stopped, CollisionSide side)
+        public static Vector2 GetCorrectedPosition(HitBox moving, HitBox stopped, CollisionSide side)
         {
-            Vector2 correctedPosition = new Vector2(moving.Min.X, moving.Min.Y);
+            Vector2 correctedPosition = moving.Position;
             switch (side)
             {
                 case CollisionSide.Left:
-                    correctedPosition.X = stopped.Min.X - (moving.Max.X - moving.Min.X);
+                    correctedPosition.X = stopped.X - moving.Width;
                     break;
                 case CollisionSide.Right:
-                    correctedPosition.X = stopped.Min.X + (stopped.Max.X - stopped.Min.X);
+                    correctedPosition.X = stopped.X + stopped.Width;
                     break;
                 case CollisionSide.Top:
-                    correctedPosition.Y = stopped.Min.Y - (moving.Max.Y - moving.Min.Y);
+                    correctedPosition.Y = stopped.Y - moving.Height;
                     break;
                 case CollisionSide.Bottom:
-                    correctedPosition.Y = stopped.Min.Y + (stopped.Max.Y - stopped.Min.Y);
+                    correctedPosition.Y = stopped.Y + stopped.Height;
                     break;
             }
             return correctedPosition;
@@ -164,16 +164,10 @@ namespace SixteenBitNuts
         /// <param name="first">First hitbox</param>
         /// <param name="second">Second hitbox</param>
         /// <returns>float</returns>
-        public static float GetDistance(BoundingBox first, BoundingBox second)
+        public static float GetDistance(HitBox first, HitBox second)
         {
-            Vector2 firstCenter = new Vector2(
-                first.Min.X + (first.Max.X - first.Min.X) / 2f,
-                first.Min.Y + (first.Max.Y - first.Min.Y) / 2f
-            );
-            Vector2 secondCenter = new Vector2(
-                second.Min.X + (second.Max.X - second.Min.X) / 2f,
-                second.Min.Y + (second.Max.Y - second.Min.Y) / 2f
-            );
+            Vector2 firstCenter = new Vector2(first.X + first.Width / 2f, first.Y + first.Height / 2f);
+            Vector2 secondCenter = new Vector2(second.X + second.Width / 2f, second.Y + second.Height / 2f);
 
             return Vector2.Distance(firstCenter, secondCenter);
         }
