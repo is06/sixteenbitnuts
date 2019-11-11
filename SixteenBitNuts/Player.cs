@@ -66,6 +66,7 @@ namespace SixteenBitNuts
         public bool IsJumping { get; set; }
         public bool IsDucking { get; set; }
         public bool IsAttacking { get; set; }
+        public bool IsPunching { get; set; }
         public bool IsDashing { get; set; }
         public bool IsDashFalling { get; set; }
         public bool IsFalling
@@ -220,12 +221,32 @@ namespace SixteenBitNuts
         /// </summary>
         public void Update(GameTime gameTime)
         {
-            #region Previous HitBoxes
-
             PreviousFrameHitBox = HitBox;
 
             IsRunning = false;
             IsDucking = false;
+            IsPunching = false;
+
+            #region Ducking
+
+            if (IsControllable)
+            {
+                if (!IsAttacking && !IsJumping && !IsFalling)
+                {
+                    // Gamepad
+                    if (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.LeftThumbstickDown) ||
+                        GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.DPadDown))
+                    {
+                        IsDucking = true;
+                    }
+
+                    // Keyboard
+                    if (Keyboard.GetState().IsKeyDown(Keys.Down))
+                    {
+                        IsDucking = true;
+                    }
+                }
+            }
 
             #endregion
 
@@ -315,29 +336,6 @@ namespace SixteenBitNuts
                     if (fallCurrentVelocity <= FALL_MAX_VELOCITY)
                     {
                         fallCurrentVelocity += FALL_VELOCITY_DECELERATION;
-                    }
-                }
-            }
-
-            #endregion
-
-            #region Ducking
-
-            if (IsControllable)
-            {
-                if (!IsAttacking && !IsJumping && !IsFalling)
-                {
-                    // Gamepad
-                    if (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.LeftThumbstickDown) ||
-                        GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.DPadDown))
-                    {
-                        IsDucking = true;
-                    }
-
-                    // Keyboard
-                    if (Keyboard.GetState().IsKeyDown(Keys.Down))
-                    {
-                        IsDucking = true;
                     }
                 }
             }
