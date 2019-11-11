@@ -86,6 +86,7 @@ namespace SixteenBitNuts
         private readonly TransitionGuide transitionGuide;
         private readonly Vector2[] layerOffsetFactors;
         private Landscape landscape;
+        private Label debugPlayerPosition;
 
         #endregion
 
@@ -137,6 +138,13 @@ namespace SixteenBitNuts
             layerOffsetFactors[(int)LayerIndex.Main] = new Vector2(1, 1);
             layerOffsetFactors[(int)LayerIndex.Foreground1] = new Vector2(1.4f, 1.4f);
             layerOffsetFactors[(int)LayerIndex.Foreground2] = new Vector2(1.7f, 1.7f);
+
+            debugPlayerPosition = new Label(this)
+            {
+                Position = new Vector2(4, 4),
+                Color = Color.White,
+                IsVisible = true,
+            };
         }
 
         protected virtual void InitPlayer()
@@ -463,6 +471,9 @@ namespace SixteenBitNuts
             if (isInDebugViewMode)
             {
                 Player.UpdateDebugHitBoxes();
+
+                debugPlayerPosition.Text = Player.Position.ToString();
+                debugPlayerPosition.Update();
             }
 
             #region Map Editor
@@ -552,7 +563,15 @@ namespace SixteenBitNuts
 
                     Game.SpriteBatch.End();
                 }
+
+                Game.SpriteBatch.Begin();
+
+                debugPlayerPosition.Draw();
+
+                Game.SpriteBatch.End();
             }
+
+            
 
             base.DebugDraw();
         }
@@ -735,7 +754,7 @@ namespace SixteenBitNuts
         {
             switch (type)
             {
-                case "spawn":
+                case "SpawnPoint":
                     sections[sectionIndex].Entities[name] = new SpawnPoint(this, name)
                     {
                         Position = position

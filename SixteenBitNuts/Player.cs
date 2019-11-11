@@ -224,18 +224,6 @@ namespace SixteenBitNuts
 
             PreviousFrameHitBox = HitBox;
 
-            if (IsDucking || IsAttacking)
-            {
-                DistanceBox = HitBox;
-            }
-            else
-            {
-                DistanceBox = new HitBox(
-                    new Vector2(Position.X, Position.Y + (HIT_BOX_HEIGHT - DISTANCE_BOX_HEIGHT)),
-                    new Vector2(DISTANCE_BOX_WIDTH, DISTANCE_BOX_HEIGHT)
-                );
-            }
-
             IsRunning = false;
             IsDucking = false;
 
@@ -532,6 +520,11 @@ namespace SixteenBitNuts
             HitBox = new HitBox(
                 new Vector2(Position.X, (IsDucking || IsAttacking) ? Position.Y + 8 : Position.Y),
                 new Vector2(HIT_BOX_WIDTH, (IsDucking || IsAttacking) ? HIT_BOX_HEIGHT - 8 : HIT_BOX_HEIGHT)
+            );
+
+            DistanceBox = new HitBox(
+                new Vector2(Position.X, (IsDucking || IsAttacking) ? Position.Y : Position.Y + (HIT_BOX_HEIGHT - DISTANCE_BOX_HEIGHT)),
+                new Vector2(DISTANCE_BOX_WIDTH, DISTANCE_BOX_HEIGHT)
             );
         }
 
