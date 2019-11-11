@@ -19,7 +19,7 @@ namespace SixteenBitNuts.Editor
             Buttons = new List<ToolbarButton>();
 
             int position = 256;
-            for (int i = 4; i <= 12; i++)
+            for (int i = 0; i <= 8; i++)
             {
                 Buttons.Add(new TileToolbarButton(this)
                 {

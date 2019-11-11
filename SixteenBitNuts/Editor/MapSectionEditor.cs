@@ -9,50 +9,40 @@ namespace SixteenBitNuts.Editor
 {
     public class MapSectionEditor
     {
-        #region Constants
-
-        private const int GRID_SIZE = 16;
-
-        #endregion
-
-        #region Fields
+        private const int DEFAULT_GRID_SIZE = 16;
 
         private bool hasErasedAnEntity;
 
-        #endregion
-
-        #region Properties
-
         public Map Map { get; private set; }
-
-        #endregion
-
-        #region Components
+        public int GridSize { get; protected set; }
 
         protected Toolbar toolbar;
 
         private readonly Cursor cursor;
-        private readonly Texture2D frameTexture;
         private readonly Texture2D gridTexture;
-
-        #endregion
+        private readonly Box frame;
 
         public MapSectionEditor(Map map)
         {
             Map = map;
+            if (GridSize == 0)
+            {
+                GridSize = DEFAULT_GRID_SIZE;
+            }
 
             toolbar = new Toolbar(this);
             cursor = new Cursor(map, map.Camera);
-            frameTexture = map.Game.Content.Load<Texture2D>("Engine/editor/frame");
             gridTexture = map.Game.Content.Load<Texture2D>("Engine/editor/grid");
+            frame = new Box(map.Game, new Rectangle(0, 0, map.Game.WindowSize.Width, map.Game.WindowSize.Height), (int)map.Game.ScreenScale * 2, Color.Green);
         }
 
         public void Update()
         {
             toolbar.Update();
             cursor.Update();
+            frame.Update();
 
-            #region Draw
+            #region Draw tile/entity
 
             if (Mouse.GetState().LeftButton == ButtonState.Pressed)
             {
@@ -103,7 +93,7 @@ namespace SixteenBitNuts.Editor
 
             #endregion
 
-            #region Erase a tile
+            #region Erase a tile/entity
 
             if (Mouse.GetState().RightButton == ButtonState.Pressed)
             {
@@ -165,14 +155,14 @@ namespace SixteenBitNuts.Editor
         {
             // Draw grid
             Map.Game.SpriteBatch.Begin(transformMatrix: Map.Camera.Transform);
-            for (int i = Map.CurrentMapSection.Bounds.X / GRID_SIZE; i < (Map.CurrentMapSection.Bounds.X + Map.CurrentMapSection.Bounds.Width) / GRID_SIZE + 1; i++)
+            for (int i = Map.CurrentMapSection.Bounds.X / GridSize; i < (Map.CurrentMapSection.Bounds.X + Map.CurrentMapSection.Bounds.Width) / GridSize + 1; i++)
             {
-                for (int j = Map.CurrentMapSection.Bounds.Y / GRID_SIZE; j < (Map.CurrentMapSection.Bounds.Y + Map.CurrentMapSection.Bounds.Height) / GRID_SIZE + 1; j++)
+                for (int j = Map.CurrentMapSection.Bounds.Y / GridSize; j < (Map.CurrentMapSection.Bounds.Y + Map.CurrentMapSection.Bounds.Height) / GridSize + 1; j++)
                 {
                     Map.Game.SpriteBatch.Draw(
                         gridTexture,
-                        new Vector2(i * GRID_SIZE, j * GRID_SIZE),
-                        new Rectangle(0, 0, GRID_SIZE, GRID_SIZE),
+                        new Vector2(i * GridSize, j * GridSize),
+                        new Rectangle(0, 0, GridSize, GridSize),
                         Color.FromNonPremultiplied(50, 50, 50, 100),
                         0,
                         new Vector2(0, 0),
@@ -193,17 +183,7 @@ namespace SixteenBitNuts.Editor
             cursor.Draw();
 
             // Draw frame
-            Map.Game.SpriteBatch.Draw(
-                frameTexture,
-                new Vector2(0, 0),
-                new Rectangle(0, 0, Map.Game.InternalSize.Width, Map.Game.InternalSize.Height),
-                Color.LimeGreen,
-                0,
-                new Vector2(0, 0),
-                Map.Game.ScreenScale,
-                SpriteEffects.None,
-                0
-            );
+            frame.Draw();
 
             Map.Game.SpriteBatch.End();
         }
@@ -233,8 +213,8 @@ namespace SixteenBitNuts.Editor
         private Vector2 GetGridSnapedPosition()
         {
             var position = cursor.InGamePosition;
-            position.X = ((int)Math.Ceiling(position.X) / GRID_SIZE) * GRID_SIZE;
-            position.Y = ((int)Math.Ceiling(position.Y) / GRID_SIZE) * GRID_SIZE;
+            position.X = ((int)Math.Ceiling(position.X) / GridSize) * GridSize;
+            position.Y = ((int)Math.Ceiling(position.Y) / GridSize) * GridSize;
 
             return position;
         }

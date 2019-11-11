@@ -12,7 +12,7 @@ namespace SixteenBitNuts.Editor
 
         private readonly Camera camera;
         private readonly Dictionary<int, MapSection> sections;
-        private readonly Image frame;
+        private readonly Box frame;
         private readonly Texture2D gridTexture;
         private readonly Label cursorPosition;
 
@@ -40,10 +40,7 @@ namespace SixteenBitNuts.Editor
                 Color = Color.White,
                 Text = "0;0"
             };
-            frame = new Image(map, new Vector2(0, 0), "Engine/editor/level_frame")
-            {
-                Color = Color.BlueViolet
-            };
+            frame = new Box(map.Game, new Rectangle(0, 0, map.Game.InternalSize.Width, map.Game.InternalSize.Height), 2, Color.BlueViolet);
             gridTexture = map.Game.Content.Load<Texture2D>("Engine/editor/grid");
 
             foreach (var section in map.Sections)
@@ -120,6 +117,7 @@ namespace SixteenBitNuts.Editor
             cursorPosition.Update();
 
             camera.Update(gameTime);
+            frame.Update();
             Cursor.Update();
         }
 

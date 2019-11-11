@@ -683,8 +683,8 @@ namespace SixteenBitNuts
                     case "se":
                         // Begin section
                         sectionIndex++;
-                        //try
-                        //{
+                        try
+                        {
                             sections[sectionIndex] = new MapSection(
                                 this,
                                 new Rectangle(
@@ -696,11 +696,11 @@ namespace SixteenBitNuts
                                 new Tileset(Game, components[5]),
                                 components[6]
                             );
-                        //}
-                        //catch (System.Exception)
-                        //{
-                        //    throw new GameException("Section deleclaration doest not conform to correct syntax: se x y width height tileset_name default_spawn");
-                        //}
+                        }
+                        catch (System.Exception)
+                        {
+                            throw new GameException("Section deleclaration doest not conform to correct syntax: se x y width height tileset_name default_spawn");
+                        }
                         break;
                     case "en":
                         // Entities
