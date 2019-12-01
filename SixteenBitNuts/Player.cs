@@ -27,9 +27,7 @@ namespace SixteenBitNuts
         private const float ATTACK_BOX_DISTANCE = 20f;
         private const float ATTACK_START_DELAY = 4f;
 
-        private const float DASH_SPEED = 6f;
-        private const float DASH_DELAY = 0.1f;
-        private const float DASH_BOUNCE_VELOCITY = 4f;
+        private const float PUNCH_BOUNCE_VELOCITY = 7f;
 
         #endregion
 
@@ -44,18 +42,12 @@ namespace SixteenBitNuts
         private bool attackButtonPressed;
         private bool attackKeyPressed;
 
-        private bool dashButtonPressed;
-        private bool dashKeyPressed;
-
         private Vector2 position;
 
         // Attack
         private float attackDelay;
         private float attackPositionDelta;
         private Direction attackDirection;
-
-        // Dash
-        private readonly Timer dashDelayTimer;
 
         #endregion
 
@@ -194,10 +186,6 @@ namespace SixteenBitNuts
             // Sprites
             InitSprites(map);
 
-            // Dashing
-            dashDelayTimer = new Timer { Duration = DASH_DELAY };
-            dashDelayTimer.OnTimerFinished += DashDelayTimer_OnTimerFinished;
-
             // Debug
             InitDebugBoxes(map);
         }
@@ -219,7 +207,7 @@ namespace SixteenBitNuts
         /// <summary>
         /// Performs player calculations
         /// </summary>
-        public void Update(GameTime gameTime)
+        public void Update(GameTime _)
         {
             PreviousFrameHitBox = HitBox;
 
@@ -429,43 +417,21 @@ namespace SixteenBitNuts
 
             #endregion
 
-            #region Down punch (dashing)
+            #region Punching
 
             if (IsControllable)
             {
-                if (!IsDashing && !IsDashFalling && (IsJumping || IsFalling))
+                if (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.LeftThumbstickDown) ||
+                    GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.DPadDown))
                 {
-                    if (!dashKeyPressed && !dashButtonPressed)
-                    {
-                        if (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.LeftThumbstickDown) ||
-                            GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.DPadDown) ||
-                            Keyboard.GetState().IsKeyDown(Keys.Down))
-                        {
-                            IsDashing = true;
-                            IsJumping = false;
-                            IsFalling = false;
-                            IsControllable = false;
-                            Direction = Direction.Bottom;
-
-                            dashButtonPressed = true;
-                            dashKeyPressed = true;
-                            dashDelayTimer.Active = true;
-                        }
-                    }
-                    if (GamePad.GetState(PlayerIndex.One).IsButtonUp(Buttons.LeftThumbstickDown) &&
-                        GamePad.GetState(PlayerIndex.One).IsButtonUp(Buttons.DPadDown))
-                    {
-                        dashButtonPressed = false;
-                    }
-                    if (Keyboard.GetState().IsKeyUp(Keys.Down))
-                    {
-                        dashKeyPressed = false;
-                    }
+                    IsPunching = true;
                 }
-            }
-            if (IsDashFalling)
-            {
-                position.Y += DASH_SPEED;
+
+                // Keyboard
+                if (Keyboard.GetState().IsKeyDown(Keys.Down))
+                {
+                    IsPunching = true;
+                }
             }
 
             #endregion
@@ -473,39 +439,23 @@ namespace SixteenBitNuts
             #region Animations
 
             if (IsRunning)
-            {
                 sprite.AnimationName = "run";
-            }
+            if (IsPunching)
+                sprite.AnimationName = "dash";
 
             if (IsJumping)
-            {
                 sprite.AnimationName = "jump";
-            }
             else if (IsFalling)
-            {
                 sprite.AnimationName = "fall";
-            }
             else if (IsAttacking)
-            {
                 sprite.AnimationName = "tail";
-            }
-            else if (IsDashing)
-            {
-                sprite.AnimationName = "dash";
-            }
             else if (IsDucking)
-            {
                 sprite.AnimationName = "duck";
-            }
 
-            if (!IsRunning && !IsJumping && !IsFalling && !IsDucking && !IsAttacking && !IsDashing)
-            {
+            if (!IsRunning && !IsJumping && !IsFalling && !IsDucking && !IsAttacking && !IsPunching)
                 sprite.AnimationName = "idle";
-            }
 
             #endregion
-
-            dashDelayTimer.Update(gameTime);
 
             UpdateHitBoxes();
         }
@@ -519,7 +469,6 @@ namespace SixteenBitNuts
                 new Vector2(Position.X, (IsDucking || IsAttacking) ? Position.Y + 8 : Position.Y),
                 new Vector2(HIT_BOX_WIDTH, (IsDucking || IsAttacking) ? HIT_BOX_HEIGHT - 8 : HIT_BOX_HEIGHT)
             );
-
             DistanceBox = new HitBox(
                 new Vector2(Position.X, (IsDucking || IsAttacking) ? Position.Y : Position.Y + (HIT_BOX_HEIGHT - DISTANCE_BOX_HEIGHT)),
                 new Vector2(DISTANCE_BOX_WIDTH, DISTANCE_BOX_HEIGHT)
@@ -573,9 +522,9 @@ namespace SixteenBitNuts
             position.Y += value;
         }
 
-        public void DashBounce()
+        public void PunchBounce()
         {
-            jumpCurrentVelocity = DASH_BOUNCE_VELOCITY;
+            jumpCurrentVelocity = PUNCH_BOUNCE_VELOCITY;
             IsJumping = true;
         }
 
@@ -587,11 +536,6 @@ namespace SixteenBitNuts
                 IsAttacking = false;
                 attackKeyPressed = false;
             }
-        }
-
-        private void DashDelayTimer_OnTimerFinished()
-        {
-            IsDashFalling = true;
         }
     }
 }

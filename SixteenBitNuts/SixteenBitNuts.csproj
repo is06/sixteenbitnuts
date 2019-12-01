@@ -18,7 +18,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;LINUX</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;WINDOWS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -46,6 +46,7 @@
     <Compile Include="CollisionManager.cs" />
     <Compile Include="Console.cs" />
     <Compile Include="DebugHitBox.cs" />
+    <Compile Include="DebugLabel.cs" />
     <Compile Include="Direction.cs" />
     <Compile Include="Editor\Cursor.cs" />
     <Compile Include="Editor\EntityToolbarButton.cs" />
@@ -67,6 +68,7 @@
     <Compile Include="Interfaces\ISpawnPoint.cs" />
     <Compile Include="Interfaces\ITile.cs" />
     <Compile Include="KeyboardDispatcher.cs" />
+    <Compile Include="EditorLabel.cs" />
     <Compile Include="Label.cs" />
     <Compile Include="Landscape.cs" />
     <Compile Include="Line.cs" />

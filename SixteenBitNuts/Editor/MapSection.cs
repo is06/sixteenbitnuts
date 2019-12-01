@@ -37,8 +37,8 @@ namespace SixteenBitNuts.Editor
         private Rectangle bounds;
         private readonly Box box;
         private readonly MapSectionPreview preview;
-        private readonly Label sizeLabel;
-        private readonly Label positionLabel;
+        private readonly EditorLabel sizeLabel;
+        private readonly EditorLabel positionLabel;
 
         public Rectangle ScreenBounds
         {
@@ -63,13 +63,13 @@ namespace SixteenBitNuts.Editor
 
             box = new Box(map.Game, bounds, 1, Color.Ivory);
             preview = new MapSectionPreview(this);
-            sizeLabel = new Label(map)
+            sizeLabel = new EditorLabel(map)
             {
                 Text = "64x128",
                 Color = Color.White,
                 Position = box.Bounds.Location.ToVector2()
             };
-            positionLabel = new Label(map)
+            positionLabel = new EditorLabel(map)
             {
                 Text = "64x128",
                 Color = Color.White,
@@ -324,9 +324,6 @@ namespace SixteenBitNuts.Editor
 
             sizeLabel.Position = box.Bounds.Location.ToVector2() - new Vector2(0, 8);
             sizeLabel.Text = bounds.Size.X + "x" + bounds.Size.Y;
-
-            sizeLabel.Update();
-            positionLabel.Update();
 
             #endregion
 

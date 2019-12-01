@@ -14,7 +14,7 @@ namespace SixteenBitNuts.Editor
         private readonly Dictionary<int, MapSection> sections;
         private readonly Box frame;
         private readonly Texture2D gridTexture;
-        private readonly Label cursorPosition;
+        private readonly EditorLabel cursorPosition;
 
         private readonly int gridZoom = 4;
         private bool isKeyAddPressed = false;
@@ -33,7 +33,7 @@ namespace SixteenBitNuts.Editor
                 CanOverrideLimits = true
             };
             sections = new Dictionary<int, MapSection>();
-            cursorPosition = new Label(map)
+            cursorPosition = new EditorLabel(map)
             {
                 IsVisible = true,
                 Position = new Vector2(8, 256),
@@ -114,7 +114,6 @@ namespace SixteenBitNuts.Editor
             }
 
             cursorPosition.Text = (int)Cursor.InGamePosition.X * SCALE + ";" + (int)Cursor.InGamePosition.Y * SCALE;
-            cursorPosition.Update();
 
             camera.Update(gameTime);
             frame.Update();

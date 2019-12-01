@@ -8,7 +8,7 @@ namespace SixteenBitNutsTests.Mocks
     {
         public int Id { get; private set; }
 
-        public MockedTile(Map map, Tileset tileset, int id, Vector2 position, Vector2 size, TileType type) : base(map)
+        public MockedTile(Map map, Tileset _, int id, Vector2 position, Vector2 size, TileType type) : base(map)
         {
             Id = id;
             Position = position;

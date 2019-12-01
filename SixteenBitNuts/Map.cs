@@ -82,11 +82,16 @@ namespace SixteenBitNuts
 
         protected readonly Dictionary<int, MapSection> sections;
         protected MapSectionEditor sectionEditor;
+
         private MapEditor mapEditor;
         private readonly TransitionGuide transitionGuide;
         private readonly Vector2[] layerOffsetFactors;
         private Landscape landscape;
-        private Label debugPlayerPosition;
+
+        private readonly DebugLabel debugPlayerHitBoxInfo;
+        private readonly DebugLabel debugPlayerDistanceBoxInfo;
+        private readonly DebugLabel debugPlayerPreviousFrameHitBoxInfo;
+        private readonly DebugLabel debugPlayerAttackBoxInfo;
 
         #endregion
 
@@ -139,10 +144,28 @@ namespace SixteenBitNuts
             layerOffsetFactors[(int)LayerIndex.Foreground1] = new Vector2(1.4f, 1.4f);
             layerOffsetFactors[(int)LayerIndex.Foreground2] = new Vector2(1.7f, 1.7f);
 
-            debugPlayerPosition = new Label(this)
+            debugPlayerHitBoxInfo = new DebugLabel(this)
             {
                 Position = new Vector2(4, 4),
-                Color = Color.White,
+                Color = Color.Cyan,
+                IsVisible = true,
+            };
+            debugPlayerDistanceBoxInfo = new DebugLabel(this)
+            {
+                Position = new Vector2(4, 24),
+                Color = Color.DodgerBlue,
+                IsVisible = true,
+            };
+            debugPlayerPreviousFrameHitBoxInfo = new DebugLabel(this)
+            {
+                Position = new Vector2(4, 44),
+                Color = Color.DarkOliveGreen,
+                IsVisible = true,
+            };
+            debugPlayerAttackBoxInfo = new DebugLabel(this)
+            {
+                Position = new Vector2(4, 64),
+                Color = Color.Red,
                 IsVisible = true,
             };
         }
@@ -193,13 +216,9 @@ namespace SixteenBitNuts
                 // Player
                 Player.Update(gameTime);
 
-                // Camera
-                Camera.Position = Player.Position - new Vector2(-8, -12);
-                Camera.Update(gameTime);
-                if (!Camera.IsMovingToNextSection)
-                {
-                    transitionGuide.Position = Camera.Position;
-                }
+                debugPlayerDistanceBoxInfo.Text = "DistanceBox: " + Player.DistanceBox.Position.ToString();
+                debugPlayerPreviousFrameHitBoxInfo.Text = "PreviousBox: " + Player.PreviousFrameHitBox.Position.ToString();
+                debugPlayerAttackBoxInfo.Text = "AttackBox: " + Player.AttackBox.Position.ToString();
 
                 #endregion
 
@@ -466,14 +485,23 @@ namespace SixteenBitNuts
                 }
 
                 #endregion
+
+                #region Camera
+
+                Camera.Position = Player.Position - new Vector2(-8, -12);
+                Camera.Update(gameTime);
+                if (!Camera.IsMovingToNextSection)
+                {
+                    transitionGuide.Position = Camera.Position;
+                }
+
+                #endregion
             }
 
             if (isInDebugViewMode)
             {
                 Player.UpdateDebugHitBoxes();
-
-                debugPlayerPosition.Text = Player.Position.ToString();
-                debugPlayerPosition.Update();
+                debugPlayerHitBoxInfo.Text = "HitBox: " + Player.HitBox.Position.ToString();
             }
 
             #region Map Editor
@@ -519,14 +547,14 @@ namespace SixteenBitNuts
                         landscape.Draw(layer);
                     }
 
-                    foreach (KeyValuePair<int, MapSection> section in sections)
-                    {
-                        section.Value.Draw(layer);
-                    }
-
                     if (layer == (int)LayerIndex.Main)
                     {
                         Player.Draw();
+                    }
+
+                    foreach (KeyValuePair<int, MapSection> section in sections)
+                    {
+                        section.Value.Draw(layer);
                     }
 
                     Game.SpriteBatch.End();
@@ -563,15 +591,7 @@ namespace SixteenBitNuts
 
                     Game.SpriteBatch.End();
                 }
-
-                Game.SpriteBatch.Begin();
-
-                debugPlayerPosition.Draw();
-
-                Game.SpriteBatch.End();
             }
-
-            
 
             base.DebugDraw();
         }
@@ -588,6 +608,15 @@ namespace SixteenBitNuts
             if (isInMapEditMode)
             {
                 mapEditor.UIDraw();
+            }
+            if (isInDebugViewMode)
+            {
+                Game.SpriteBatch.Begin();
+                debugPlayerHitBoxInfo.Draw();
+                debugPlayerDistanceBoxInfo.Draw();
+                debugPlayerPreviousFrameHitBoxInfo.Draw();
+                debugPlayerAttackBoxInfo.Draw();
+                Game.SpriteBatch.End();
             }
         }
 

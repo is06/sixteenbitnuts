@@ -10,26 +10,21 @@ namespace SixteenBitNuts
         public Color Color { get; set; }
         public bool IsVisible { get; set; }
 
-        private SpriteFont font;
-        private readonly Scene scene;
+        protected SpriteFont font;
+        protected readonly Scene scene;
 
         public Label(Scene scene)
         {
             this.scene = scene;
-            InitSpriteFont();
+            InitFont();
         }
 
-        protected virtual void InitSpriteFont()
+        protected virtual void InitFont()
         {
-            font = scene.Game.Content.Load<SpriteFont>("Engine/fonts/numbers");
+            
         }
 
-        public void Update()
-        {
-
-        }
-
-        public void Draw()
+        public virtual void Draw()
         {
             if (IsVisible)
             {
