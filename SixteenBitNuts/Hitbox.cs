@@ -72,7 +72,7 @@ namespace SixteenBitNuts
 
         public bool Intersects(HitBox other)
         {
-            if (Left <= other.Right && Right >= other.Left && Top <= other.Bottom && Bottom >= other.Top)
+            if (Left < other.Right && Right > other.Left && Top <= other.Bottom && Bottom >= other.Top)
             {
                 return true;
             }

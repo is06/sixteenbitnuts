@@ -268,23 +268,7 @@ namespace SixteenBitNuts
 
                 if (!isInSectionEditMode)
                 {
-                    // Get the nearest obstacles to test intersection
-                    int nearestElementLimit = nearElements.Aggregate(0, (limit, element) =>
-                    {
-                        if (Player.NextFrameHitBox.Intersects(element.HitBox))
-                        {
-                            limit++;
-                        }
-
-                        return limit;
-                    });
-                    if (nearestElementLimit >= 2)
-                    {
-                        nearestElementLimit -= 1;
-                    }
-                    var nearestElements = GetNearestElementsFromHitBox(Player.DistanceBox, nearElements, nearestElementLimit);
-
-                    foreach (var element in nearestElements)
+                    foreach (var element in GetResolutionElementsFromHitBox(Player.HitBox, Player.DistanceBox, nearElements))
                     {
                         element.DebugColor = Color.Red;
 
@@ -628,36 +612,84 @@ namespace SixteenBitNuts
             isInMapEditMode = false;
         }
 
-        /// <summary>
-        /// Get the list of the nearest elements (1 or 2 at equal distance) from the specified hit box
-        /// </summary>
-        /// <param name="hitBox">The hitbox of the moving object</param>
-        /// <param name="elements">List of elements</param>
-        /// <param name="limit">Limit count of nearest elements</param>
-        /// <returns>The list of the nearest elements from the specified hit box</returns>
-        private List<IMapElement> GetNearestElementsFromHitBox(HitBox hitBox, IEnumerable<IMapElement> elements, int limit)
+        private List<IMapElement> GetResolutionElementsFromHitBox(HitBox nextFrameHitBox, HitBox currentHitBox, List<IMapElement> elements)
         {
-            var nearestElements = new List<IMapElement>();
-            var distances = new List<float>();
+            var result = new List<IMapElement>();
 
+            // On ne prend que les éléments qui se superposent à AABB
+            var intersectingElements = new List<IMapElement>();
             foreach (var element in elements)
             {
-                distances.Add(CollisionManager.GetDistance(hitBox, element.HitBox));
-            }
-            distances.Sort();
-
-            foreach (float distance in distances.GetRange(0, limit))
-            {
-                foreach (var element in elements)
+                if (element.HitBox.Intersects(nextFrameHitBox))
                 {
-                    if (distance == CollisionManager.GetDistance(hitBox, element.HitBox))
-                    {
-                        nearestElements.Add(element);
-                    }
+                    intersectingElements.Add(element);
                 }
             }
 
-            return nearestElements;
+            var leftElements = new List<IMapElement>();
+            var rightElements = new List<IMapElement>();
+            var topElements = new List<IMapElement>();
+            var bottomElements = new List<IMapElement>();
+
+            foreach (var element in intersectingElements)
+            {
+                if (currentHitBox.Bottom <= element.HitBox.Top)
+                {
+                    bottomElements.Add(element);
+                }
+                else
+                {
+                    if (currentHitBox.Left >= element.HitBox.Right)
+                    {
+                        leftElements.Add(element);
+                    }
+                    else if (currentHitBox.Right <= element.HitBox.Left)
+                    {
+                        rightElements.Add(element);
+                    }
+                    else if (currentHitBox.Top >= element.HitBox.Bottom)
+                    {
+                        topElements.Add(element);
+                    }
+                }                
+            }
+
+            var nearestLeft = GetNearestElementFromHitBox(currentHitBox, leftElements);
+            if (nearestLeft != null) result.Add(nearestLeft);
+            var nearestRight = GetNearestElementFromHitBox(currentHitBox, rightElements);
+            if (nearestRight != null) result.Add(nearestRight);
+            var nearestTop = GetNearestElementFromHitBox(currentHitBox, topElements);
+            if (nearestTop != null) result.Add(nearestTop);
+            var nearestBottom = GetNearestElementFromHitBox(currentHitBox, bottomElements);
+            if (nearestBottom != null) result.Add(nearestBottom);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Retrieve the nearest element in a list from a hitbox
+        /// </summary>
+        /// <param name="hitBox">The origin hitbox, usually the player hitbox</param>
+        /// <param name="elements">List of element to look into</param>
+        /// <returns>The nearest element</returns>
+        private IMapElement GetNearestElementFromHitBox(HitBox hitBox, List<IMapElement> elements)
+        {
+            if (elements.Count == 0) return null;
+
+            IMapElement nearest = elements.First();
+            float minDistance = CollisionManager.GetDistance(hitBox, nearest.HitBox);
+
+            foreach (var element in elements)
+            {
+                var distance = CollisionManager.GetDistance(hitBox, element.HitBox);
+                if (distance < minDistance)
+                {
+                    minDistance = distance;
+                    nearest = element;
+                }
+            }
+
+            return nearest;
         }
 
         /// <summary>
