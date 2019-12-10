@@ -11,43 +11,38 @@ namespace SixteenBitNuts
     {
         #region Constants
 
+        private static Vector2 GRAVITY = new Vector2(0, 0.4f);
+
         private const float RUN_SPEED = 1.75f;
-        private const float JUMP_VELOCITY = 7f;
-        private const float JUMP_VELOCITY_DECELERATION = 0.35f;
-        private const float FALL_MAX_VELOCITY = 9f;
-        private const float FALL_VELOCITY_DECELERATION = 0.35f;
 
         private const float HIT_BOX_WIDTH = 16f;
         private const float HIT_BOX_HEIGHT = 24f;
-        private const float DISTANCE_BOX_WIDTH = 16f;
-        private const float DISTANCE_BOX_HEIGHT = 16f;
 
-        private const float ATTACK_BOX_HEIGHT = 12f;
-        private const float ATTACK_BOX_OFFSET = 2f;
-        private const float ATTACK_BOX_DISTANCE = 20f;
-        private const float ATTACK_START_DELAY = 4f;
+        private const float JUMP_FORCE = -8f;
 
-        private const float PUNCH_BOUNCE_VELOCITY = 7f;
+        //private const float ATTACK_BOX_HEIGHT = 12f;
+        //private const float ATTACK_BOX_OFFSET = 2f;
+        //private const float ATTACK_BOX_DISTANCE = 20f;
+        //private const float ATTACK_START_DELAY = 4f;
+
+        //private const float PUNCH_BOUNCE_VELOCITY = 7f;
 
         #endregion
 
         #region Fields
 
-        private float jumpCurrentVelocity;
-        private float fallCurrentVelocity;
-        private bool isFalling;
         private bool jumpButtonPressed;
-        private bool jumpKeyPressed;
 
-        private bool attackButtonPressed;
-        private bool attackKeyPressed;
+        //private bool attackButtonPressed;
+        //private bool attackKeyPressed;
 
         private Vector2 position;
+        private Vector2 velocity;
 
         // Attack
-        private float attackDelay;
-        private float attackPositionDelta;
-        private Direction attackDirection;
+        //private float attackDelay;
+        //private float attackPositionDelta;
+        //private Direction attackDirection;
 
         #endregion
 
@@ -61,34 +56,13 @@ namespace SixteenBitNuts
         public bool IsPunching { get; set; }
         public bool IsDashing { get; set; }
         public bool IsDashFalling { get; set; }
-        public bool IsFalling
-        {
-            get
-            {
-                return isFalling;
-            }
-            set
-            {
-                fallCurrentVelocity = 0f;
-                isFalling = value;
-            }
-        }
+        public bool IsFalling { get; set; }
+        public bool IsGrounded { get; set; }
         public bool WasOnPlatform { get; set; }
         public Direction Direction { get; set; }
         public HitBox HitBox { get; set; }
         public HitBox PreviousFrameHitBox { get; set; }
-        public HitBox DistanceBox { get; set; }
         public HitBox AttackBox { get; set; }
-        public HitBox NextFrameHitBox
-        {
-            get
-            {
-                return new HitBox(
-                    HitBox.Position + Velocity,
-                    HitBox.Size
-                );
-            }
-        }
         public Vector2 Position
         {
             get
@@ -112,39 +86,11 @@ namespace SixteenBitNuts
                 return new Vector2((float)Math.Round(position.X), (float)Math.Round(position.Y));
             }
         }
-        public float Left
-        {
-            get
-            {
-                return HitBox.Left;
-            }
-        }
-        public float Right
-        {
-            get
-            {
-                return HitBox.Right;
-            }
-        }
-        public float Top
-        {
-            get
-            {
-                return HitBox.Top;
-            }
-        }
-        public float Bottom
-        {
-            get
-            {
-                return HitBox.Bottom;
-            }
-        }
         public Vector2 Velocity
         {
             get
             {
-                return HitBox.Position - PreviousFrameHitBox.Position;
+                return velocity;
             }
         }
 
@@ -168,16 +114,11 @@ namespace SixteenBitNuts
         public Player(Map map, Vector2 position)
         {
             // Fields
-            jumpCurrentVelocity = JUMP_VELOCITY;
             Direction = Direction.Right;
             this.position = position;
 
             // Hitboxes
             HitBox = PreviousFrameHitBox = new HitBox(position, new Vector2(HIT_BOX_WIDTH, HIT_BOX_HEIGHT));
-            DistanceBox = new HitBox(
-                new Vector2(position.X, position.Y + (HIT_BOX_HEIGHT - DISTANCE_BOX_HEIGHT)),
-                new Vector2(DISTANCE_BOX_WIDTH, DISTANCE_BOX_HEIGHT)
-            );
 
             // Properties
             IsFalling = true;
@@ -209,21 +150,15 @@ namespace SixteenBitNuts
         /// </summary>
         public void Update(GameTime _)
         {
+            // Memorize the previous frame hit box
             PreviousFrameHitBox = HitBox;
-
-            DistanceBox = new HitBox(
-                new Vector2(Position.X, (IsDucking || IsAttacking) ? Position.Y : Position.Y + (HIT_BOX_HEIGHT - DISTANCE_BOX_HEIGHT)),
-                new Vector2(DISTANCE_BOX_WIDTH, DISTANCE_BOX_HEIGHT)
-            );
-
-            IsRunning = false;
-            IsDucking = false;
-            IsPunching = false;
 
             #region Ducking
 
             if (IsControllable)
             {
+                IsDucking = false;
+
                 if (!IsAttacking && !IsJumping && !IsFalling)
                 {
                     // Gamepad
@@ -247,13 +182,16 @@ namespace SixteenBitNuts
 
             if (IsControllable)
             {
+                IsRunning = false;
+                velocity.X = 0;
+
                 if (!IsDucking && !IsAttacking)
                 {
                     // Gamepad
                     if (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.LeftThumbstickLeft) ||
                         GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.DPadLeft))
                     {
-                        position.X -= RUN_SPEED;
+                        velocity.X = -RUN_SPEED;
                         IsRunning = true;
                         Direction = sprite.Direction = Direction.Left;
                     }
@@ -261,7 +199,7 @@ namespace SixteenBitNuts
                     if (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.LeftThumbstickRight) ||
                         GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.DPadRight))
                     {
-                        position.X += RUN_SPEED;
+                        velocity.X = RUN_SPEED;
                         IsRunning = true;
                         Direction = sprite.Direction = Direction.Right;
                     }
@@ -269,14 +207,14 @@ namespace SixteenBitNuts
                     // Keyboard
                     if (Keyboard.GetState().IsKeyDown(Keys.Left))
                     {
-                        position.X -= RUN_SPEED;
+                        velocity.X = -RUN_SPEED;
                         IsRunning = true;
                         Direction = sprite.Direction = Direction.Left;
                     }
 
                     if (Keyboard.GetState().IsKeyDown(Keys.Right))
                     {
-                        position.X += RUN_SPEED;
+                        velocity.X = RUN_SPEED;
                         IsRunning = true;
                         Direction = sprite.Direction = Direction.Right;
                     }
@@ -289,47 +227,31 @@ namespace SixteenBitNuts
 
             if (IsControllable)
             {
-                if (!IsJumping && !IsFalling && !IsDucking && !IsAttacking && !IsDashing)
+                if (!IsDucking && IsGrounded && !jumpButtonPressed && Keyboard.GetState().IsKeyDown(Keys.C))
                 {
-                    if (!jumpButtonPressed && !jumpKeyPressed)
-                    {
-                        if (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.A) ||
-                            Keyboard.GetState().IsKeyDown(Keys.C))
-                        {
-                            jumpCurrentVelocity = JUMP_VELOCITY;
-                            jumpButtonPressed = true;
-                            jumpKeyPressed = true;
-                            IsJumping = true;
-                        }
-                    }
-                    if (GamePad.GetState(PlayerIndex.One).IsButtonUp(Buttons.A))
-                    {
-                        jumpButtonPressed = false;
-                    }
-                    if (Keyboard.GetState().IsKeyUp(Keys.C))
-                    {
-                        jumpKeyPressed = false;
-                    }
+                    velocity.Y = JUMP_FORCE;
+                    IsGrounded = false;
+                    jumpButtonPressed = true;
                 }
-                if (IsJumping)
+                if (Keyboard.GetState().IsKeyUp(Keys.C))
                 {
-                    position.Y -= jumpCurrentVelocity;
-                    jumpCurrentVelocity -= JUMP_VELOCITY_DECELERATION;
+                    // If the player is moving up
+                    if (velocity.Y < 0)
+                    {
+                        velocity.Y *= 0.5f;
+                    }
+                    jumpButtonPressed = false;
+                }
 
-                    if (jumpCurrentVelocity <= 0)
-                    {
-                        IsJumping = false;
-                        IsFalling = true;
-                        fallCurrentVelocity = 0f;
-                    }
-                }
-                if (IsFalling)
+                if (velocity.Y > 0)
                 {
-                    position.Y += fallCurrentVelocity;
-                    if (fallCurrentVelocity <= FALL_MAX_VELOCITY)
-                    {
-                        fallCurrentVelocity += FALL_VELOCITY_DECELERATION;
-                    }
+                    IsJumping = false;
+                    IsFalling = true;
+                }
+                else if(velocity.Y < 0)
+                {
+                    IsJumping = true;
+                    IsFalling = false;
                 }
             }
 
@@ -337,6 +259,7 @@ namespace SixteenBitNuts
 
             #region Tail attack
 
+            /*
             if (IsControllable)
             {
                 if (!IsJumping && !IsFalling && IsDucking)
@@ -419,11 +342,13 @@ namespace SixteenBitNuts
                     attackDelay++;
                 }
             }
+            */
 
             #endregion
 
             #region Punching
 
+            /*
             if (IsControllable)
             {
                 if (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.LeftThumbstickDown) ||
@@ -438,6 +363,7 @@ namespace SixteenBitNuts
                     IsPunching = true;
                 }
             }
+            */
 
             #endregion
 
@@ -462,16 +388,15 @@ namespace SixteenBitNuts
 
             #endregion
 
-            UpdateHitBoxes();
-        }
+            velocity += GRAVITY;
 
-        /// <summary>
-        /// Update hitbox position from player position
-        /// </summary>
-        public void UpdateHitBoxes()
-        {
+            if (IsGrounded)
+                velocity.Y = 0;
+            
+            position += velocity;
+
             HitBox = new HitBox(
-                new Vector2(Position.X, (IsDucking || IsAttacking) ? Position.Y + 8 : Position.Y),
+                new Vector2(position.X, (IsDucking || IsAttacking) ? position.Y + 8 : position.Y),
                 new Vector2(HIT_BOX_WIDTH, (IsDucking || IsAttacking) ? HIT_BOX_HEIGHT - 8 : HIT_BOX_HEIGHT)
             );
         }
@@ -479,7 +404,6 @@ namespace SixteenBitNuts
         public void UpdateDebugHitBoxes()
         {
             debugAttackBox.Update(AttackBox);
-            debugDistanceBox.Update(DistanceBox);
             debugHitBox.Update(HitBox);
             debugPreviousFrameHitBox.Update(PreviousFrameHitBox);
         }
@@ -525,7 +449,7 @@ namespace SixteenBitNuts
 
         public void PunchBounce()
         {
-            jumpCurrentVelocity = PUNCH_BOUNCE_VELOCITY;
+            //jumpCurrentVelocity = PUNCH_BOUNCE_VELOCITY;
             IsJumping = true;
         }
 
@@ -535,7 +459,7 @@ namespace SixteenBitNuts
             {
                 sprite.AnimationName = "idle";
                 IsAttacking = false;
-                attackKeyPressed = false;
+                //attackKeyPressed = false;
             }
         }
     }
