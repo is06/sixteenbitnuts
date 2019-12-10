@@ -58,6 +58,7 @@ namespace SixteenBitNuts
         public bool IsDashFalling { get; set; }
         public bool IsFalling { get; set; }
         public bool IsGrounded { get; set; }
+        public bool IsTouchingTheCeiling { get; set; }
         public bool WasOnPlatform { get; set; }
         public Direction Direction { get; set; }
         public HitBox HitBox { get; set; }
@@ -388,12 +389,22 @@ namespace SixteenBitNuts
 
             #endregion
 
+            #region Physics calculations
+
             velocity += GRAVITY;
 
             if (IsGrounded)
                 velocity.Y = 0;
+
+            if (IsTouchingTheCeiling)
+            {
+                IsTouchingTheCeiling = false;
+                velocity.Y *= -0.5f;
+            }
             
             position += velocity;
+
+            #endregion
 
             HitBox = new HitBox(
                 new Vector2(position.X, (IsDucking || IsAttacking) ? position.Y + 8 : position.Y),

@@ -314,6 +314,13 @@ namespace SixteenBitNuts
                                         Player.WasOnPlatform = true;
                                     }
                                 }
+
+                                // Hit the ceiling
+                                Player.IsTouchingTheCeiling = false;
+                                if (side == CollisionSide.Bottom)
+                                {
+                                    Player.IsTouchingTheCeiling = true;
+                                }
                             }
                         }
                     }
