@@ -89,9 +89,9 @@ namespace SixteenBitNuts
         private Landscape landscape;
 
         private readonly DebugLabel debugPlayerHitBoxInfo;
-        private readonly DebugLabel debugPlayerDistanceBoxInfo;
         private readonly DebugLabel debugPlayerPreviousFrameHitBoxInfo;
         private readonly DebugLabel debugPlayerAttackBoxInfo;
+        private readonly DebugLabel debugPlayerVelocity;
 
         #endregion
 
@@ -150,22 +150,22 @@ namespace SixteenBitNuts
                 Color = Color.Cyan,
                 IsVisible = true,
             };
-            debugPlayerDistanceBoxInfo = new DebugLabel(this)
-            {
-                Position = new Vector2(4, 24),
-                Color = Color.DodgerBlue,
-                IsVisible = true,
-            };
             debugPlayerPreviousFrameHitBoxInfo = new DebugLabel(this)
             {
-                Position = new Vector2(4, 44),
+                Position = new Vector2(4, 24),
                 Color = Color.DarkOliveGreen,
                 IsVisible = true,
             };
             debugPlayerAttackBoxInfo = new DebugLabel(this)
             {
-                Position = new Vector2(4, 64),
+                Position = new Vector2(4, 44),
                 Color = Color.Red,
+                IsVisible = true,
+            };
+            debugPlayerVelocity = new DebugLabel(this)
+            {
+                Position = new Vector2(4, 64),
+                Color = Color.White,
                 IsVisible = true,
             };
         }
@@ -198,37 +198,42 @@ namespace SixteenBitNuts
         {
             base.Update(gameTime);
 
-            deathTimer.Update(gameTime);
-
             if (isInMapEditMode)
             {
                 mapEditor.Update(gameTime);
             }
             else
             {
+                #region Misc
+
+                deathTimer.Update(gameTime);
+
+                #endregion
+
                 #region Components positioning
 
-                foreach (KeyValuePair<int, MapSection> pair in sections)
+                // Map Sections
+                foreach (var section in sections)
                 {
-                    pair.Value.Update(gameTime);
+                    section.Value.Update(gameTime);
                 }
 
                 // Player
                 Player.Update(gameTime);
 
-                debugPlayerDistanceBoxInfo.Text = "DistanceBox: " + Player.DistanceBox.Position.ToString();
+                // Debug Info
                 debugPlayerPreviousFrameHitBoxInfo.Text = "PreviousBox: " + Player.PreviousFrameHitBox.Position.ToString();
                 debugPlayerAttackBoxInfo.Text = "AttackBox: " + Player.AttackBox.Position.ToString();
+                debugPlayerVelocity.Text = "Velocity: " + Player.Velocity.ToString();
 
                 #endregion
 
-                #region MapElement handle
+                #region Collision detection
 
                 var nearElements = new List<IMapElement>();
                 if (!isInSectionEditMode)
                 {
-                    // First collision detection pass:
-                    // We take only elements that are at below a certain distance from the player
+                    // First collision detection pass (all section elements)
                     foreach (var element in CurrentMapSection.Elements)
                     {
                         // If element has destroying flag: remove it from the list
@@ -238,15 +243,15 @@ namespace SixteenBitNuts
                         }
 
                         element.DebugColor = Color.LimeGreen;
-
+                        
+                        // We take only elements that are at below a certain distance from the player
                         if (Vector2.Distance(Player.Position, element.Position) <= NEAR_ELEMENT_THRESHOLD)
                         {
                             nearElements.Add(element);
                         }
                     }
 
-                    // Second collision detection pass:
-                    // We check for attacks
+                    // Second collision detection pass (near elements)
                     foreach (var element in nearElements)
                     {
                         element.DebugColor = Color.Orange;
@@ -262,13 +267,11 @@ namespace SixteenBitNuts
                     }
                 }
 
-                #endregion
-
-                #region Collision detection
-
                 if (!isInSectionEditMode)
                 {
-                    foreach (var element in GetResolutionElementsFromHitBox(Player.HitBox, Player.DistanceBox, nearElements))
+                    bool playerIsIntersectingWithObstacle = false;
+
+                    foreach (var element in GetResolutionElementsFromHitBox(Player.HitBox, Player.PreviousFrameHitBox, nearElements))
                     {
                         element.DebugColor = Color.Red;
 
@@ -285,55 +288,42 @@ namespace SixteenBitNuts
                                 OnCollisionWithEntity?.Invoke((Entity)element);
                             }
 
-                            // If player was dashing when colliding with some obstacle,
-                            // player is controllable again
-                            if (Player.IsDashFalling)
-                            {
-                                if (element.IsObstacle || element.IsPlatform)
-                                {
-                                    Player.IsDashing = false;
-                                    Player.IsDashFalling = false;
-                                    Player.IsControllable = true;
-                                }
-                            }
-
-                            // Detect the collision side of the obstacle
                             if (element.IsObstacle)
                             {
+                                playerIsIntersectingWithObstacle = true;
+
+                                // Detect the collision side of the obstacle
                                 CollisionSide side = CollisionManager.GetCollisionSide(
                                     moving: Player.PreviousFrameHitBox,
                                     stopped: element.HitBox,
                                     movingVelocity: Player.Velocity
                                 );
 
-                                // Change player fall state
-                                if (Player.IsFalling && side == CollisionSide.Top)
-                                {
-                                    Player.IsFalling = false;
-                                    Player.WasOnPlatform = true;
-                                }
-
-                                // Correct position to prevent intersection
+                                // Correct position to prevent intersection and block player
                                 Player.Position = CollisionManager.GetCorrectedPosition(Player.HitBox, element.HitBox, side);
+
+                                // Change player fall state
+                                Player.IsGrounded = false;
+                                if (side == CollisionSide.Top)
+                                {
+                                    Player.IsGrounded = true;
+
+                                    if (Player.IsFalling)
+                                    {
+                                        Player.IsFalling = false;
+                                        Player.WasOnPlatform = true;
+                                    }
+                                }
                             }
                         }
                     }
 
-                    // Check for intersection for ground existence
-                    bool playerIsNotIntersectingWithObstacle = true;
-                    foreach (var element in CurrentMapSection.Elements)
-                    {
-                        if (element.IsObstacle && Player.HitBox.Intersects(element.HitBox))
-                        {
-                            playerIsNotIntersectingWithObstacle = false;
-                            break;
-                        }
-                    }
                     // No ground under player's feet: falling
-                    if (playerIsNotIntersectingWithObstacle && Player.WasOnPlatform && !Player.IsJumping && !Player.IsDashing)
+                    if (!playerIsIntersectingWithObstacle && Player.WasOnPlatform && !Player.IsJumping)
                     {
                         Player.WasOnPlatform = false;
                         Player.IsFalling = true;
+                        Player.IsGrounded = false;
                     }
                 }
 
@@ -391,8 +381,8 @@ namespace SixteenBitNuts
 
                 if (!isInSectionEditMode && !Camera.IsMovingToNextSection)
                 {
-                    if (Player.Right > CurrentMapSection.Bounds.Right ||
-                        Player.Left < CurrentMapSection.Bounds.Left)
+                    if (Player.HitBox.Right > CurrentMapSection.Bounds.Right ||
+                        Player.HitBox.Left < CurrentMapSection.Bounds.Left)
                     {
                         transitionProgression = 0;
                         nextSectionIndex = GetTransitionNextSectionIndex();
@@ -597,9 +587,9 @@ namespace SixteenBitNuts
             {
                 Game.SpriteBatch.Begin();
                 debugPlayerHitBoxInfo.Draw();
-                debugPlayerDistanceBoxInfo.Draw();
                 debugPlayerPreviousFrameHitBoxInfo.Draw();
                 debugPlayerAttackBoxInfo.Draw();
+                debugPlayerVelocity.Draw();
                 Game.SpriteBatch.End();
             }
         }
