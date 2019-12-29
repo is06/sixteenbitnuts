@@ -25,8 +25,6 @@ namespace SixteenBitNuts
         private const float ATTACK_BOX_DISTANCE = 20f;
         private const float ATTACK_START_DELAY = 4f;
 
-        //private const float PUNCH_BOUNCE_VELOCITY = 7f;
-
         #endregion
 
         #region Fields
@@ -100,8 +98,7 @@ namespace SixteenBitNuts
         #region Components
 
         protected Sprite sprite;
-        protected DebugHitBox debugHitBox;
-        protected DebugHitBox debugDistanceBox;
+        protected DebugHitBox debugHitBox;  
         protected DebugHitBox debugPreviousFrameHitBox;
         protected DebugHitBox debugAttackBox;
 
@@ -142,7 +139,6 @@ namespace SixteenBitNuts
         {
             debugHitBox = new DebugHitBox(map.Game, 1, Color.Cyan);
             debugPreviousFrameHitBox = new DebugHitBox(map.Game, 2, Color.DarkOliveGreen);
-            debugDistanceBox = new DebugHitBox(map.Game, 3, Color.DodgerBlue);
             debugAttackBox = new DebugHitBox(map.Game, 1, Color.Red);
         }
 
@@ -430,7 +426,6 @@ namespace SixteenBitNuts
         /// </summary>
         public void DebugDraw()
         {
-            debugDistanceBox.Draw();
             debugPreviousFrameHitBox.Draw();
             debugHitBox.Draw();
             debugAttackBox.Draw();
