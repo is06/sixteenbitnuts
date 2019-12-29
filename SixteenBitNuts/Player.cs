@@ -20,10 +20,10 @@ namespace SixteenBitNuts
 
         private const float JUMP_FORCE = -8f;
 
-        //private const float ATTACK_BOX_HEIGHT = 12f;
-        //private const float ATTACK_BOX_OFFSET = 2f;
-        //private const float ATTACK_BOX_DISTANCE = 20f;
-        //private const float ATTACK_START_DELAY = 4f;
+        private const float ATTACK_BOX_HEIGHT = 12f;
+        private const float ATTACK_BOX_OFFSET = 2f;
+        private const float ATTACK_BOX_DISTANCE = 20f;
+        private const float ATTACK_START_DELAY = 4f;
 
         //private const float PUNCH_BOUNCE_VELOCITY = 7f;
 
@@ -33,16 +33,16 @@ namespace SixteenBitNuts
 
         private bool jumpButtonPressed;
 
-        //private bool attackButtonPressed;
-        //private bool attackKeyPressed;
+        private bool attackButtonPressed;
+        private bool attackKeyPressed;
 
         private Vector2 position;
         private Vector2 velocity;
 
         // Attack
-        //private float attackDelay;
-        //private float attackPositionDelta;
-        //private Direction attackDirection;
+        private float attackDelay;
+        private float attackPositionDelta;
+        private Direction attackDirection;
 
         #endregion
 
@@ -260,7 +260,6 @@ namespace SixteenBitNuts
 
             #region Tail attack
 
-            /*
             if (IsControllable)
             {
                 if (!IsJumping && !IsFalling && IsDucking)
@@ -317,33 +316,32 @@ namespace SixteenBitNuts
                     {
                         if (attackPositionDelta > 0)
                             AttackBox = new HitBox(
-                                new Vector2(Position.X, Position.Y + ATTACK_BOX_OFFSET),
-                                new Vector2(HIT_BOX_WIDTH + attackPositionDelta, ATTACK_BOX_HEIGHT)
+                                position: new Vector2(Position.X, Position.Y + ATTACK_BOX_OFFSET),
+                                size: new Vector2(HIT_BOX_WIDTH + attackPositionDelta, ATTACK_BOX_HEIGHT)
                             );
                         else
                             AttackBox = new HitBox(
-                                new Vector2(Position.X + attackPositionDelta, Position.Y + ATTACK_BOX_OFFSET),
-                                new Vector2(HIT_BOX_WIDTH + attackPositionDelta, ATTACK_BOX_HEIGHT)
+                                position: new Vector2(Position.X + attackPositionDelta, Position.Y + ATTACK_BOX_OFFSET),
+                                size: new Vector2(HIT_BOX_WIDTH - attackPositionDelta, ATTACK_BOX_HEIGHT)
                             );
                     }
                     else
                     {
                         if (attackPositionDelta < 0)
                             AttackBox = new HitBox(
-                                new Vector2(Position.X + attackPositionDelta, Position.Y + ATTACK_BOX_OFFSET),
-                                new Vector2(HIT_BOX_WIDTH + attackPositionDelta, ATTACK_BOX_HEIGHT)
+                                position: new Vector2(Position.X + attackPositionDelta, Position.Y + ATTACK_BOX_OFFSET),
+                                size: new Vector2(HIT_BOX_WIDTH - attackPositionDelta, ATTACK_BOX_HEIGHT)
                             );
                         else
                             AttackBox = new HitBox(
-                                new Vector2(Position.X, Position.Y + ATTACK_BOX_OFFSET),
-                                new Vector2(HIT_BOX_WIDTH + attackPositionDelta, ATTACK_BOX_HEIGHT)
+                                position: new Vector2(Position.X, Position.Y + ATTACK_BOX_OFFSET),
+                                size: new Vector2(HIT_BOX_WIDTH + attackPositionDelta, ATTACK_BOX_HEIGHT)
                             );
                     }
 
                     attackDelay++;
                 }
             }
-            */
 
             #endregion
 
