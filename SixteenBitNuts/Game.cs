@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Diagnostics;
 
 namespace SixteenBitNuts
 {
@@ -9,6 +10,7 @@ namespace SixteenBitNuts
     {
         #region Properties
 
+        public string WindowTitle { get; protected set; }
         public Size WindowSize { get; protected set; }
         public Size InternalSize { get; protected set; }
         public int FrameRate { get; protected set; }
@@ -28,6 +30,7 @@ namespace SixteenBitNuts
 
         private RenderTarget2D renderSurface;        
         private readonly GraphicsDeviceManager graphics;
+        private Process process;
 
         private bool isInConsoleMode;
         private bool keyConsolePressed;
@@ -41,6 +44,7 @@ namespace SixteenBitNuts
         public Game()
         {
             graphics = new GraphicsDeviceManager(this);
+            process = Process.GetCurrentProcess();
         }
 
         protected override void Initialize()
@@ -52,6 +56,7 @@ namespace SixteenBitNuts
 
             // Misc
             Window.AllowUserResizing = false;
+            Window.Title = WindowTitle;
             Content.RootDirectory = "Content";
             TargetElapsedTime = new TimeSpan((int)(1000f / FrameRate * 10000f));
             InGameViewport = new Viewport(0, 0, InternalSize.Width, InternalSize.Height);
@@ -99,6 +104,9 @@ namespace SixteenBitNuts
 
             console.Update();
 #endif
+
+            process = Process.GetCurrentProcess();
+            Window.Title = WindowTitle + " - " + (process.PrivateMemorySize64 / 1000000f) + " MB";
 
             base.Update(gameTime);
 
