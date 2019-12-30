@@ -99,7 +99,7 @@ namespace SixteenBitNuts
 
         public event CollisionHandler OnCollisionWithEntity;
         public event CollisionHandler OnAttackEntity;
-        public event CollisionHandler OnDashWithEntity;
+        public event CollisionHandler OnBounceOnEntity;
 
         #endregion
 
@@ -278,12 +278,22 @@ namespace SixteenBitNuts
                         // Player collisions
                         if (Player.HitBox.Intersects(element.HitBox))
                         {
+                            // Detect the collision side of the obstacle
+                            CollisionSide side = CollisionManager.GetCollisionSide(
+                                moving: Player.PreviousFrameHitBox,
+                                stopped: element.HitBox,
+                                movingVelocity: Player.Velocity
+                            );
+
                             // Entity collision event
                             if (element is Entity)
                             {
-                                if (Player.IsDashFalling)
+                                if (Player.IsPunching)
                                 {
-                                    OnDashWithEntity?.Invoke((Entity)element);
+                                    if (side == CollisionSide.Top)
+                                    {
+                                        OnBounceOnEntity?.Invoke((Entity)element);
+                                    }
                                 }
                                 OnCollisionWithEntity?.Invoke((Entity)element);
                             }
@@ -292,17 +302,10 @@ namespace SixteenBitNuts
                             {
                                 playerIsIntersectingWithObstacle = true;
 
-                                // Detect the collision side of the obstacle
-                                CollisionSide side = CollisionManager.GetCollisionSide(
-                                    moving: Player.PreviousFrameHitBox,
-                                    stopped: element.HitBox,
-                                    movingVelocity: Player.Velocity
-                                );
-
                                 // Correct position to prevent intersection and block player
                                 Player.Position = CollisionManager.GetCorrectedPosition(Player.HitBox, element.HitBox, side);
 
-                                // Change player fall state
+                                // Hit the ground
                                 Player.IsGrounded = false;
                                 if (side == CollisionSide.Top)
                                 {

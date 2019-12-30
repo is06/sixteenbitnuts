@@ -30,6 +30,7 @@ namespace SixteenBitNuts
         #region Fields
 
         private bool jumpButtonPressed;
+        private bool punchButtonPressed;
 
         private bool attackButtonPressed;
         private bool attackKeyPressed;
@@ -52,7 +53,7 @@ namespace SixteenBitNuts
         public bool IsDucking { get; set; }
         public bool IsAttacking { get; set; }
         public bool IsPunching { get; set; }
-        public bool IsDashing { get; set; }
+        public bool IsBouncing { get; set; }
         public bool IsDashFalling { get; set; }
         public bool IsFalling { get; set; }
         public bool IsGrounded { get; set; }
@@ -156,7 +157,7 @@ namespace SixteenBitNuts
             {
                 IsDucking = false;
 
-                if (!IsAttacking && !IsJumping && !IsFalling)
+                if (!IsBouncing && !IsAttacking && !IsJumping && !IsFalling)
                 {
                     // Gamepad
                     if (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.LeftThumbstickDown) ||
@@ -245,7 +246,7 @@ namespace SixteenBitNuts
                     IsJumping = false;
                     IsFalling = true;
                 }
-                else if(velocity.Y < 0)
+                else if (velocity.Y < 0)
                 {
                     IsJumping = true;
                     IsFalling = false;
@@ -343,22 +344,25 @@ namespace SixteenBitNuts
 
             #region Punching
 
-            /*
             if (IsControllable)
             {
-                if (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.LeftThumbstickDown) ||
-                    GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.DPadDown))
-                {
-                    IsPunching = true;
-                }
+                IsPunching = false;
 
-                // Keyboard
-                if (Keyboard.GetState().IsKeyDown(Keys.Down))
+                if (IsJumping || IsFalling)
                 {
-                    IsPunching = true;
+                    if (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.LeftThumbstickDown) ||
+                        GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.DPadDown))
+                    {
+                        IsPunching = true;
+                    }
+
+                    // Keyboard
+                    if (Keyboard.GetState().IsKeyDown(Keys.Down))
+                    {
+                        IsPunching = true;
+                    }
                 }
             }
-            */
 
             #endregion
 
@@ -366,8 +370,6 @@ namespace SixteenBitNuts
 
             if (IsRunning)
                 sprite.AnimationName = "run";
-            if (IsPunching)
-                sprite.AnimationName = "dash";
 
             if (IsJumping)
                 sprite.AnimationName = "jump";
@@ -377,6 +379,9 @@ namespace SixteenBitNuts
                 sprite.AnimationName = "tail";
             else if (IsDucking)
                 sprite.AnimationName = "duck";
+
+            if (IsPunching)
+                sprite.AnimationName = "dash";
 
             if (!IsRunning && !IsJumping && !IsFalling && !IsDucking && !IsAttacking && !IsPunching)
                 sprite.AnimationName = "idle";
@@ -451,19 +456,12 @@ namespace SixteenBitNuts
             position.Y += value;
         }
 
-        public void PunchBounce()
-        {
-            //jumpCurrentVelocity = PUNCH_BOUNCE_VELOCITY;
-            IsJumping = true;
-        }
-
         private void Sprite_OnAnimationFinished(Sprite sender)
         {
             if (sender.AnimationName == "tail")
             {
                 sprite.AnimationName = "idle";
                 IsAttacking = false;
-                //attackKeyPressed = false;
             }
         }
     }
