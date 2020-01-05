@@ -11,8 +11,6 @@ namespace SixteenBitNuts
     {
         #region Constants
 
-        private static Vector2 GRAVITY = new Vector2(0, 0.4f);
-
         private const float RUN_SPEED = 1.75f;
 
         private const float HIT_BOX_WIDTH = 16f;
@@ -30,7 +28,6 @@ namespace SixteenBitNuts
         #region Fields
 
         private bool jumpButtonPressed;
-        private bool punchButtonPressed;
 
         private bool attackButtonPressed;
         private bool attackKeyPressed;
@@ -93,11 +90,13 @@ namespace SixteenBitNuts
                 return velocity;
             }
         }
+        public float Weight { get; protected set; }
 
         #endregion
 
         #region Components
 
+        protected Map map;
         protected Sprite sprite;
         protected DebugHitBox debugHitBox;  
         protected DebugHitBox debugPreviousFrameHitBox;
@@ -110,11 +109,11 @@ namespace SixteenBitNuts
         /// </summary>
         /// <param name="map"></param>
         /// <param name="position"></param>
-        public Player(Map map, Vector2 position)
+        public Player(Map map)
         {
             // Fields
+            this.map = map;
             Direction = Direction.Right;
-            this.position = position;
 
             // Hitboxes
             HitBox = PreviousFrameHitBox = new HitBox(position, new Vector2(HIT_BOX_WIDTH, HIT_BOX_HEIGHT));
@@ -390,7 +389,7 @@ namespace SixteenBitNuts
 
             #region Physics calculations
 
-            velocity += GRAVITY;
+            velocity += map.Gravity * Weight;
 
             if (IsGrounded)
                 velocity.Y = 0;

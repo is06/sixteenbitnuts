@@ -76,6 +76,8 @@ namespace SixteenBitNuts
             }
         }
 
+        public Vector2 Gravity { get; protected set; }
+
         #endregion
 
         #region Components
@@ -129,7 +131,6 @@ namespace SixteenBitNuts
             LoadFromFile("Data/maps/" + name + ".map");
 
             // Overridable initializers
-            InitPlayer();
             InitMapSectionEditor();
             InitMapEditor();
 
@@ -168,11 +169,6 @@ namespace SixteenBitNuts
                 Color = Color.White,
                 IsVisible = true,
             };
-        }
-
-        protected virtual void InitPlayer()
-        {
-            Player = new Player(this, CurrentMapSection.DefaultSpawnPoint.Position);
         }
 
         protected virtual void InitMapEditor()

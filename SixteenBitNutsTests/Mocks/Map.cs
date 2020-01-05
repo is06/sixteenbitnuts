@@ -16,11 +16,6 @@ namespace SixteenBitNutsTests.Mocks
             
         }
 
-        protected override void InitPlayer()
-        {
-            Player = new MockedPlayer(this, new Vector2(0, 0));
-        }
-
         protected override void InitMapEditor()
         {
             
