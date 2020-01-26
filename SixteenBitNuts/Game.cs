@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using System;
 using System.Diagnostics;
 
@@ -32,11 +31,6 @@ namespace SixteenBitNuts
         private readonly GraphicsDeviceManager graphics;
         private Process process;
 
-        private bool isInConsoleMode;
-        private bool keyConsolePressed;
-
-        protected Console console;
-
         protected Scene currentScene;
 
         #endregion
@@ -65,17 +59,6 @@ namespace SixteenBitNuts
             renderSurface = new RenderTarget2D(GraphicsDevice, InternalSize.Width, InternalSize.Height);
 
             base.Initialize();
-
-#if WINDOWS
-            // Debug console
-            KeyboardDispatcher keyboardDispatcher = new KeyboardDispatcher(Window);
-            console = new Console(this, keyboardDispatcher);
-
-            console.OnLoadMap += ConsoleLoadMap;
-            console.OnExitGame += ConsoleExitGame;
-            console.OnEditSection += ConsoleEditSection;
-            console.OnEditMap += ConsoleEditMap;
-#endif
         }
 
         protected override void LoadContent()
@@ -90,21 +73,6 @@ namespace SixteenBitNuts
 
         protected override void Update(GameTime gameTime)
         {
-#if WINDOWS
-            if (!keyConsolePressed && Keyboard.GetState().IsKeyDown(Keys.F4))
-            {
-                keyConsolePressed = true;
-                isInConsoleMode = !isInConsoleMode;
-                console.Enabled = isInConsoleMode;
-            }
-            if (Keyboard.GetState().IsKeyUp(Keys.F4))
-            {
-                keyConsolePressed = false;
-            }
-
-            console.Update();
-#endif
-
             process = Process.GetCurrentProcess();
             Window.Title = WindowTitle + " - " + (process.PrivateMemorySize64 / 1000000f) + " MB";
 
@@ -149,12 +117,6 @@ namespace SixteenBitNuts
             {
                 // Render all UI elements in front of the render target texture
                 currentScene.UIDraw();
-
-#if WINDOWS
-                SpriteBatch.Begin();
-                console.Draw(gameTime);
-                SpriteBatch.End();
-#endif
             }
 
             base.Draw(gameTime);
@@ -173,30 +135,5 @@ namespace SixteenBitNuts
 
             base.Dispose(disposing);
         }
-
-        #region Console events
-
-        private void ConsoleLoadMap(Console sender, ConsoleEventArgs args)
-        {
-            string mapName = args.Parameters[0];
-            LoadMap(mapName);
-        }
-
-        private void ConsoleEditSection(Console sender, ConsoleEventArgs args)
-        {
-            currentScene.EditCurrentSection();
-        }
-
-        private void ConsoleEditMap(Console sender, ConsoleEventArgs args)
-        {
-            currentScene.EditLayout();
-        }
-
-        private void ConsoleExitGame(Console sender, ConsoleEventArgs args)
-        {
-            Exit();
-        }
-
-        #endregion
     }
 }

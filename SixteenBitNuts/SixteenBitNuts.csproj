@@ -44,7 +44,6 @@
     <Compile Include="Box.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="CollisionManager.cs" />
-    <Compile Include="Console.cs" />
     <Compile Include="DebugHitBox.cs" />
     <Compile Include="DebugLabel.cs" />
     <Compile Include="Direction.cs" />
@@ -58,7 +57,6 @@
     <Compile Include="Editor\MapSection.cs" />
     <Compile Include="Editor\MapSectionEditor.cs" />
     <Compile Include="Entity.cs" />
-    <Compile Include="EventInput.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="GameException.cs" />
     <Compile Include="HitBox.cs" />
@@ -67,7 +65,6 @@
     <Compile Include="Interfaces\IMapElement.cs" />
     <Compile Include="Interfaces\ISpawnPoint.cs" />
     <Compile Include="Interfaces\ITile.cs" />
-    <Compile Include="KeyboardDispatcher.cs" />
     <Compile Include="EditorLabel.cs" />
     <Compile Include="Label.cs" />
     <Compile Include="Landscape.cs" />
@@ -83,7 +80,6 @@
     <Compile Include="SpawnPoint.cs" />
     <Compile Include="Sprite.cs" />
     <Compile Include="SpriteAnimation.cs" />
-    <Compile Include="TextBox.cs" />
     <Compile Include="Tile.cs" />
     <Compile Include="TileElement.cs" />
     <Compile Include="TileOffsetException.cs" />
