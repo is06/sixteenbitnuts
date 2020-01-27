@@ -1,5 +1,0 @@
-﻿map 0
-
-se 0 0 480 270 test_tileset test_spawn
-ti 0 64 64 0
-en spawn test_spawn 64 40
