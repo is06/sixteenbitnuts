@@ -11,7 +11,7 @@ namespace SixteenBitNuts
 
     public struct TileElement
     {
-        public Vector2 Size;
+        public Size Size;
         public Vector2 Offset;
         public TileType Type;
     }

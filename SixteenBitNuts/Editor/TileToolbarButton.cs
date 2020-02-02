@@ -15,7 +15,7 @@ namespace SixteenBitNuts.Editor
 
             Toolbar.Editor.Map.CurrentMapSection.Tileset.Draw(
                 Position + new Vector2(6, 6),
-                Toolbar.Editor.Map.CurrentMapSection.Tileset.GetSizeFromId(Id),
+                Toolbar.Editor.Map.CurrentMapSection.Tileset.GetSizeFromId(Id).ToVector2(),
                 Toolbar.Editor.Map.CurrentMapSection.Tileset.GetOffsetFromId(Id),
                 new Vector2(3, 3)
             );

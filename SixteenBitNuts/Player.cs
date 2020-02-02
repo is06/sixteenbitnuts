@@ -26,7 +26,7 @@ namespace SixteenBitNuts
         public bool IsTouchingTheCeiling { get; set; }
         public bool WasOnPlatform { get; set; }
         public Direction Direction { get; set; }
-        public Vector2 Size { get; set; }
+        public Size Size { get; set; }
         public HitBox HitBox { get; set; }
         public HitBox PreviousFrameHitBox { get; set; }
         public HitBox AttackBox { get; set; }
@@ -86,8 +86,8 @@ namespace SixteenBitNuts
             Direction = Direction.Right;
 
             // Hitboxes
-            HitBox = new HitBox(position, new Vector2(Size.X, Size.Y));
-            PreviousFrameHitBox = new HitBox(position, new Vector2(Size.X, Size.Y));
+            HitBox = new HitBox(position, Size);
+            PreviousFrameHitBox = new HitBox(position, Size);
 
             // Properties
             IsFalling = true;
@@ -127,7 +127,7 @@ namespace SixteenBitNuts
         {
             HitBox = new HitBox(
                 new Vector2(position.X, (IsDucking || IsAttacking) ? position.Y + 8 : position.Y),
-                new Vector2(Size.X, (IsDucking || IsAttacking) ? Size.Y - 8 : Size.Y)
+                new Size(Size.Width, (IsDucking || IsAttacking) ? Size.Height - 8 : Size.Height)
             );
         }
 

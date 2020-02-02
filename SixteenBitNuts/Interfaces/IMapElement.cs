@@ -11,7 +11,7 @@ namespace SixteenBitNuts.Interfaces
         bool IsCollectable { get; set; }
         bool IsDestroying { get; set; }
         Vector2 Position { get; set; }
-        Vector2 Size { get; set; }
+        Size Size { get; set; }
         HitBox HitBox { get; }
 
         void Update(GameTime gameTime);

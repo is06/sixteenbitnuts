@@ -112,7 +112,7 @@ namespace SixteenBitNuts
             Camera = new Camera(
                 this,
                 new Vector2(Game.InternalSize.Width / 2, Game.InternalSize.Height / 2),
-                new Viewport(0, 0, Game.InternalSize.Width, Game.InternalSize.Height)
+                new Viewport(0, 0, (int)Game.InternalSize.Width, (int)Game.InternalSize.Height)
             );
 
             // Components
@@ -573,7 +573,7 @@ namespace SixteenBitNuts
                 {
                     var sectionHitBox = new HitBox(
                         section.Value.Bounds.Location.ToVector2(),
-                        section.Value.Bounds.Size.ToVector2()
+                        new Size(section.Value.Bounds.Size.X, section.Value.Bounds.Size.Y)
                     );
                     if (Player.HitBox.Intersects(sectionHitBox))
                     {

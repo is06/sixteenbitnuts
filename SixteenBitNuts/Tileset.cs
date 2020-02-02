@@ -76,7 +76,7 @@ namespace SixteenBitNuts
             }   
         }
 
-        public Vector2 GetSizeFromId(int id)
+        public Size GetSizeFromId(int id)
         {
             try
             {
@@ -113,7 +113,7 @@ namespace SixteenBitNuts
                 if (components[0] == "ti")
                 {
                     TileElement element;
-                    element.Size = new Vector2(int.Parse(components[1]), int.Parse(components[2]));
+                    element.Size = new Size(int.Parse(components[1]), int.Parse(components[2]));
                     element.Offset = new Vector2(int.Parse(components[3]), int.Parse(components[4]));
                     element.Type = (TileType)int.Parse(components[5]);
 

@@ -9,7 +9,7 @@ namespace SixteenBitNuts
 
         private readonly Tileset tileset;
 
-        public Tile(Map map, Tileset tileset, int id, Vector2 position, Vector2 size, TileType type) : base(map)
+        public Tile(Map map, Tileset tileset, int id, Vector2 position, Size size, TileType type) : base(map)
         {
             this.tileset = tileset;
 
@@ -22,7 +22,7 @@ namespace SixteenBitNuts
 
         public override void Draw()
         {
-            tileset.Draw(Position, Size, tileset.GetOffsetFromId(Id), Vector2.One);
+            tileset.Draw(Position, Size.ToVector2(), tileset.GetOffsetFromId(Id), Vector2.One);
         }
 
         public override void DebugDraw()

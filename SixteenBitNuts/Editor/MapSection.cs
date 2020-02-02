@@ -245,7 +245,7 @@ namespace SixteenBitNuts.Editor
                         }
                         if (width < editor.Map.Game.InternalSize.Width)
                         {
-                            width = editor.Map.Game.InternalSize.Width;
+                            width = (int)editor.Map.Game.InternalSize.Width;
                         }
 
                         bounds.Width = width;
@@ -254,7 +254,7 @@ namespace SixteenBitNuts.Editor
                     {
                         editor.Cursor.Type = CursorType.ResizeHorizontal;
                         int width = (((int)cursorInMapPosition.X / SCALE) * SCALE) - bounds.X;
-                        if (width < editor.Map.Game.InternalSize.Width) width = editor.Map.Game.InternalSize.Width;
+                        if (width < editor.Map.Game.InternalSize.Width) width = (int)editor.Map.Game.InternalSize.Width;
                         bounds.Width = width;
                     }
                     if (resizeSide == ResizeSide.Top)
@@ -271,7 +271,7 @@ namespace SixteenBitNuts.Editor
                         }
                         if (height < editor.Map.Game.InternalSize.Height)
                         {
-                            height = editor.Map.Game.InternalSize.Height;
+                            height = (int)editor.Map.Game.InternalSize.Height;
                         }
 
                         bounds.Height = height;
@@ -280,7 +280,7 @@ namespace SixteenBitNuts.Editor
                     {
                         editor.Cursor.Type = CursorType.ResizeVertical;
                         int height = (((int)cursorInMapPosition.Y / SCALE) * SCALE) - bounds.Y;
-                        if (height < editor.Map.Game.InternalSize.Height) height = editor.Map.Game.InternalSize.Height;
+                        if (height < editor.Map.Game.InternalSize.Height) height = (int)editor.Map.Game.InternalSize.Height;
                         bounds.Height = height;
                     }
 

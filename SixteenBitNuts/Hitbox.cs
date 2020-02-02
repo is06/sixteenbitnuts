@@ -5,7 +5,7 @@ namespace SixteenBitNuts
     public struct HitBox
     {
         public Vector2 Position { get; set; }
-        public Vector2 Size { get; set; }
+        public Size Size { get; set; }
 
         public float Left
         {
@@ -18,7 +18,7 @@ namespace SixteenBitNuts
         {
             get
             {
-                return Position.X + Size.X;
+                return Position.X + Size.Width;
             }
         }
         public float Top
@@ -32,7 +32,7 @@ namespace SixteenBitNuts
         {
             get
             {
-                return Position.Y + Size.Y;
+                return Position.Y + Size.Height;
             }
         }
         public float X
@@ -53,18 +53,18 @@ namespace SixteenBitNuts
         {
             get
             {
-                return Size.X;
+                return Size.Width;
             }
         }
         public float Height
         {
             get
             {
-                return Size.Y;
+                return Size.Height;
             }
         }
 
-        public HitBox(Vector2 position, Vector2 size)
+        public HitBox(Vector2 position, Size size)
         {
             Position = position;
             Size = size;

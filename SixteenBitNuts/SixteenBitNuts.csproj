@@ -62,6 +62,7 @@
     <Compile Include="GameException.cs" />
     <Compile Include="HitBox.cs" />
     <Compile Include="Image.cs" />
+    <Compile Include="Interactive.cs" />
     <Compile Include="Interfaces\IEntity.cs" />
     <Compile Include="Interfaces\IMapElement.cs" />
     <Compile Include="Interfaces\ISpawnPoint.cs" />

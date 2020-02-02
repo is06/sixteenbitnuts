@@ -21,7 +21,7 @@ namespace SixteenBitNuts
         public bool IsCollectable { get; set; }
         public bool IsDestroying { get; set; }
         public Vector2 Position { get; set; }
-        public Vector2 Size { get; set; }
+        public Size Size { get; set; }
         public HitBox HitBox
         {
             get

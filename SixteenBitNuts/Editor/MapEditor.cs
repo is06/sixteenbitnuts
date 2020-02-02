@@ -28,7 +28,7 @@ namespace SixteenBitNuts.Editor
         {
             Map = map;
 
-            camera = new Camera(map, new Vector2(0, 0), new Viewport(0, 0, map.Game.InternalSize.Width, map.Game.InternalSize.Height))
+            camera = new Camera(map, new Vector2(0, 0), new Viewport(0, 0, (int)map.Game.InternalSize.Width, (int)map.Game.InternalSize.Height))
             {
                 CanOverrideLimits = true
             };
@@ -40,7 +40,7 @@ namespace SixteenBitNuts.Editor
                 Color = Color.White,
                 Text = "0;0"
             };
-            frame = new Box(map.Game, new Rectangle(0, 0, map.Game.InternalSize.Width, map.Game.InternalSize.Height), 2, Color.BlueViolet);
+            frame = new Box(map.Game, new Rectangle(0, 0, (int)map.Game.InternalSize.Width, (int)map.Game.InternalSize.Height), 2, Color.BlueViolet);
             gridTexture = map.Game.Content.Load<Texture2D>("Engine/editor/grid");
 
             foreach (var section in map.Sections)
@@ -85,8 +85,8 @@ namespace SixteenBitNuts.Editor
                 var bounds = new Rectangle(
                     (int)(Cursor.InGamePosition.X * SCALE),
                     (int)(Cursor.InGamePosition.Y * SCALE),
-                    Map.Game.InternalSize.Width,
-                    Map.Game.InternalSize.Height
+                    (int)Map.Game.InternalSize.Width,
+                    (int)Map.Game.InternalSize.Height
                 );
 
                 int nextSectionIndex = sections.Count;

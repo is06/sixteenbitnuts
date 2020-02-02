@@ -33,7 +33,7 @@ namespace SixteenBitNuts.Editor
             toolbar = new Toolbar(this);
             cursor = new Cursor(map, map.Camera);
             gridTexture = map.Game.Content.Load<Texture2D>("Engine/editor/grid");
-            frame = new Box(map.Game, new Rectangle(0, 0, map.Game.WindowSize.Width, map.Game.WindowSize.Height), (int)map.Game.ScreenScale * 2, Color.Green);
+            frame = new Box(map.Game, new Rectangle(0, 0, (int)map.Game.WindowSize.Width, (int)map.Game.WindowSize.Height), (int)map.Game.ScreenScale * 2, Color.Green);
         }
 
         public void Update()

@@ -44,8 +44,8 @@ namespace SixteenBitNuts
         protected override void Initialize()
         {
             // Graphics
-            graphics.PreferredBackBufferWidth = WindowSize.Width;
-            graphics.PreferredBackBufferHeight = WindowSize.Height;
+            graphics.PreferredBackBufferWidth = (int)WindowSize.Width;
+            graphics.PreferredBackBufferHeight = (int)WindowSize.Height;
             graphics.ApplyChanges();
 
             // Misc
@@ -53,10 +53,10 @@ namespace SixteenBitNuts
             Window.Title = WindowTitle;
             Content.RootDirectory = "Content";
             TargetElapsedTime = new TimeSpan((int)(1000f / FrameRate * 10000f));
-            InGameViewport = new Viewport(0, 0, InternalSize.Width, InternalSize.Height);
+            InGameViewport = new Viewport(0, 0, (int)InternalSize.Width, (int)InternalSize.Height);
             SpriteBatch = new SpriteBatch(GraphicsDevice);
 
-            renderSurface = new RenderTarget2D(GraphicsDevice, InternalSize.Width, InternalSize.Height);
+            renderSurface = new RenderTarget2D(GraphicsDevice, (int)InternalSize.Width, (int)InternalSize.Height);
 
             base.Initialize();
         }
@@ -106,8 +106,8 @@ namespace SixteenBitNuts
                 );
                 SpriteBatch.Draw(
                     texture: renderSurface,
-                    destinationRectangle: new Rectangle(0, 0, WindowSize.Width, WindowSize.Height),
-                    sourceRectangle: new Rectangle(0, 0, InGameViewport.Width, InGameViewport.Height),
+                    destinationRectangle: new Rectangle(0, 0, (int)WindowSize.Width, (int)WindowSize.Height),
+                    sourceRectangle: new Rectangle(0, 0, (int)InGameViewport.Width, (int)InGameViewport.Height),
                     color: Color.White
                 );
                 SpriteBatch.End();
