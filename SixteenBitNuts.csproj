@@ -2,6 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Version>0.2.0</Version>
+    <Authors>Thomas Noury</Authors>
+    <Company>is06</Company>
+    <Product>16-bit nuts</Product>
+    <AssemblyVersion>0.2.0</AssemblyVersion>
+    <Description>A game engine to make 16-bit styled platformers.</Description>
   </PropertyGroup>
 
   <ItemGroup>
