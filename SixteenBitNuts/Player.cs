@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
 using System;
 
 namespace SixteenBitNuts
@@ -9,38 +8,8 @@ namespace SixteenBitNuts
     /// </summary>
     public class Player
     {
-        #region Constants
-
-        private const float RUN_SPEED = 1.75f;
-
-        private const float HIT_BOX_WIDTH = 16f;
-        private const float HIT_BOX_HEIGHT = 24f;
-
-        private const float JUMP_FORCE = -8f;
-
-        private const float ATTACK_BOX_HEIGHT = 12f;
-        private const float ATTACK_BOX_OFFSET = 2f;
-        private const float ATTACK_BOX_DISTANCE = 20f;
-        private const float ATTACK_START_DELAY = 4f;
-
-        #endregion
-
-        #region Fields
-
-        private bool jumpButtonPressed;
-
-        private bool attackButtonPressed;
-        private bool attackKeyPressed;
-
-        private Vector2 position;
-        private Vector2 velocity;
-
-        // Attack
-        private float attackDelay;
-        private float attackPositionDelta;
-        private Direction attackDirection;
-
-        #endregion
+        protected Vector2 position;
+        protected Vector2 velocity;
 
         #region Properties
 
@@ -53,10 +22,11 @@ namespace SixteenBitNuts
         public bool IsBouncing { get; set; }
         public bool IsDashFalling { get; set; }
         public bool IsFalling { get; set; }
-        public bool IsGrounded { get; set; }
+        public bool IsTouchingTheGround { get; set; }
         public bool IsTouchingTheCeiling { get; set; }
         public bool WasOnPlatform { get; set; }
         public Direction Direction { get; set; }
+        public Vector2 Size { get; set; }
         public HitBox HitBox { get; set; }
         public HitBox PreviousFrameHitBox { get; set; }
         public HitBox AttackBox { get; set; }
@@ -98,9 +68,9 @@ namespace SixteenBitNuts
 
         protected Map map;
         protected Sprite sprite;
+
         protected DebugHitBox debugHitBox;  
         protected DebugHitBox debugPreviousFrameHitBox;
-        protected DebugHitBox debugAttackBox;
 
         #endregion
 
@@ -116,282 +86,32 @@ namespace SixteenBitNuts
             Direction = Direction.Right;
 
             // Hitboxes
-            HitBox = PreviousFrameHitBox = new HitBox(position, new Vector2(HIT_BOX_WIDTH, HIT_BOX_HEIGHT));
+            HitBox = new HitBox(position, new Vector2(Size.X, Size.Y));
+            PreviousFrameHitBox = new HitBox(position, new Vector2(Size.X, Size.Y));
 
             // Properties
             IsFalling = true;
             IsControllable = true;
 
-            // Sprites
-            InitSprites(map);
-
             // Debug
-            InitDebugBoxes(map);
-        }
-
-        protected virtual void InitSprites(Map map)
-        {
-            sprite = new Sprite(map.Game, "gameplay/player");
-            sprite.OnAnimationFinished += Sprite_OnAnimationFinished;
-        }
-
-        protected virtual void InitDebugBoxes(Map map)
-        {
             debugHitBox = new DebugHitBox(map.Game, 1, Color.Cyan);
             debugPreviousFrameHitBox = new DebugHitBox(map.Game, 2, Color.DarkOliveGreen);
-            debugAttackBox = new DebugHitBox(map.Game, 1, Color.Red);
         }
 
         /// <summary>
         /// Performs player calculations
         /// </summary>
-        public void Update(GameTime _)
+        public virtual void Update(GameTime _)
         {
             // Memorize the previous frame hit box
             PreviousFrameHitBox = HitBox;
+        }
 
-            #region Ducking
-
-            if (IsControllable)
-            {
-                IsDucking = false;
-
-                if (!IsBouncing && !IsAttacking && !IsJumping && !IsFalling)
-                {
-                    // Gamepad
-                    if (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.LeftThumbstickDown) ||
-                        GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.DPadDown))
-                    {
-                        IsDucking = true;
-                    }
-
-                    // Keyboard
-                    if (Keyboard.GetState().IsKeyDown(Keys.Down))
-                    {
-                        IsDucking = true;
-                    }
-                }
-            }
-
-            #endregion
-
-            #region Run
-
-            if (IsControllable)
-            {
-                IsRunning = false;
-                velocity.X = 0;
-
-                if (!IsDucking && !IsAttacking)
-                {
-                    // Gamepad
-                    if (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.LeftThumbstickLeft) ||
-                        GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.DPadLeft))
-                    {
-                        velocity.X = -RUN_SPEED;
-                        IsRunning = true;
-                        Direction = sprite.Direction = Direction.Left;
-                    }
-
-                    if (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.LeftThumbstickRight) ||
-                        GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.DPadRight))
-                    {
-                        velocity.X = RUN_SPEED;
-                        IsRunning = true;
-                        Direction = sprite.Direction = Direction.Right;
-                    }
-
-                    // Keyboard
-                    if (Keyboard.GetState().IsKeyDown(Keys.Left))
-                    {
-                        velocity.X = -RUN_SPEED;
-                        IsRunning = true;
-                        Direction = sprite.Direction = Direction.Left;
-                    }
-
-                    if (Keyboard.GetState().IsKeyDown(Keys.Right))
-                    {
-                        velocity.X = RUN_SPEED;
-                        IsRunning = true;
-                        Direction = sprite.Direction = Direction.Right;
-                    }
-                }
-            }
-
-            #endregion
-
-            #region Jumps
-
-            if (IsControllable)
-            {
-                if (!IsDucking && IsGrounded && !jumpButtonPressed && Keyboard.GetState().IsKeyDown(Keys.C))
-                {
-                    velocity.Y = JUMP_FORCE;
-                    IsGrounded = false;
-                    jumpButtonPressed = true;
-                }
-                if (Keyboard.GetState().IsKeyUp(Keys.C))
-                {
-                    // If the player is moving up
-                    if (velocity.Y < 0)
-                    {
-                        velocity.Y *= 0.5f;
-                    }
-                    jumpButtonPressed = false;
-                }
-
-                if (velocity.Y > 0)
-                {
-                    IsJumping = false;
-                    IsFalling = true;
-                }
-                else if (velocity.Y < 0)
-                {
-                    IsJumping = true;
-                    IsFalling = false;
-                }
-            }
-
-            #endregion
-
-            #region Tail attack
-
-            if (IsControllable)
-            {
-                if (!IsJumping && !IsFalling && IsDucking)
-                {
-                    if (!attackButtonPressed && !attackKeyPressed)
-                    {
-                        if (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.X) ||
-                            Keyboard.GetState().IsKeyDown(Keys.X))
-                        {
-                            attackButtonPressed = true;
-                            attackKeyPressed = true;
-                            IsAttacking = true;
-                            attackDelay = 0f;
-                            attackPositionDelta = 0f;
-                            attackDirection = Direction;
-                        }
-                    }
-                    if (GamePad.GetState(PlayerIndex.One).IsButtonUp(Buttons.X))
-                    {
-                        attackButtonPressed = false;
-                    }
-                    if (Keyboard.GetState().IsKeyUp(Keys.X))
-                    {
-                        attackKeyPressed = false;
-                    }
-                }
-
-                debugAttackBox.Color = Color.Yellow;
-
-                if (IsAttacking)
-                {
-                    debugAttackBox.Color = Color.Red;
-
-                    if (attackDirection == Direction.Right)
-                    {
-                        if (attackDelay >= ATTACK_START_DELAY)
-                            attackPositionDelta += 4f;
-                        if (attackPositionDelta > ATTACK_BOX_DISTANCE)
-                            attackDirection = Direction.Left;
-                        if (Direction == Direction.Left && attackPositionDelta >= 0)
-                            attackDirection = Direction.None;
-                    }
-                    if (attackDirection == Direction.Left)
-                    {
-                        if (attackDelay >= ATTACK_START_DELAY)
-                            attackPositionDelta -= 4f;
-                        if (attackPositionDelta <= -ATTACK_BOX_DISTANCE)
-                            attackDirection = Direction.Right;
-                        if (Direction == Direction.Right && attackPositionDelta <= 0)
-                            attackDirection = Direction.None;
-                    }
-
-                    if (attackDirection == Direction.Right)
-                    {
-                        if (attackPositionDelta > 0)
-                            AttackBox = new HitBox(
-                                position: new Vector2(Position.X, Position.Y + ATTACK_BOX_OFFSET),
-                                size: new Vector2(HIT_BOX_WIDTH + attackPositionDelta, ATTACK_BOX_HEIGHT)
-                            );
-                        else
-                            AttackBox = new HitBox(
-                                position: new Vector2(Position.X + attackPositionDelta, Position.Y + ATTACK_BOX_OFFSET),
-                                size: new Vector2(HIT_BOX_WIDTH - attackPositionDelta, ATTACK_BOX_HEIGHT)
-                            );
-                    }
-                    else
-                    {
-                        if (attackPositionDelta < 0)
-                            AttackBox = new HitBox(
-                                position: new Vector2(Position.X + attackPositionDelta, Position.Y + ATTACK_BOX_OFFSET),
-                                size: new Vector2(HIT_BOX_WIDTH - attackPositionDelta, ATTACK_BOX_HEIGHT)
-                            );
-                        else
-                            AttackBox = new HitBox(
-                                position: new Vector2(Position.X, Position.Y + ATTACK_BOX_OFFSET),
-                                size: new Vector2(HIT_BOX_WIDTH + attackPositionDelta, ATTACK_BOX_HEIGHT)
-                            );
-                    }
-
-                    attackDelay++;
-                }
-            }
-
-            #endregion
-
-            #region Punching
-
-            if (IsControllable)
-            {
-                IsPunching = false;
-
-                if (IsJumping || IsFalling)
-                {
-                    if (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.LeftThumbstickDown) ||
-                        GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.DPadDown))
-                    {
-                        IsPunching = true;
-                    }
-
-                    // Keyboard
-                    if (Keyboard.GetState().IsKeyDown(Keys.Down))
-                    {
-                        IsPunching = true;
-                    }
-                }
-            }
-
-            #endregion
-
-            #region Animations
-
-            if (IsRunning)
-                sprite.AnimationName = "run";
-
-            if (IsJumping)
-                sprite.AnimationName = "jump";
-            else if (IsFalling)
-                sprite.AnimationName = "fall";
-            else if (IsAttacking)
-                sprite.AnimationName = "tail";
-            else if (IsDucking)
-                sprite.AnimationName = "duck";
-
-            if (IsPunching)
-                sprite.AnimationName = "dash";
-
-            if (!IsRunning && !IsJumping && !IsFalling && !IsDucking && !IsAttacking && !IsPunching)
-                sprite.AnimationName = "idle";
-
-            #endregion
-
-            #region Physics calculations
-
+        public void ComputePhysics()
+        {
             velocity += map.Gravity * Weight;
 
-            if (IsGrounded)
+            if (IsTouchingTheGround)
                 velocity.Y = 0;
 
             if (IsTouchingTheCeiling)
@@ -399,20 +119,20 @@ namespace SixteenBitNuts
                 IsTouchingTheCeiling = false;
                 velocity.Y *= -0.5f;
             }
-            
+
             position += velocity;
+        }
 
-            #endregion
-
+        public void UpdateHitBox()
+        {
             HitBox = new HitBox(
                 new Vector2(position.X, (IsDucking || IsAttacking) ? position.Y + 8 : position.Y),
-                new Vector2(HIT_BOX_WIDTH, (IsDucking || IsAttacking) ? HIT_BOX_HEIGHT - 8 : HIT_BOX_HEIGHT)
+                new Vector2(Size.X, (IsDucking || IsAttacking) ? Size.Y - 8 : Size.Y)
             );
         }
 
-        public void UpdateDebugHitBoxes()
+        public virtual void UpdateDebugHitBoxes()
         {
-            debugAttackBox.Update(AttackBox);
             debugHitBox.Update(HitBox);
             debugPreviousFrameHitBox.Update(PreviousFrameHitBox);
         }
@@ -428,11 +148,10 @@ namespace SixteenBitNuts
         /// <summary>
         /// Draw debug info of the player sprite
         /// </summary>
-        public void DebugDraw()
+        public virtual void DebugDraw()
         {
             debugPreviousFrameHitBox.Draw();
             debugHitBox.Draw();
-            debugAttackBox.Draw();
         }
 
         public void MoveLeft(float value)
@@ -455,13 +174,6 @@ namespace SixteenBitNuts
             position.Y += value;
         }
 
-        private void Sprite_OnAnimationFinished(Sprite sender)
-        {
-            if (sender.AnimationName == "tail")
-            {
-                sprite.AnimationName = "idle";
-                IsAttacking = false;
-            }
-        }
+        
     }
 }

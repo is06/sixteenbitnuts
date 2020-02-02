@@ -4,7 +4,6 @@ using Microsoft.Xna.Framework.Input;
 using SixteenBitNuts.Editor;
 using System.IO;
 using System.Collections.Generic;
-using System.Linq;
 using SixteenBitNuts.Interfaces;
 
 namespace SixteenBitNuts
@@ -33,7 +32,7 @@ namespace SixteenBitNuts
         private bool keyMapEditModePressed;
         private bool isInSectionEditMode;
         private bool keySectionEditModePressed;
-        private bool isInDebugViewMode;
+        protected bool isInDebugViewMode;
         private bool keyDebugViewPressed;
 
         // Transitions
@@ -90,14 +89,9 @@ namespace SixteenBitNuts
         private readonly Vector2[] layerOffsetFactors;
         private Landscape landscape;
 
-        private readonly DebugLabel debugPlayerHitBoxInfo;
-        private readonly DebugLabel debugPlayerPreviousFrameHitBoxInfo;
-        private readonly DebugLabel debugPlayerAttackBoxInfo;
-        private readonly DebugLabel debugPlayerVelocity;
-
         #endregion
 
-        #region Events
+        #region Event handlers
 
         public event CollisionHandler OnCollisionWithEntity;
         public event CollisionHandler OnAttackEntity;
@@ -144,31 +138,6 @@ namespace SixteenBitNuts
             layerOffsetFactors[(int)LayerIndex.Main] = new Vector2(1, 1);
             layerOffsetFactors[(int)LayerIndex.Foreground1] = new Vector2(1.4f, 1.4f);
             layerOffsetFactors[(int)LayerIndex.Foreground2] = new Vector2(1.7f, 1.7f);
-
-            debugPlayerHitBoxInfo = new DebugLabel(this)
-            {
-                Position = new Vector2(4, 4),
-                Color = Color.Cyan,
-                IsVisible = true,
-            };
-            debugPlayerPreviousFrameHitBoxInfo = new DebugLabel(this)
-            {
-                Position = new Vector2(4, 24),
-                Color = Color.DarkOliveGreen,
-                IsVisible = true,
-            };
-            debugPlayerAttackBoxInfo = new DebugLabel(this)
-            {
-                Position = new Vector2(4, 44),
-                Color = Color.Red,
-                IsVisible = true,
-            };
-            debugPlayerVelocity = new DebugLabel(this)
-            {
-                Position = new Vector2(4, 64),
-                Color = Color.White,
-                IsVisible = true,
-            };
         }
 
         protected virtual void InitMapEditor()
@@ -216,11 +185,8 @@ namespace SixteenBitNuts
 
                 // Player
                 Player.Update(gameTime);
-
-                // Debug Info
-                debugPlayerPreviousFrameHitBoxInfo.Text = "PreviousBox: " + Player.PreviousFrameHitBox.Position.ToString();
-                debugPlayerAttackBoxInfo.Text = "AttackBox: " + Player.AttackBox.Position.ToString();
-                debugPlayerVelocity.Text = "Velocity: " + Player.Velocity.ToString();
+                Player.ComputePhysics();
+                Player.UpdateHitBox();
 
                 #endregion
 
@@ -267,7 +233,7 @@ namespace SixteenBitNuts
                 {
                     bool playerIsIntersectingWithObstacle = false;
 
-                    foreach (var element in GetResolutionElementsFromHitBox(Player.HitBox, Player.PreviousFrameHitBox, nearElements))
+                    foreach (var element in CollisionManager.GetResolutionElementsFromHitBox(Player.HitBox, Player.PreviousFrameHitBox, nearElements))
                     {
                         element.DebugColor = Color.Red;
 
@@ -302,10 +268,10 @@ namespace SixteenBitNuts
                                 Player.Position = CollisionManager.GetCorrectedPosition(Player.HitBox, element.HitBox, side);
 
                                 // Hit the ground
-                                Player.IsGrounded = false;
+                                Player.IsTouchingTheGround = false;
                                 if (side == CollisionSide.Top)
                                 {
-                                    Player.IsGrounded = true;
+                                    Player.IsTouchingTheGround = true;
 
                                     if (Player.IsFalling)
                                     {
@@ -329,7 +295,7 @@ namespace SixteenBitNuts
                     {
                         Player.WasOnPlatform = false;
                         Player.IsFalling = true;
-                        Player.IsGrounded = false;
+                        Player.IsTouchingTheGround = false;
                     }
                 }
 
@@ -481,7 +447,6 @@ namespace SixteenBitNuts
             if (isInDebugViewMode)
             {
                 Player.UpdateDebugHitBoxes();
-                debugPlayerHitBoxInfo.Text = "HitBox: " + Player.HitBox.Position.ToString();
             }
 
             #region Map Editor
@@ -522,10 +487,7 @@ namespace SixteenBitNuts
 
                     Game.SpriteBatch.Begin(transformMatrix: layerTransform, samplerState: SamplerState.PointWrap);
 
-                    if (landscape != null)
-                    {
-                        landscape.Draw(layer);
-                    }
+                    landscape?.Draw(layer);
 
                     if (layer == (int)LayerIndex.Main)
                     {
@@ -589,15 +551,6 @@ namespace SixteenBitNuts
             {
                 mapEditor.UIDraw();
             }
-            if (isInDebugViewMode)
-            {
-                Game.SpriteBatch.Begin();
-                debugPlayerHitBoxInfo.Draw();
-                debugPlayerPreviousFrameHitBoxInfo.Draw();
-                debugPlayerAttackBoxInfo.Draw();
-                debugPlayerVelocity.Draw();
-                Game.SpriteBatch.End();
-            }
         }
 
         public void LoadSectionFromIndex(int index)
@@ -606,86 +559,6 @@ namespace SixteenBitNuts
             Player.Position = CurrentMapSection.DefaultSpawnPoint.Position;
 
             isInMapEditMode = false;
-        }
-
-        private List<IMapElement> GetResolutionElementsFromHitBox(HitBox nextFrameHitBox, HitBox currentHitBox, List<IMapElement> elements)
-        {
-            var result = new List<IMapElement>();
-
-            // On ne prend que les éléments qui se superposent à AABB
-            var intersectingElements = new List<IMapElement>();
-            foreach (var element in elements)
-            {
-                if (element.HitBox.Intersects(nextFrameHitBox))
-                {
-                    intersectingElements.Add(element);
-                }
-            }
-
-            var leftElements = new List<IMapElement>();
-            var rightElements = new List<IMapElement>();
-            var topElements = new List<IMapElement>();
-            var bottomElements = new List<IMapElement>();
-
-            foreach (var element in intersectingElements)
-            {
-                if (currentHitBox.Bottom <= element.HitBox.Top)
-                {
-                    bottomElements.Add(element);
-                }
-                else
-                {
-                    if (currentHitBox.Left >= element.HitBox.Right)
-                    {
-                        leftElements.Add(element);
-                    }
-                    else if (currentHitBox.Right <= element.HitBox.Left)
-                    {
-                        rightElements.Add(element);
-                    }
-                    else if (currentHitBox.Top >= element.HitBox.Bottom)
-                    {
-                        topElements.Add(element);
-                    }
-                }                
-            }
-
-            var nearestLeft = GetNearestElementFromHitBox(currentHitBox, leftElements);
-            if (nearestLeft != null) result.Add(nearestLeft);
-            var nearestRight = GetNearestElementFromHitBox(currentHitBox, rightElements);
-            if (nearestRight != null) result.Add(nearestRight);
-            var nearestTop = GetNearestElementFromHitBox(currentHitBox, topElements);
-            if (nearestTop != null) result.Add(nearestTop);
-            var nearestBottom = GetNearestElementFromHitBox(currentHitBox, bottomElements);
-            if (nearestBottom != null) result.Add(nearestBottom);
-
-            return result;
-        }
-
-        /// <summary>
-        /// Retrieve the nearest element in a list from a hitbox
-        /// </summary>
-        /// <param name="hitBox">The origin hitbox, usually the player hitbox</param>
-        /// <param name="elements">List of element to look into</param>
-        /// <returns>The nearest element</returns>
-        private IMapElement GetNearestElementFromHitBox(HitBox hitBox, List<IMapElement> elements)
-        {
-            if (elements.Count == 0) return null;
-
-            IMapElement nearest = elements.First();
-            float minDistance = CollisionManager.GetDistance(hitBox, nearest.HitBox);
-
-            foreach (var element in elements)
-            {
-                var distance = CollisionManager.GetDistance(hitBox, element.HitBox);
-                if (distance < minDistance)
-                {
-                    minDistance = distance;
-                    nearest = element;
-                }
-            }
-
-            return nearest;
         }
 
         /// <summary>

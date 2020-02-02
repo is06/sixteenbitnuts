@@ -56,6 +56,7 @@
     <Compile Include="Editor\MapEditor.cs" />
     <Compile Include="Editor\MapSection.cs" />
     <Compile Include="Editor\MapSectionEditor.cs" />
+    <Compile Include="Enemy.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="GameException.cs" />

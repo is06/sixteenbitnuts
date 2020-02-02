@@ -2,7 +2,7 @@
 
 namespace SixteenBitNuts
 {
-    class DebugLabel : Label
+    public class DebugLabel : Label
     {
         public DebugLabel(Scene scene) : base(scene)
         {
