@@ -1,6 +1,3 @@
 /.vs
-/packages
-/SixteenBitNuts/bin/*
-/SixteenBitNuts/obj
-/SixteenBitNutsTests/bin/*
-/SixteenBitNutsTests/obj
+/bin
+/obj
