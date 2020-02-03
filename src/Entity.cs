@@ -1,10 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using SixteenBitNuts.Interfaces;
+using System;
+using System.Runtime.Serialization;
 
 namespace SixteenBitNuts
 {
-    public class Entity : MapElement, IEntity
+    [Serializable]
+    public class Entity : MapElement, IEntity, ISerializable
     {
         public string Name { get; private set; }
 
@@ -47,6 +50,14 @@ namespace SixteenBitNuts
         public void Destroy()
         {
             IsDestroying = true;
+        }
+
+        public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue("name", Name);
+            info.AddValue("type", GetType().Name);
+            info.AddValue("x", Position.X);
+            info.AddValue("y", Position.Y);
         }
     }
 }

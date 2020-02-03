@@ -1,5 +1,4 @@
-﻿
-namespace SixteenBitNuts
+﻿namespace SixteenBitNuts
 {
     public enum Direction
     {

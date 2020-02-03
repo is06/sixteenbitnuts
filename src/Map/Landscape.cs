@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Runtime.Serialization;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -16,14 +18,22 @@ namespace SixteenBitNuts
         Foreground2 = 7
     }
 
-    struct LandscapeLayer
+    [Serializable]
+    struct LandscapeLayer : ISerializable
     {
         public string Name;
         public LayerIndex Index;
         public Texture2D Texture;
+
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue("name", Name);
+            info.AddValue("index", Index);
+        }
     }
 
-    class Landscape
+    [Serializable]
+    class Landscape : ISerializable
     {
         private readonly Map map;
 
@@ -55,6 +65,11 @@ namespace SixteenBitNuts
                     );
                 }
             }
+        }
+
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue("layers", Layers);
         }
     }
 }

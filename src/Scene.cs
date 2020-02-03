@@ -1,7 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
+using System;
 
 namespace SixteenBitNuts
 {
+    [Serializable()]
     public class Scene
     {
         public Game Game { get; private set; }

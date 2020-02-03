@@ -1,11 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.Runtime.Serialization;
 using SixteenBitNuts.Interfaces;
 
 namespace SixteenBitNuts
 {
-    public class SpawnPoint : Entity, ISpawnPoint
+    [Serializable]
+    public class SpawnPoint : Entity, ISpawnPoint, ISerializable
     {
         private Texture2D debugTexture;
 
@@ -52,6 +54,11 @@ namespace SixteenBitNuts
             );
 
             base.DebugDraw();
+        }
+
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            base.GetObjectData(info, context);
         }
     }
 }

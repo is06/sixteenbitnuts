@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.IO;
@@ -72,7 +71,7 @@ namespace SixteenBitNuts
             }
             catch (KeyNotFoundException)
             {
-                throw new TileOffsetException("Offset for tile " + id + " was not found in tileset '" + Name + ".tileset'. The file may be empty.");
+                throw new GameException("Offset for tile " + id + " was not found in tileset '" + Name + ".tileset'. The file may be empty.");
             }   
         }
 
@@ -84,7 +83,7 @@ namespace SixteenBitNuts
             }
             catch (KeyNotFoundException)
             {
-                throw new TileOffsetException("Size for tile " + id + " was not found in tileset '" + Name + ".tileset'. The file may be empty.");
+                throw new GameException("Size for tile " + id + " was not found in tileset '" + Name + ".tileset'. The file may be empty.");
             }
         }
 

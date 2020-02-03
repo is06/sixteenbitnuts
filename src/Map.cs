@@ -2,8 +2,11 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using SixteenBitNuts.Editor;
+using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using SixteenBitNuts.Interfaces;
 
 namespace SixteenBitNuts
@@ -13,7 +16,8 @@ namespace SixteenBitNuts
     /// <summary>
     /// Class representing an in-game map
     /// </summary>
-    public class Map : Scene
+    [Serializable]
+    public class Map : Scene, ISerializable
     {
         private const float TRANSITION_SPEED = 0.03f;
         private const float NEAR_ELEMENT_THRESHOLD = 100f;
@@ -344,6 +348,7 @@ namespace SixteenBitNuts
                     if (Keyboard.GetState().IsKeyDown(Keys.F12))
                     {
                         SaveToFile("Data/maps/" + name + ".map");
+                        SaveToBinary("Data/maps/" + name + ".bin");
                     }
                 }
 
@@ -691,6 +696,20 @@ namespace SixteenBitNuts
                     };
                     break;
             }
+        }
+
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue("landscape", landscape);
+            info.AddValue("section", sections);
+        }
+
+        private void SaveToBinary(string filePath)
+        {
+            var stream = new MemoryStream();
+            var formatter = new BinaryFormatter();
+            formatter.Serialize(stream, this);
+            File.WriteAllBytes(filePath, stream.ToArray());
         }
 
         private void SaveToFile(string filePath)

@@ -1,9 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
 using SixteenBitNuts.Interfaces;
+using System;
+using System.Runtime.Serialization;
 
 namespace SixteenBitNuts
 {
-    public class Tile : MapElement, ITile
+    [Serializable]
+    public class Tile : MapElement, ITile, ISerializable
     {
         public int Id { get; private set; }
 
@@ -28,6 +31,13 @@ namespace SixteenBitNuts
         public override void DebugDraw()
         {
             tileset.DebugDraw(Position.ToPoint(), Size.ToPoint(), DebugColor);
+        }
+
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue("id", Id);
+            info.AddValue("x", Position.X);
+            info.AddValue("y", Position.Y);
         }
     }
 }
