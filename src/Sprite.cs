@@ -12,11 +12,11 @@ namespace SixteenBitNuts
 
     public class Sprite
     {
-        public event AnimationFinishedHandler OnAnimationFinished;
+        public event AnimationFinishedHandler? OnAnimationFinished;
 
         #region Fields
 
-        private string textureName;
+        private string? textureName;
         private string currentAnimationName;
         private float currentAnimationFrame;
         private bool isAnimated;
@@ -64,7 +64,7 @@ namespace SixteenBitNuts
 
         #region Components
 
-        private Texture2D texture;
+        private readonly Texture2D texture;
         private readonly Game game;
         private readonly Dictionary<string, SpriteAnimation> animations;
 
@@ -87,11 +87,6 @@ namespace SixteenBitNuts
             // Loading sprite descriptor and texture
             LoadFromFile("Data/sprites/" + name + ".sprite");
 
-            LoadTexture();
-        }
-
-        protected virtual void LoadTexture()
-        {
             texture = game.Content.Load<Texture2D>("Game/sprites/" + textureName);
         }
 
@@ -107,7 +102,7 @@ namespace SixteenBitNuts
                 CurrentAnimation.DirectionOffsets[Direction].Y
             );
 
-            game.SpriteBatch.Draw(
+            game.SpriteBatch?.Draw(
                 texture: texture,
                 position: new Vector2((float)Math.Round(position.X), (float)Math.Round(position.Y)),
                 sourceRectangle: new Rectangle(

@@ -86,7 +86,10 @@ namespace SixteenBitNuts.Editor
                     // Draw an entity
                     if (toolbar.SelectedButtonType == typeof(EntityToolbarButton) && !EntityAlreadyAtPosition(drawerPosition))
                     {
-                        AddEntity(toolbar.SelectedEntityType, drawerPosition);
+                        if (toolbar.SelectedEntityType != null)
+                        {
+                            AddEntity(toolbar.SelectedEntityType, drawerPosition);
+                        }
                     }
                 }
             }
@@ -133,19 +136,19 @@ namespace SixteenBitNuts.Editor
 
             if (Keyboard.GetState().IsKeyDown(Keys.Left))
             {
-                Map.Player.MoveLeft(2f);
+                Map.Player?.MoveLeft(2f);
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Right))
             {
-                Map.Player.MoveRight(2f);
+                Map.Player?.MoveRight(2f);
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Up))
             {
-                Map.Player.MoveUp(2f);
+                Map.Player?.MoveUp(2f);
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Down))
             {
-                Map.Player.MoveDown(2f);
+                Map.Player?.MoveDown(2f);
             }
 
             #endregion
@@ -154,12 +157,12 @@ namespace SixteenBitNuts.Editor
         public void Draw()
         {
             // Draw grid
-            Map.Game.SpriteBatch.Begin(transformMatrix: Map.Camera.Transform);
+            Map.Game.SpriteBatch?.Begin(transformMatrix: Map.Camera.Transform);
             for (int i = Map.CurrentMapSection.Bounds.X / GridSize; i < (Map.CurrentMapSection.Bounds.X + Map.CurrentMapSection.Bounds.Width) / GridSize + 1; i++)
             {
                 for (int j = Map.CurrentMapSection.Bounds.Y / GridSize; j < (Map.CurrentMapSection.Bounds.Y + Map.CurrentMapSection.Bounds.Height) / GridSize + 1; j++)
                 {
-                    Map.Game.SpriteBatch.Draw(
+                    Map.Game.SpriteBatch?.Draw(
                         gridTexture,
                         new Vector2(i * GridSize, j * GridSize),
                         new Rectangle(0, 0, GridSize, GridSize),
@@ -172,12 +175,12 @@ namespace SixteenBitNuts.Editor
                     );
                 }
             }
-            Map.Game.SpriteBatch.End();
+            Map.Game.SpriteBatch?.End();
         }
 
         public void UIDraw()
         {
-            Map.Game.SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
+            Map.Game.SpriteBatch?.Begin(samplerState: SamplerState.PointClamp);
 
             toolbar.Draw();
             cursor.Draw();
@@ -185,7 +188,7 @@ namespace SixteenBitNuts.Editor
             // Draw frame
             frame.Draw();
 
-            Map.Game.SpriteBatch.End();
+            Map.Game.SpriteBatch?.End();
         }
 
         protected virtual void AddEntity(string entityType, Vector2 position)

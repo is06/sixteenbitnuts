@@ -9,7 +9,7 @@ namespace SixteenBitNuts
         public double Duration { get; set; }
         public bool Active { get; set; }
 
-        public event TimerHandler OnTimerFinished;
+        public event TimerHandler? OnTimerFinished;
 
         private double elapsed;
 

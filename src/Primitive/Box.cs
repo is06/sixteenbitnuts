@@ -16,11 +16,6 @@ namespace SixteenBitNuts
             Thickness = thickness;
             Color = color;
 
-            InitLines(game, color);
-        }
-
-        protected virtual void InitLines(Game game, Color color)
-        {
             lines = new Line[4];
             lines[0] = new Line(game, new Rectangle(0, 0, 1, 1), color);
             lines[1] = new Line(game, new Rectangle(0, 0, 1, 1), color);

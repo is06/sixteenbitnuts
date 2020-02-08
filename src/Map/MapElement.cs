@@ -34,7 +34,7 @@ namespace SixteenBitNuts
 
         #region Fields
 
-        private Box debugHitBox;
+        private readonly Box debugHitBox;
         protected readonly Map map;
 
         #endregion
@@ -42,18 +42,13 @@ namespace SixteenBitNuts
         public MapElement(Map map)
         {
             this.map = map;
-            InitDebugHitBox();
-            IsVisible = true;
-        }
-
-        protected virtual void InitDebugHitBox()
-        {
             debugHitBox = new Box(
                 map.Game,
                 new Rectangle(Position.ToPoint(), Size.ToPoint()),
                 DEBUG_BOX_THICKNESS,
                 DebugColor
             );
+            IsVisible = true;
         }
 
         public virtual void Update(GameTime gameTime)

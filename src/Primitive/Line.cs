@@ -6,7 +6,7 @@ namespace SixteenBitNuts
 {
     class Line
     {
-        private Texture2D texture;
+        private readonly Texture2D texture;
         private readonly Game game;
 
         public Rectangle Bounds { get; set; }
@@ -15,20 +15,15 @@ namespace SixteenBitNuts
         public Line(Game game, Rectangle bounds, Color color)
         {
             this.game = game;
-            LoadTexture(game);
+            texture = new Texture2D(game.GraphicsDevice, 1, 1);
+            texture.SetData(new[] { Color.White });
             Bounds = bounds;
             Color = color;
         }
 
-        protected virtual void LoadTexture(Game game)
-        {
-            texture = new Texture2D(game.GraphicsDevice, 1, 1);
-            texture.SetData(new[] { Color.White });
-        }
-
         public void Draw()
         {
-            game.SpriteBatch.Draw(
+            game.SpriteBatch?.Draw(
                 texture,
                 new Vector2(Bounds.X, Bounds.Y),
                 new Rectangle(0, 0, 1, 1),

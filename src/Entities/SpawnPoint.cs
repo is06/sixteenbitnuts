@@ -9,7 +9,7 @@ namespace SixteenBitNuts
     [Serializable]
     public class SpawnPoint : Entity, ISpawnPoint, ISerializable
     {
-        private Texture2D debugTexture;
+        private Texture2D? debugTexture;
 
         public SpawnPoint(Map map, string name) : base(map, name)
         {
@@ -41,7 +41,7 @@ namespace SixteenBitNuts
 
         public override void DebugDraw()
         {
-            map.Game.SpriteBatch.Draw(
+            map.Game.SpriteBatch?.Draw(
                 texture: debugTexture,
                 position: new Vector2((float)Math.Round(Position.X), (float)Math.Round(Position.Y)),
                 sourceRectangle: new Rectangle(0, 0, 16, 16),

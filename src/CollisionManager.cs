@@ -221,7 +221,7 @@ namespace SixteenBitNuts
         /// <param name="hitBox">The origin hitbox, usually the player hitbox</param>
         /// <param name="elements">List of element to look into</param>
         /// <returns>The nearest element</returns>
-        public static IMapElement GetNearestElementFromHitBox(HitBox hitBox, List<IMapElement> elements)
+        public static IMapElement? GetNearestElementFromHitBox(HitBox hitBox, List<IMapElement> elements)
         {
             if (elements.Count == 0) return null;
 

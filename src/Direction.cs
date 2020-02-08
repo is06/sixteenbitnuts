@@ -1,6 +1,6 @@
 ﻿namespace SixteenBitNuts
 {
-    public enum Direction
+    public enum Direction : int
     {
         None = -1,
         Right = 0,

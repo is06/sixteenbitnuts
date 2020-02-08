@@ -67,7 +67,7 @@ namespace SixteenBitNuts
         #region Components
 
         protected Map map;
-        protected Sprite sprite;
+        protected Sprite? sprite;
 
         protected DebugHitBox debugHitBox;  
         protected DebugHitBox debugPreviousFrameHitBox;
@@ -142,7 +142,7 @@ namespace SixteenBitNuts
         /// </summary>
         public void Draw()
         {
-            sprite.Draw(position: DrawingPosition - sprite.HitBoxOffset, layer: 0f);
+            sprite?.Draw(position: DrawingPosition - sprite.HitBoxOffset, layer: 0f);
         }
 
         /// <summary>
@@ -173,7 +173,5 @@ namespace SixteenBitNuts
         {
             position.Y += value;
         }
-
-        
     }
 }

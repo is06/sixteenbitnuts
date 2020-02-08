@@ -62,7 +62,7 @@ namespace SixteenBitNuts.Editor
 
         public void Draw()
         {
-            map.Game.SpriteBatch.Draw(
+            map.Game.SpriteBatch?.Draw(
                 texture: textures[(int)Type],
                 position: Position.ToVector2(),
                 sourceRectangle: new Rectangle(0, 0, 32, 32),

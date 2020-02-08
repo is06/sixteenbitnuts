@@ -8,8 +8,8 @@ namespace SixteenBitNuts
 {
     public class Tileset
     {        
-        private Texture2D texture;
-        private Box debugHitBox;
+        private readonly Texture2D texture;
+        private readonly Box debugHitBox;
         protected readonly Dictionary<int, TileElement> elements;
 
         public string Name { get; private set; }
@@ -22,27 +22,17 @@ namespace SixteenBitNuts
             Game = game;
 
             // Components
-            LoadTexture(name);
-            InitDebugHitBox();
-            
+            texture = Game.Content.Load<Texture2D>("Game/tilesets/" + name);
+            debugHitBox = new Box(Game, new Rectangle(0, 0, 16, 16), 1, Color.DarkRed);
+
             elements = new Dictionary<int, TileElement>();
             
             LoadFromFile("Data/tilesets/" + name + ".tileset");
         }
 
-        protected virtual void LoadTexture(string name)
-        {
-            texture = Game.Content.Load<Texture2D>("Game/tilesets/" + name);
-        }
-
-        protected virtual void InitDebugHitBox()
-        {
-            debugHitBox = new Box(Game, new Rectangle(0, 0, 16, 16), 1, Color.DarkRed);
-        }
-
         public void Draw(Vector2 position, Vector2 size, Vector2 offset, Vector2 scale)
         {
-            Game.SpriteBatch.Draw(
+            Game.SpriteBatch?.Draw(
                 texture: texture,
                 position: new Vector2((float)Math.Round(position.X), (float)Math.Round(position.Y)),
                 sourceRectangle: new Rectangle((int)offset.X, (int)offset.Y, (int)size.X, (int)size.Y),

@@ -24,7 +24,7 @@ namespace SixteenBitNuts
 
         public void Draw()
         {
-            scene.Game.SpriteBatch.Draw(
+            scene.Game.SpriteBatch?.Draw(
                 texture,
                 Position,
                 new Rectangle(0, 0, texture.Width, texture.Height),

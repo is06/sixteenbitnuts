@@ -14,8 +14,8 @@ namespace SixteenBitNuts
     [Serializable]
     public class MapSection : ISerializable
     {
-        private Vector2[] transitionPoints;
-        private Texture2D transitionCornerTexture;
+        private Vector2[]? transitionPoints;
+        private readonly Texture2D transitionCornerTexture;
         private readonly string defaultSpawnPointName;
 
         #region Properties
@@ -61,7 +61,7 @@ namespace SixteenBitNuts
         {
             Map = map;
             this.defaultSpawnPointName = defaultSpawnPointName;
-            LoadTransitionCornerTexture();
+            transitionCornerTexture = Map.Game.Content.Load<Texture2D>("Engine/editor/transition_corner");
 
             // Properties
             Bounds = bounds;
@@ -71,11 +71,6 @@ namespace SixteenBitNuts
             Entities = new Dictionary<string, IEntity>();
 
             SetTransitionPoints(bounds);
-        }
-
-        protected virtual void LoadTransitionCornerTexture()
-        {
-            transitionCornerTexture = Map.Game.Content.Load<Texture2D>("Engine/editor/transition_corner");
         }
 
 
@@ -129,34 +124,42 @@ namespace SixteenBitNuts
             {
                 pair.Value.DebugDraw();
             }
-            for (int i = 0; i < transitionPoints.Length; i++)
+            if (transitionPoints != null)
             {
-                Map.Game.SpriteBatch.Draw(
-                    transitionCornerTexture,
-                    new Vector2(transitionPoints[i].X, transitionPoints[i].Y),
-                    new Rectangle(0, 0, 16, 16),
-                    Color.White
-                );
+                for (int i = 0; i < transitionPoints.Length; i++)
+                {
+                    Map.Game.SpriteBatch?.Draw(
+                        transitionCornerTexture,
+                        new Vector2(transitionPoints[i].X, transitionPoints[i].Y),
+                        new Rectangle(0, 0, 16, 16),
+                        Color.White
+                    );
+                }
             }
         }
 
-        public Vector2 GetNearestTransitionPointFrom(Vector2 position)
+        public Vector2? GetNearestTransitionPointFrom(Vector2 position)
         {
-            Vector2 nearestPoint = transitionPoints[0];
-            float min = Vector2.Distance(transitionPoints[0], position);
-
-            foreach (Vector2 point in transitionPoints)
+            if (transitionPoints != null)
             {
-                float distance = Vector2.Distance(point, position);
+                Vector2 nearestPoint = transitionPoints[0];
+                float min = Vector2.Distance(transitionPoints[0], position);
 
-                if (distance < min)
+                foreach (Vector2 point in transitionPoints)
                 {
-                    min = distance;
-                    nearestPoint = point;
+                    float distance = Vector2.Distance(point, position);
+
+                    if (distance < min)
+                    {
+                        min = distance;
+                        nearestPoint = point;
+                    }
                 }
+
+                return nearestPoint;
             }
 
-            return nearestPoint;
+            return null;
         }
 
         public void UpdateAllPositions(Point positionOffset, Point size)
@@ -168,7 +171,7 @@ namespace SixteenBitNuts
             }
 
             // Move player if inside the section
-            if (Bounds.Contains(Map.Player.Position))
+            if (Map.Player != null && Bounds.Contains(Map.Player.Position))
             {
                 Map.Player.Position = new Vector2(Map.Player.Position.X + positionOffset.X, Map.Player.Position.Y + positionOffset.Y);
             }

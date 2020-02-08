@@ -4,17 +4,20 @@ namespace SixteenBitNuts
 {
     public class DebugHitBox
     {
-        protected Box graphicBox;
+        protected Box? graphicBox;
 
         public Color Color
         {
             get
             {
-                return graphicBox.Color;
+                return graphicBox?.Color ?? Color.Transparent;
             }
             set
             {
-                graphicBox.Color = value;
+                if (graphicBox != null)
+                {
+                    graphicBox.Color = value;
+                }
             }
         }
 
@@ -35,13 +38,16 @@ namespace SixteenBitNuts
 
         public void Update(HitBox hitBox)
         {
-            graphicBox.Bounds = new Rectangle(hitBox.Position.ToPoint(), hitBox.Size.ToPoint());
-            graphicBox.Update();
+            if (graphicBox != null)
+            {
+                graphicBox.Bounds = new Rectangle(hitBox.Position.ToPoint(), hitBox.Size.ToPoint());
+            }
+            graphicBox?.Update();
         }
 
         public void Draw()
         {
-            graphicBox.Draw();
+            graphicBox?.Draw();
         }
     }
 }

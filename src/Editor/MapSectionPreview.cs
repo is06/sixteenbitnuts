@@ -27,7 +27,7 @@ namespace SixteenBitNuts.Editor
         {
             foreach (var position in previewTilePositions)
             {
-                section.Map.Game.SpriteBatch.Draw(
+                section.Map.Game.SpriteBatch?.Draw(
                     pixel,
                     position.ToVector2() + Position.ToVector2(),
                     Color.RosyBrown

@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace SixteenBitNuts
 {
@@ -9,7 +10,7 @@ namespace SixteenBitNuts
     {
         #region Properties
 
-        public string WindowTitle { get; protected set; }
+        public string? WindowTitle { get; protected set; }
         public Size WindowSize { get; protected set; }
         public Size InternalSize { get; protected set; }
         public int FrameRate { get; protected set; }
@@ -21,17 +22,17 @@ namespace SixteenBitNuts
                 return WindowSize.Width / (float)InternalSize.Width;
             }
         }
-        public SpriteBatch SpriteBatch { get; set; }
+        public SpriteBatch? SpriteBatch { get; set; }
 
         #endregion
 
         #region Components
 
-        private RenderTarget2D renderSurface;        
+        private RenderTarget2D? renderSurface;        
         private readonly GraphicsDeviceManager graphics;
         private Process process;
 
-        protected Scene currentScene;
+        protected Scene? currentScene;
 
         #endregion
 
@@ -78,7 +79,7 @@ namespace SixteenBitNuts
 
             base.Update(gameTime);
 
-            currentScene.Update(gameTime);
+            currentScene?.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
@@ -90,33 +91,37 @@ namespace SixteenBitNuts
                 GraphicsDevice.Clear(Color.Black);
 
                 // Draws everything in the surface
-                currentScene.Draw();
+                currentScene?.Draw();
 
                 // Debug visual representation
-                currentScene.DebugDraw();
+                currentScene?.DebugDraw();
 
                 // Back to the normal render method
                 GraphicsDevice.SetRenderTarget(null);
 
                 // Render the surface to have the ingame screen
-                SpriteBatch.Begin(
+                SpriteBatch?.Begin(
                     SpriteSortMode.Immediate,
                     BlendState.AlphaBlend,
-                    SamplerState.PointClamp
+                    SamplerState.PointClamp,
+                    null,
+                    null,
+                    null, // Effect
+                    null
                 );
-                SpriteBatch.Draw(
+                SpriteBatch?.Draw(
                     texture: renderSurface,
                     destinationRectangle: new Rectangle(0, 0, (int)WindowSize.Width, (int)WindowSize.Height),
-                    sourceRectangle: new Rectangle(0, 0, (int)InGameViewport.Width, (int)InGameViewport.Height),
+                    sourceRectangle: new Rectangle(0, 0, InGameViewport.Width, InGameViewport.Height),
                     color: Color.White
                 );
-                SpriteBatch.End();
+                SpriteBatch?.End();
             }
 
             // Hi-res graphics rendering
             {
                 // Render all UI elements in front of the render target texture
-                currentScene.UIDraw();
+                currentScene?.UIDraw();
             }
 
             base.Draw(gameTime);
@@ -129,8 +134,8 @@ namespace SixteenBitNuts
 
         protected override void Dispose(bool disposing)
         {
-            SpriteBatch.Dispose();
-            renderSurface.Dispose();
+            SpriteBatch?.Dispose();
+            renderSurface?.Dispose();
             graphics.Dispose();
 
             base.Dispose(disposing);

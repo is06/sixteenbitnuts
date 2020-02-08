@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 
 namespace SixteenBitNuts.Editor
@@ -8,9 +7,9 @@ namespace SixteenBitNuts.Editor
     {
         public MapSectionEditor Editor { get; private set; }
         public List<ToolbarButton> Buttons { get; }
-        public System.Type SelectedButtonType { get; set; }
+        public System.Type? SelectedButtonType { get; set; }
         public int SelectedTileId { get; set; }
-        public string SelectedEntityType { get; set; }
+        public string? SelectedEntityType { get; set; }
 
         public Toolbar(MapSectionEditor editor)
         {

@@ -125,14 +125,14 @@ namespace SixteenBitNuts.Editor
             var gridOrigin = camera.ViewPort.Bounds.Location - camera.ViewPort.Bounds.Center - (new Point((int)camera.Transform.Translation.X, (int)camera.Transform.Translation.Y));
             var gridDestination = camera.ViewPort.Bounds.Location + camera.ViewPort.Bounds.Size - (new Point((int)camera.Transform.Translation.X, (int)camera.Transform.Translation.Y));
 
-            Map.Game.SpriteBatch.Begin(transformMatrix: camera.Transform);
+            Map.Game.SpriteBatch?.Begin(transformMatrix: camera.Transform);
 
             // Draw grid
             for (int i = gridOrigin.X / gridZoom; i < gridDestination.X / gridZoom; i++)
             {
                 for (int j = gridOrigin.Y / gridZoom; j < gridDestination.Y / gridZoom; j++)
                 {
-                    Map.Game.SpriteBatch.Draw(
+                    Map.Game.SpriteBatch?.Draw(
                         texture: gridTexture,
                         position: new Vector2(i * gridZoom, j * gridZoom),
                         sourceRectangle: new Rectangle(0, 0, 16, 16),
@@ -152,19 +152,19 @@ namespace SixteenBitNuts.Editor
                 section.Value.Draw();
             }
 
-            Map.Game.SpriteBatch.End();
+            Map.Game.SpriteBatch?.End();
 
-            Map.Game.SpriteBatch.Begin();
+            Map.Game.SpriteBatch?.Begin();
             frame.Draw();
             cursorPosition.Draw();
-            Map.Game.SpriteBatch.End();
+            Map.Game.SpriteBatch?.End();
         }
 
         public void UIDraw()
         {
-            Map.Game.SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
+            Map.Game.SpriteBatch?.Begin(samplerState: SamplerState.PointClamp);
             Cursor.Draw();
-            Map.Game.SpriteBatch.End();
+            Map.Game.SpriteBatch?.End();
         }
 
         public void UpdateLayout()

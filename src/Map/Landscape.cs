@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace SixteenBitNuts
 {
-    enum LayerIndex
+    enum LayerIndex : int
     {
         StaticBackground = 0,
         Background4 = 1,
@@ -38,7 +38,7 @@ namespace SixteenBitNuts
         private readonly Map map;
 
         public List<LandscapeLayer> Layers { get; set; }
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         public Landscape(Map map)
         {
@@ -52,7 +52,7 @@ namespace SixteenBitNuts
             {
                 if ((int)layer.Index == layerIndex)
                 {
-                    map.Game.SpriteBatch.Draw(
+                    map.Game.SpriteBatch?.Draw(
                         texture: layer.Texture,
                         position: Vector2.Zero,
                         sourceRectangle: new Rectangle(0, 0, 1024, 270),

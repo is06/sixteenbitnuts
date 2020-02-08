@@ -11,7 +11,7 @@ namespace SixteenBitNuts
     {
         public string Name { get; private set; }
 
-        protected Texture2D texture;
+        protected Texture2D? texture;
         protected Vector2 drawPosition;
 
         public Entity(Map map, string name) : base(map)
@@ -31,7 +31,7 @@ namespace SixteenBitNuts
         {
             if (IsVisible)
             {
-                map.Game.SpriteBatch.Draw(
+                map.Game.SpriteBatch?.Draw(
                     texture: texture,
                     position: drawPosition,
                     sourceRectangle: new Rectangle(Point.Zero, Size.ToPoint()),

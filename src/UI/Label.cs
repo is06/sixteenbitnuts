@@ -10,12 +10,13 @@ namespace SixteenBitNuts
         public Color Color { get; set; }
         public bool IsVisible { get; set; }
 
-        protected SpriteFont font;
+        protected SpriteFont? font;
         protected readonly Scene scene;
 
         public Label(Scene scene)
         {
             this.scene = scene;
+            Text = "";
             InitFont();
         }
 
@@ -28,7 +29,7 @@ namespace SixteenBitNuts
         {
             if (IsVisible)
             {
-                scene.Game.SpriteBatch.DrawString(font, Text, Position, Color, 0f, Vector2.Zero, 1f, SpriteEffects.None, 1f);
+                scene.Game.SpriteBatch?.DrawString(font, Text, Position, Color, 0f, Vector2.Zero, 1f, SpriteEffects.None, 1f);
             }
         }
     }

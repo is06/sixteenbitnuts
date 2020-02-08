@@ -22,8 +22,6 @@ namespace SixteenBitNuts
         private const float TRANSITION_SPEED = 0.03f;
         private const float NEAR_ELEMENT_THRESHOLD = 100f;
 
-        public static Matrix[] parallaxTransforms;
-
         #region Fields
 
         // Map
@@ -68,7 +66,7 @@ namespace SixteenBitNuts
                 return sections[currentSectionIndex];
             }
         }
-        public Player Player { get; protected set; }
+        public Player? Player { get; protected set; }
         public Camera Camera { get; private set; }
         public int EntityLastIndex { get; set; }
         public bool IsInSectionEditMode
@@ -88,18 +86,18 @@ namespace SixteenBitNuts
         protected readonly Dictionary<int, MapSection> sections;
         protected MapSectionEditor sectionEditor;
 
-        private MapEditor mapEditor;
+        private readonly MapEditor mapEditor;
         private readonly TransitionGuide transitionGuide;
         private readonly Vector2[] layerOffsetFactors;
-        private Landscape landscape;
+        private Landscape? landscape;
 
         #endregion
 
         #region Event handlers
 
-        public event CollisionHandler OnCollisionWithEntity;
-        public event CollisionHandler OnAttackEntity;
-        public event CollisionHandler OnBounceOnEntity;
+        public event CollisionHandler? OnCollisionWithEntity;
+        public event CollisionHandler? OnAttackEntity;
+        public event CollisionHandler? OnBounceOnEntity;
 
         #endregion
 
@@ -124,13 +122,11 @@ namespace SixteenBitNuts
             transitionGuide = new TransitionGuide();
             deathTimer = new Timer { Duration = 2 };
             deathTimer.OnTimerFinished += DeathTimer_OnTimerFinished;
+            mapEditor = new MapEditor(this);
+            sectionEditor = new MapSectionEditor(this);
 
             // Load map descriptor
             LoadFromFile("Data/maps/" + name + ".map");
-
-            // Overridable initializers
-            InitMapSectionEditor();
-            InitMapEditor();
 
             // Layer transformations
             layerOffsetFactors = new Vector2[8];
@@ -144,20 +140,13 @@ namespace SixteenBitNuts
             layerOffsetFactors[(int)LayerIndex.Foreground2] = new Vector2(1.7f, 1.7f);
         }
 
-        protected virtual void InitMapEditor()
-        {
-            mapEditor = new MapEditor(this);
-        }
-
-        protected virtual void InitMapSectionEditor()
-        {
-            sectionEditor = new MapSectionEditor(this);
-        }
-
         private void DeathTimer_OnTimerFinished()
         {
-            Player.Position = CurrentMapSection.DefaultSpawnPoint.Position;
-            Player.IsControllable = true;
+            if (Player != null)
+            {
+                Player.Position = CurrentMapSection.DefaultSpawnPoint.Position;
+                Player.IsControllable = true;
+            }
         }
 
         /// <summary>
@@ -188,9 +177,9 @@ namespace SixteenBitNuts
                 }
 
                 // Player
-                Player.Update(gameTime);
-                Player.ComputePhysics();
-                Player.UpdateHitBox();
+                Player?.Update(gameTime);
+                Player?.ComputePhysics();
+                Player?.UpdateHitBox();
 
                 #endregion
 
@@ -211,7 +200,7 @@ namespace SixteenBitNuts
                         element.DebugColor = Color.LimeGreen;
                         
                         // We take only elements that are at below a certain distance from the player
-                        if (Vector2.Distance(Player.Position, element.Position) <= NEAR_ELEMENT_THRESHOLD)
+                        if (Player != null && Vector2.Distance(Player.Position, element.Position) <= NEAR_ELEMENT_THRESHOLD)
                         {
                             nearElements.Add(element);
                         }
@@ -223,7 +212,7 @@ namespace SixteenBitNuts
                         element.DebugColor = Color.Orange;
 
                         // Attack collisions
-                        if (Player.IsAttacking && Player.AttackBox.Intersects(element.HitBox))
+                        if (Player != null && Player.IsAttacking && Player.AttackBox.Intersects(element.HitBox))
                         {
                             if (element is Entity)
                             {
@@ -237,69 +226,72 @@ namespace SixteenBitNuts
                 {
                     bool playerIsIntersectingWithObstacle = false;
 
-                    foreach (var element in CollisionManager.GetResolutionElementsFromHitBox(Player.HitBox, Player.PreviousFrameHitBox, nearElements))
+                    if (Player != null)
                     {
-                        element.DebugColor = Color.Red;
-
-                        // Player collisions
-                        if (Player.HitBox.Intersects(element.HitBox))
+                        foreach (var element in CollisionManager.GetResolutionElementsFromHitBox(Player.HitBox, Player.PreviousFrameHitBox, nearElements))
                         {
-                            // Detect the collision side of the obstacle
-                            CollisionSide side = CollisionManager.GetCollisionSide(
-                                moving: Player.PreviousFrameHitBox,
-                                stopped: element.HitBox,
-                                movingVelocity: Player.Velocity
-                            );
+                            element.DebugColor = Color.Red;
 
-                            // Entity collision event
-                            if (element is Entity)
+                            // Player collisions
+                            if (Player.HitBox.Intersects(element.HitBox))
                             {
-                                if (Player.IsPunching)
+                                // Detect the collision side of the obstacle
+                                CollisionSide side = CollisionManager.GetCollisionSide(
+                                    moving: Player.PreviousFrameHitBox,
+                                    stopped: element.HitBox,
+                                    movingVelocity: Player.Velocity
+                                );
+
+                                // Entity collision event
+                                if (element is Entity)
                                 {
+                                    if (Player.IsPunching)
+                                    {
+                                        if (side == CollisionSide.Top)
+                                        {
+                                            OnBounceOnEntity?.Invoke((Entity)element);
+                                        }
+                                    }
+                                    OnCollisionWithEntity?.Invoke((Entity)element);
+                                }
+
+                                if (element.IsObstacle)
+                                {
+                                    playerIsIntersectingWithObstacle = true;
+
+                                    // Correct position to prevent intersection and block player
+                                    Player.Position = CollisionManager.GetCorrectedPosition(Player.HitBox, element.HitBox, side);
+
+                                    // Hit the ground
+                                    Player.IsTouchingTheGround = false;
                                     if (side == CollisionSide.Top)
                                     {
-                                        OnBounceOnEntity?.Invoke((Entity)element);
+                                        Player.IsTouchingTheGround = true;
+
+                                        if (Player.IsFalling)
+                                        {
+                                            Player.IsFalling = false;
+                                            Player.WasOnPlatform = true;
+                                        }
                                     }
-                                }
-                                OnCollisionWithEntity?.Invoke((Entity)element);
-                            }
 
-                            if (element.IsObstacle)
-                            {
-                                playerIsIntersectingWithObstacle = true;
-
-                                // Correct position to prevent intersection and block player
-                                Player.Position = CollisionManager.GetCorrectedPosition(Player.HitBox, element.HitBox, side);
-
-                                // Hit the ground
-                                Player.IsTouchingTheGround = false;
-                                if (side == CollisionSide.Top)
-                                {
-                                    Player.IsTouchingTheGround = true;
-
-                                    if (Player.IsFalling)
+                                    // Hit the ceiling
+                                    Player.IsTouchingTheCeiling = false;
+                                    if (side == CollisionSide.Bottom)
                                     {
-                                        Player.IsFalling = false;
-                                        Player.WasOnPlatform = true;
+                                        Player.IsTouchingTheCeiling = true;
                                     }
-                                }
-
-                                // Hit the ceiling
-                                Player.IsTouchingTheCeiling = false;
-                                if (side == CollisionSide.Bottom)
-                                {
-                                    Player.IsTouchingTheCeiling = true;
                                 }
                             }
                         }
-                    }
 
-                    // No ground under player's feet: falling
-                    if (!playerIsIntersectingWithObstacle && Player.WasOnPlatform && !Player.IsJumping)
-                    {
-                        Player.WasOnPlatform = false;
-                        Player.IsFalling = true;
-                        Player.IsTouchingTheGround = false;
+                        // No ground under player's feet: falling
+                        if (!playerIsIntersectingWithObstacle && Player.WasOnPlatform && !Player.IsJumping)
+                        {
+                            Player.WasOnPlatform = false;
+                            Player.IsFalling = true;
+                            Player.IsTouchingTheGround = false;
+                        }
                     }
                 }
 
@@ -325,15 +317,18 @@ namespace SixteenBitNuts
                 {
                     keySectionEditModePressed = true;
 
-                    if (isInSectionEditMode)
+                    if (Player != null)
                     {
-                        isInSectionEditMode = false;
-                        Player.IsControllable = true;
-                    }
-                    else
-                    {
-                        isInSectionEditMode = true;
-                        Player.IsControllable = false;
+                        if (isInSectionEditMode)
+                        {
+                            isInSectionEditMode = false;
+                            Player.IsControllable = true;
+                        }
+                        else
+                        {
+                            isInSectionEditMode = true;
+                            Player.IsControllable = false;
+                        }
                     }
                 }
                 if (Keyboard.GetState().IsKeyUp(Keys.F2))
@@ -358,34 +353,42 @@ namespace SixteenBitNuts
 
                 if (!isInSectionEditMode && !Camera.IsMovingToNextSection)
                 {
-                    if (Player.HitBox.Right > CurrentMapSection.Bounds.Right ||
-                        Player.HitBox.Left < CurrentMapSection.Bounds.Left)
+                    if (Player != null)
                     {
-                        transitionProgression = 0;
-                        nextSectionIndex = GetTransitionNextSectionIndex();
-                        if (nextSectionIndex != -1)
+                        if (Player.HitBox.Right > CurrentMapSection.Bounds.Right ||
+                        Player.HitBox.Left < CurrentMapSection.Bounds.Left)
                         {
-                            Player.IsControllable = false;
-                            Camera.IsMovingToNextSection = true;
-                            Camera.CanOverrideLimits = true;
-                            Vector2 transitionTargetPosition = sections[nextSectionIndex].GetNearestTransitionPointFrom(Player.Position);
-                            Vector2 oppositeAngle = new Vector2(transitionTargetPosition.X, transitionGuide.Position.Y);
+                            transitionProgression = 0;
+                            nextSectionIndex = GetTransitionNextSectionIndex();
+                            if (nextSectionIndex != -1)
+                            {
+                                Player.IsControllable = false;
+                                Camera.IsMovingToNextSection = true;
+                                Camera.CanOverrideLimits = true;
+                                
+                                var nearestTransitionPoint = sections[nextSectionIndex].GetNearestTransitionPointFrom(Player.Position);
+                                if (nearestTransitionPoint != null)
+                                {
+                                    Vector2 transitionTargetPosition = (Vector2)nearestTransitionPoint;
+                                    Vector2 oppositeAngle = new Vector2(transitionTargetPosition.X, transitionGuide.Position.Y);
 
-                            // Compute deltas
-                            transitionDeltaLength = Vector2.Distance(transitionGuide.Position, transitionTargetPosition);
-                            transitionDeltaHyp = transitionDeltaLength * TRANSITION_SPEED;
+                                    // Compute deltas
+                                    transitionDeltaLength = Vector2.Distance(transitionGuide.Position, transitionTargetPosition);
+                                    transitionDeltaHyp = transitionDeltaLength * TRANSITION_SPEED;
 
-                            // Compute move deltas
-                            float deltaX = Vector2.Distance(transitionGuide.Position, oppositeAngle);
-                            float deltaY = Vector2.Distance(transitionTargetPosition, oppositeAngle);
+                                    // Compute move deltas
+                                    float deltaX = Vector2.Distance(transitionGuide.Position, oppositeAngle);
+                                    float deltaY = Vector2.Distance(transitionTargetPosition, oppositeAngle);
 
-                            if (transitionTargetPosition.X < transitionGuide.Position.X)
-                                deltaX *= -1;
-                            if (transitionTargetPosition.Y < transitionGuide.Position.Y)
-                                deltaY *= -1;
+                                    if (transitionTargetPosition.X < transitionGuide.Position.X)
+                                        deltaX *= -1;
+                                    if (transitionTargetPosition.Y < transitionGuide.Position.Y)
+                                        deltaY *= -1;
 
-                            transitionDeltaX = TRANSITION_SPEED * deltaX;
-                            transitionDeltaY = TRANSITION_SPEED * deltaY;
+                                    transitionDeltaX = TRANSITION_SPEED * deltaX;
+                                    transitionDeltaY = TRANSITION_SPEED * deltaY;
+                                }
+                            }
                         }
                     }
                 }
@@ -396,10 +399,13 @@ namespace SixteenBitNuts
                         transitionGuide.Position.X + transitionDeltaX,
                         transitionGuide.Position.Y + transitionDeltaY
                     );
-                    Player.Position = new Vector2(
-                        Player.Position.X + transitionDeltaX / 32,
-                        Player.Position.Y + transitionDeltaY / 32
-                    );
+                    if (Player != null)
+                    {
+                        Player.Position = new Vector2(
+                            Player.Position.X + transitionDeltaX / 32,
+                            Player.Position.Y + transitionDeltaY / 32
+                        );
+                    }
                     Camera.Position = transitionGuide.Position;
 
                     transitionProgression += transitionDeltaHyp;
@@ -414,7 +420,10 @@ namespace SixteenBitNuts
                 {
                     Camera.IsMovingToNextSection = false;
                     Camera.CanOverrideLimits = false;
-                    Player.IsControllable = true;
+                    if (Player != null)
+                    {
+                        Player.IsControllable = true;
+                    }
 
                     currentSectionIndex = nextSectionIndex;
                     nextSectionIndex = -1;
@@ -429,7 +438,7 @@ namespace SixteenBitNuts
 
                 #region Player falls down
 
-                if (Player.Position.Y >= CurrentMapSection.Bounds.Bottom)
+                if (Player != null && Player.Position.Y >= CurrentMapSection.Bounds.Bottom)
                 {
                     Player.IsControllable = false;
                     deathTimer.Active = true;
@@ -439,7 +448,10 @@ namespace SixteenBitNuts
 
                 #region Camera
 
-                Camera.Position = Player.Position - new Vector2(-8, -12);
+                if (Player != null)
+                {
+                    Camera.Position = Player.Position - new Vector2(-8, -12);
+                }
                 Camera.Update(gameTime);
                 if (!Camera.IsMovingToNextSection)
                 {
@@ -451,7 +463,7 @@ namespace SixteenBitNuts
 
             if (isInDebugViewMode)
             {
-                Player.UpdateDebugHitBoxes();
+                Player?.UpdateDebugHitBoxes();
             }
 
             #region Map Editor
@@ -490,13 +502,13 @@ namespace SixteenBitNuts
                         0
                     );
 
-                    Game.SpriteBatch.Begin(transformMatrix: layerTransform, samplerState: SamplerState.PointWrap);
+                    Game.SpriteBatch?.Begin(transformMatrix: layerTransform, samplerState: SamplerState.PointWrap);
 
                     landscape?.Draw(layer);
 
                     if (layer == (int)LayerIndex.Main)
                     {
-                        Player.Draw();
+                        Player?.Draw();
                     }
 
                     foreach (KeyValuePair<int, MapSection> section in sections)
@@ -504,7 +516,7 @@ namespace SixteenBitNuts
                         section.Value.Draw(layer);
                     }
 
-                    Game.SpriteBatch.End();
+                    Game.SpriteBatch?.End();
                 }
             }
 
@@ -525,7 +537,7 @@ namespace SixteenBitNuts
             {
                 for (int layer = -4; layer <= 2; layer++)
                 {
-                    Game.SpriteBatch.Begin(transformMatrix: Camera.Transform);
+                    Game.SpriteBatch?.Begin(transformMatrix: Camera.Transform);
 
                     foreach (var section in sections)
                     {
@@ -533,10 +545,10 @@ namespace SixteenBitNuts
                     }
                     if (layer == 0)
                     {
-                        Player.DebugDraw();
+                        Player?.DebugDraw();
                     }
 
-                    Game.SpriteBatch.End();
+                    Game.SpriteBatch?.End();
                 }
             }
 
@@ -561,7 +573,10 @@ namespace SixteenBitNuts
         public void LoadSectionFromIndex(int index)
         {
             currentSectionIndex = index;
-            Player.Position = CurrentMapSection.DefaultSpawnPoint.Position;
+            if (Player != null)
+            {
+                Player.Position = CurrentMapSection.DefaultSpawnPoint.Position;
+            }
 
             isInMapEditMode = false;
         }
@@ -580,7 +595,7 @@ namespace SixteenBitNuts
                         section.Value.Bounds.Location.ToVector2(),
                         new Size(section.Value.Bounds.Size.X, section.Value.Bounds.Size.Y)
                     );
-                    if (Player.HitBox.Intersects(sectionHitBox))
+                    if (Player != null && Player.HitBox.Intersects(sectionHitBox))
                     {
                         return section.Key;
                     }
@@ -627,12 +642,15 @@ namespace SixteenBitNuts
                         };
                         break;
                     case "ly":
-                        landscape.Layers.Add(new LandscapeLayer()
+                        if (landscape != null)
                         {
-                            Name = components[2],
-                            Index = (LayerIndex)int.Parse(components[1]),
-                            Texture = Game.Content.Load<Texture2D>("Game/backgrounds/" + components[2])
-                        });
+                            landscape.Layers.Add(new LandscapeLayer()
+                            {
+                                Name = components[2],
+                                Index = (LayerIndex)int.Parse(components[1]),
+                                Texture = Game.Content.Load<Texture2D>("Game/backgrounds/" + components[2])
+                            });
+                        }
                         break;
                     case "se":
                         // Begin section
@@ -716,13 +734,16 @@ namespace SixteenBitNuts
         {
             var contents = new List<string>
             {
-                "map " + name,
-                "bg " + landscape.Name,
+                "map " + name
             };
 
-            foreach (var layer in landscape.Layers)
+            if (landscape != null)
             {
-                contents.Add("ly " + (int)layer.Index + " " + layer.Name);
+                contents.Add("bg " + landscape.Name);
+                foreach (var layer in landscape.Layers)
+                {
+                    contents.Add("ly " + (int)layer.Index + " " + layer.Name);
+                }
             }
 
             foreach (var section in sections)

@@ -32,7 +32,7 @@ namespace SixteenBitNuts.Editor
                 (Position.Y + 6)
             );
 
-            Toolbar.Editor.Map.Game.SpriteBatch.Draw(
+            Toolbar.Editor.Map.Game.SpriteBatch?.Draw(
                 texture: texture,
                 position: position,
                 sourceRectangle: new Rectangle(0, 0, 16, 16),
