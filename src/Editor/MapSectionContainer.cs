@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace SixteenBitNuts.Editor
 {
@@ -13,15 +12,20 @@ namespace SixteenBitNuts.Editor
         Bottom
     }
 
-    class MapSection
+    class MapSectionContainer
     {
         public Map Map { get; private set; }
         public int Index { get; set; }
-        public SixteenBitNuts.MapSection RealSection
+        public MapSection? RealSection
         {
             get
             {
-                return Map.Sections[Index];
+                if (Map.Sections.ContainsKey(Index))
+                {
+                    return Map.Sections[Index];
+                }
+
+                return null;
             }
         }
 
@@ -52,7 +56,7 @@ namespace SixteenBitNuts.Editor
             }
         }
 
-        public MapSection(Map map, MapEditor editor, int index, Rectangle bounds)
+        public MapSectionContainer(Map map, MapEditor editor, int index, Rectangle bounds)
         {
             Map = map;
             Index = index;
@@ -127,7 +131,10 @@ namespace SixteenBitNuts.Editor
                         editor.IsMovingSection = false;
 
                         // Update all positions in the real map section
-                        RealSection.UpdateAllPositions(bounds.Location - previousSectionPosition, bounds.Size);
+                        if (RealSection != null)
+                        {
+                            RealSection.UpdateAllPositions(bounds.Location - previousSectionPosition, bounds.Size);
+                        }
 
                         preview.UpdatePreviewTilesFromRealSection();
                     }
@@ -292,7 +299,10 @@ namespace SixteenBitNuts.Editor
                         editor.IsResizingSection = false;
 
                         // Update all positions in the real map section
-                        RealSection.UpdateAllPositions(bounds.Location - previousSectionPosition, bounds.Size);
+                        if (RealSection != null)
+                        {
+                            RealSection.UpdateAllPositions(bounds.Location - previousSectionPosition, bounds.Size);
+                        }
 
                         preview.UpdatePreviewTilesFromRealSection();
                     }

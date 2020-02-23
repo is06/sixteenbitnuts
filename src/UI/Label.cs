@@ -17,17 +17,11 @@ namespace SixteenBitNuts
         {
             this.scene = scene;
             Text = "";
-            InitFont();
-        }
-
-        protected virtual void InitFont()
-        {
-            
         }
 
         public virtual void Draw()
         {
-            if (IsVisible)
+            if (IsVisible && font != null)
             {
                 scene.Game.SpriteBatch?.DrawString(font, Text, Position, Color, 0f, Vector2.Zero, 1f, SpriteEffects.None, 1f);
             }

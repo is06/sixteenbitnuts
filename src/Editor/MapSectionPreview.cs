@@ -9,10 +9,10 @@ namespace SixteenBitNuts.Editor
         public Point Position { get; set; }
 
         private readonly Texture2D pixel;
-        private readonly MapSection section;
+        private readonly MapSectionContainer section;
         private readonly List<Point> previewTilePositions;
 
-        public MapSectionPreview(MapSection section)
+        public MapSectionPreview(MapSectionContainer section)
         {
             this.section = section;
 
@@ -39,12 +39,15 @@ namespace SixteenBitNuts.Editor
         {
             previewTilePositions.Clear();
 
-            foreach (var tile in section.RealSection.Tiles)
+            if (section.RealSection != null)
             {
-                previewTilePositions.Add(new Point(
-                    (int)((tile.Position.X / MapEditor.SCALE) - (section.RealSection.Bounds.Location.X / MapEditor.SCALE)),
-                    (int)((tile.Position.Y / MapEditor.SCALE) - (section.RealSection.Bounds.Location.Y / MapEditor.SCALE))
-                ));
+                foreach (var tile in section.RealSection.Tiles)
+                {
+                    previewTilePositions.Add(new Point(
+                        (int)((tile.Position.X / MapEditor.SCALE) - (section.RealSection.Bounds.Location.X / MapEditor.SCALE)),
+                        (int)((tile.Position.Y / MapEditor.SCALE) - (section.RealSection.Bounds.Location.Y / MapEditor.SCALE))
+                    ));
+                }
             }
         }
     }

@@ -23,6 +23,7 @@ namespace SixteenBitNuts
             }
         }
         public SpriteBatch? SpriteBatch { get; set; }
+        public TilesetService TilesetService { get; private set; }
 
         #endregion
 
@@ -40,6 +41,8 @@ namespace SixteenBitNuts
         {
             graphics = new GraphicsDeviceManager(this);
             process = Process.GetCurrentProcess();
+
+            TilesetService = new TilesetService(this);
         }
 
         protected override void Initialize()

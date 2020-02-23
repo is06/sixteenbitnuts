@@ -11,7 +11,7 @@ namespace SixteenBitNuts.Editor
         public const float SCALE = 16f;
 
         private readonly Camera camera;
-        private readonly Dictionary<int, MapSection> sections;
+        private readonly Dictionary<int, MapSectionContainer> containers;
         private readonly Box frame;
         private readonly Texture2D gridTexture;
         private readonly EditorLabel cursorPosition;
@@ -23,6 +23,13 @@ namespace SixteenBitNuts.Editor
         public bool IsMovingSection { get; set; }
         public bool IsResizingSection { get; set; }
         public Cursor Cursor { get; set; }
+        public Dictionary<int, MapSectionContainer> MapSectionContainers
+        {
+            get
+            {
+                return containers;
+            }
+        }
 
         public MapEditor(Map map)
         {
@@ -32,7 +39,7 @@ namespace SixteenBitNuts.Editor
             {
                 CanOverrideLimits = true
             };
-            sections = new Dictionary<int, MapSection>();
+            containers = new Dictionary<int, MapSectionContainer>();
             cursorPosition = new EditorLabel(map)
             {
                 IsVisible = true,
@@ -45,7 +52,7 @@ namespace SixteenBitNuts.Editor
 
             foreach (var section in map.Sections)
             {
-                sections[section.Key] = new MapSection(map, this, section.Key, section.Value.Bounds);
+                containers[section.Key] = new MapSectionContainer(map, this, section.Key, section.Value.Bounds);
             }
 
             Cursor = new Cursor(map, camera);
@@ -89,14 +96,13 @@ namespace SixteenBitNuts.Editor
                     (int)Map.Game.InternalSize.Height
                 );
 
-                int nextSectionIndex = sections.Count;
-                sections.Add(nextSectionIndex, new MapSection(Map, this, nextSectionIndex, bounds));
+                int nextSectionIndex = Map.Sections.Count;
+                containers.Add(nextSectionIndex, new MapSectionContainer(Map, this, nextSectionIndex, bounds));
 
-                // TODO: retrieve tileset from tileset factory
-                var tileset = new Tileset(Map.Game, "tileset3");
-
-                // TODO: create a spawn point for this section
-                Map.Sections.Add(nextSectionIndex, new SixteenBitNuts.MapSection(Map, bounds, tileset, "spawn02"));
+                var defaultSpawnPoint = new SpawnPoint(Map, "spawn01");
+                var mapSection = new SixteenBitNuts.MapSection(Map, bounds, Map.Game.TilesetService.Get("beta"), defaultSpawnPoint.Name);
+                mapSection.Entities.Add(defaultSpawnPoint.Name, defaultSpawnPoint);
+                Map.Sections.Add(nextSectionIndex, mapSection);
             }
             if (Keyboard.GetState().IsKeyUp(Keys.Add))
             {
@@ -105,7 +111,7 @@ namespace SixteenBitNuts.Editor
 
             #endregion
 
-            foreach (var section in sections)
+            foreach (var section in containers)
             {
                 section.Value.Update(new Vector2(
                     Cursor.InGamePosition.X * SCALE,
@@ -147,7 +153,7 @@ namespace SixteenBitNuts.Editor
             }
 
             // Draw map sections
-            foreach (var section in sections)
+            foreach (var section in containers)
             {
                 section.Value.Draw();
             }
@@ -169,13 +175,13 @@ namespace SixteenBitNuts.Editor
 
         public void UpdateLayout()
         {
-            foreach (var section in sections)
+            foreach (var section in containers)
             {
                 section.Value.UpdateLayout();
             }
         }
 
-        public void LoadSection(MapSection section)
+        public void LoadSection(MapSectionContainer section)
         {
             Map.LoadSectionFromIndex(section.Index);
         }

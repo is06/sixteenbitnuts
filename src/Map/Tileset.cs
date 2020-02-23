@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.IO;
@@ -7,7 +8,7 @@ using System.Collections.Generic;
 namespace SixteenBitNuts
 {
     public class Tileset
-    {        
+    {
         private readonly Texture2D texture;
         private readonly Box debugHitBox;
         protected readonly Dictionary<int, TileElement> elements;
@@ -22,9 +23,16 @@ namespace SixteenBitNuts
             Game = game;
 
             // Components
-            texture = Game.Content.Load<Texture2D>("Game/tilesets/" + name);
+            try
+            {
+                texture = Game.Content.Load<Texture2D>("Game/tilesets/" + name);
+            }
+            catch (ContentLoadException e)
+            {
+                throw new GameException("Exception while loading tileset texture '" + name + "' (" + e.Message + ")");
+            }
+            
             debugHitBox = new Box(Game, new Rectangle(0, 0, 16, 16), 1, Color.DarkRed);
-
             elements = new Dictionary<int, TileElement>();
             
             LoadFromFile("Data/tilesets/" + name + ".tileset");

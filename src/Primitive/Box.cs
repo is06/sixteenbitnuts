@@ -4,7 +4,7 @@ namespace SixteenBitNuts
 {
     public class Box
     {
-        private Line[] lines;
+        private readonly Line[] lines;
 
         public Rectangle Bounds { get; set; }
         public int Thickness { get; set; }

@@ -657,21 +657,26 @@ namespace SixteenBitNuts
                         sectionIndex++;
                         try
                         {
+                            var bounds = new Rectangle(
+                                int.Parse(components[1]),
+                                int.Parse(components[2]),
+                                int.Parse(components[3]),
+                                int.Parse(components[4])
+                            );
                             sections[sectionIndex] = new MapSection(
                                 this,
-                                new Rectangle(
-                                    int.Parse(components[1]),
-                                    int.Parse(components[2]),
-                                    int.Parse(components[3]),
-                                    int.Parse(components[4])
-                                ),
-                                new Tileset(Game, components[5]),
+                                bounds,
+                                Game.TilesetService.Get(components[5]),
                                 components[6]
                             );
+                            mapEditor.MapSectionContainers.Add(
+                                sectionIndex,
+                                new MapSectionContainer(this, mapEditor, sectionIndex, bounds)
+                            );
                         }
-                        catch (System.Exception)
+                        catch (IndexOutOfRangeException e)
                         {
-                            throw new GameException("Section deleclaration doest not conform to correct syntax: se x y width height tileset_name default_spawn");
+                            throw new GameException("Missing a component of section descriptor line (" + e.Message + ")");
                         }
                         break;
                     case "en":
