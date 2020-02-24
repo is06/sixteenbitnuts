@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Diagnostics;
-using System.Collections.Generic;
 
 namespace SixteenBitNuts
 {
@@ -15,13 +14,7 @@ namespace SixteenBitNuts
         public Size InternalSize { get; protected set; }
         public int FrameRate { get; protected set; }
         public Viewport InGameViewport { get; private set; }
-        public float ScreenScale
-        {
-            get
-            {
-                return WindowSize.Width / (float)InternalSize.Width;
-            }
-        }
+        public float ScreenScale => WindowSize.Width / InternalSize.Width;
         public SpriteBatch? SpriteBatch { get; set; }
         public TilesetService TilesetService { get; private set; }
 

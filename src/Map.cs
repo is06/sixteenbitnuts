@@ -52,31 +52,12 @@ namespace SixteenBitNuts
 
         #region Properties
 
-        public Dictionary<int, MapSection> Sections
-        {
-            get
-            {
-                return sections;
-            }
-        }
-        public MapSection CurrentMapSection
-        {
-            get
-            {
-                return sections[currentSectionIndex];
-            }
-        }
+        public Dictionary<int, MapSection> Sections => sections;
+        public MapSection CurrentMapSection => sections[currentSectionIndex];
         public Player? Player { get; protected set; }
         public Camera Camera { get; private set; }
         public int EntityLastIndex { get; set; }
-        public bool IsInSectionEditMode
-        {
-            get
-            {
-                return isInSectionEditMode;
-            }
-        }
-
+        public bool IsInSectionEditMode => isInSectionEditMode;
         public Vector2 Gravity { get; protected set; }
 
         #endregion
