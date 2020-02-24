@@ -14,21 +14,6 @@ namespace SixteenBitNuts.Editor
 
     class MapSectionContainer
     {
-        public Map Map { get; private set; }
-        public int Index { get; set; }
-        public MapSection? RealSection
-        {
-            get
-            {
-                if (Map.Sections.ContainsKey(Index))
-                {
-                    return Map.Sections[Index];
-                }
-
-                return null;
-            }
-        }
-
         private const int SCALE = 16;
 
         private readonly MapEditor editor;
@@ -44,6 +29,20 @@ namespace SixteenBitNuts.Editor
         private readonly EditorLabel sizeLabel;
         private readonly EditorLabel positionLabel;
 
+        public Map Map { get; private set; }
+        public int Index { get; set; }
+        public MapSection? RealSection
+        {
+            get
+            {
+                if (Map.Sections.ContainsKey(Index))
+                {
+                    return Map.Sections[Index];
+                }
+
+                return null;
+            }
+        }
         public Rectangle ScreenBounds
         {
             get
