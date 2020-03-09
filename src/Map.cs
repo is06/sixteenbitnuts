@@ -563,6 +563,26 @@ namespace SixteenBitNuts
         }
 
         /// <summary>
+        /// Add an entity to the current map section
+        /// </summary>
+        /// <param name="entity">The entity to add</param>
+        protected void AddEntity(Entity entity)
+        {
+            CurrentMapSection.Entities.Add(entity.Name, entity);
+        }
+
+        /// <summary>
+        /// Add an entity to a specific map section
+        /// </summary>
+        /// <param name="entity">The entity to add</param>
+        /// <param name="sectionIndex">The section index where to add the entity</param>
+        protected void AddEntity(Entity entity, int sectionIndex)
+        {
+            sections[sectionIndex].Entities.Add(entity.Name, entity);
+        }
+
+
+        /// <summary>
         /// Return the index of the next section for the transition
         /// </summary>
         /// <returns>Integer representing the index</returns>
