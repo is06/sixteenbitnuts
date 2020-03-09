@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using SixteenBitNuts.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace SixteenBitNuts
@@ -13,6 +14,7 @@ namespace SixteenBitNuts
 
         protected Texture2D? texture;
         protected Vector2 drawPosition;
+        protected List<Movement> movements = new List<Movement>();
 
         public Entity(Map map, string name) : base(map)
         {
@@ -23,6 +25,11 @@ namespace SixteenBitNuts
         public override void Update(GameTime gameTime)
         {
             drawPosition = Position;
+
+            foreach (var movement in movements)
+            {
+                movement.Update(gameTime);
+            }
 
             base.Update(gameTime);
         }
@@ -50,6 +57,11 @@ namespace SixteenBitNuts
         public void Destroy()
         {
             IsDestroying = true;
+        }
+
+        public void AddMovement(Movement movement)
+        {
+            movements.Add(movement);
         }
 
         public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
