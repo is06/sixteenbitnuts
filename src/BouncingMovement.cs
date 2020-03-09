@@ -4,9 +4,9 @@ namespace SixteenBitNuts
 {
     public class BouncingMovement : Movement
     {
-        public int Strength { get; set; }
+        public float Strength { get; set; }
 
-        public BouncingMovement(Entity entity) : base(entity)
+        public BouncingMovement() : base()
         {
             
         }
@@ -14,6 +14,11 @@ namespace SixteenBitNuts
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
+
+            Translation = new Vector2(
+                Strength * Easing.Arch2(time),
+                Translation.Y
+            );
         }
     }
 }

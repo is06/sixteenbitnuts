@@ -4,17 +4,20 @@ namespace SixteenBitNuts
 {
     public class Movement
     {
-        private readonly Entity entity;
-        private Vector2 translation;
+        public Vector2 Translation { get; protected set; }
+        public float Speed { get; set; }
 
-        public Movement(Entity entity)
+        protected float time = 0f;
+
+        public Movement()
         {
-            this.entity = entity;
+
         }
 
         public virtual void Update(GameTime gameTime)
         {
-            entity.Position += translation;
+            time += (Speed / 100f);
+            if (time > 1f) time = 0f;
         }
     }
 }
