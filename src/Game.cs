@@ -71,7 +71,7 @@ namespace SixteenBitNuts
         protected override void Update(GameTime gameTime)
         {
             process = Process.GetCurrentProcess();
-            Window.Title = WindowTitle + " - " + (process.PrivateMemorySize64 / 1000000f) + " MB";
+            Window.Title = WindowTitle + " - " + (process.PrivateMemorySize64 / (1024f * 1024f)) + " MB";
 
             base.Update(gameTime);
 
