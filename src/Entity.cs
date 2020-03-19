@@ -13,7 +13,6 @@ namespace SixteenBitNuts
         public string Name { get; private set; }
 
         protected Texture2D? texture;
-        protected Vector2 initPosition;
         protected Vector2 drawPosition;
         protected List<Movement> movements = new List<Movement>();
 
@@ -21,7 +20,6 @@ namespace SixteenBitNuts
         {
             Name = name;
             DebugColor = Color.Orange;
-            initPosition = Position;
         }
 
         public override void Update(GameTime gameTime)
@@ -29,7 +27,7 @@ namespace SixteenBitNuts
             foreach (var movement in movements)
             {
                 movement.Update(gameTime);
-                Position = initPosition + movement.Translation;
+                Position += movement.Translation;
             }
 
             drawPosition = Position;

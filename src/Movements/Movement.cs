@@ -7,7 +7,7 @@ namespace SixteenBitNuts
         public Vector2 Translation { get; protected set; }
         public float Speed { get; set; }
 
-        protected float time = 0f;
+        protected float movementStep = 0f;
 
         public Movement()
         {
@@ -16,8 +16,7 @@ namespace SixteenBitNuts
 
         public virtual void Update(GameTime gameTime)
         {
-            time += (Speed / 100f);
-            if (time > 1f) time = 0f;
+            
         }
     }
 }
