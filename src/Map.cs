@@ -77,8 +77,6 @@ namespace SixteenBitNuts
         #region Event handlers
 
         public event CollisionHandler? OnCollisionWithEntity;
-        public event CollisionHandler? OnAttackEntity;
-        public event CollisionHandler? OnBounceOnEntity;
 
         #endregion
 
@@ -191,15 +189,6 @@ namespace SixteenBitNuts
                     foreach (var element in nearElements)
                     {
                         element.DebugColor = Color.Orange;
-
-                        // Attack collisions
-                        if (Player != null && Player.IsAttacking && Player.AttackBox.Intersects(element.HitBox))
-                        {
-                            if (element is Entity)
-                            {
-                                OnAttackEntity?.Invoke((Entity)element);
-                            }
-                        }
                     }
                 }
 
@@ -226,13 +215,6 @@ namespace SixteenBitNuts
                                 // Entity collision event
                                 if (element is Entity)
                                 {
-                                    if (Player.IsPunching)
-                                    {
-                                        if (side == CollisionSide.Top)
-                                        {
-                                            OnBounceOnEntity?.Invoke((Entity)element);
-                                        }
-                                    }
                                     OnCollisionWithEntity?.Invoke((Entity)element);
                                 }
 
