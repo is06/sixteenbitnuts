@@ -38,6 +38,8 @@ namespace SixteenBitNuts
 
             if (DestinationPoint is Vector2 point)
             {
+                info.AddValue("w", Size.Width);
+                info.AddValue("h", Size.Height);
                 info.AddValue("dx", point.X);
                 info.AddValue("dy", point.Y);
             }
