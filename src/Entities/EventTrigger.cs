@@ -21,10 +21,8 @@ namespace SixteenBitNuts
 
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            info.AddValue("name", Name);
-            info.AddValue("type", GetType().Name);
-            info.AddValue("x", Position.X);
-            info.AddValue("y", Position.Y);
+            base.GetObjectData(info, context);
+
             info.AddValue("w", Size.Width);
             info.AddValue("h", Size.Height);
         }

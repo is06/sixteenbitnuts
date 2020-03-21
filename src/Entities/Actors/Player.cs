@@ -18,7 +18,6 @@ namespace SixteenBitNuts
         public Size Size { get; set; }
         public HitBox HitBox { get; set; }
         public HitBox PreviousFrameHitBox { get; set; }
-        public HitBox AttackBox { get; set; }
         public Vector2 Position
         {
             get

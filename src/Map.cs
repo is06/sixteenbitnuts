@@ -642,24 +642,16 @@ namespace SixteenBitNuts
                         break;
                     case "en":
                         // Entities
-                        try
-                        {
-                            LoadEntity(components[1], sectionIndex, components[2], new Vector2(
+                        LoadEntity(
+                            type: components[1],
+                            sectionIndex: sectionIndex,
+                            name: components[2],
+                            position: new Vector2(
                                 int.Parse(components[3]),
                                 int.Parse(components[4])
-                            ), new Size(
-                                int.Parse(components[5]),
-                                int.Parse(components[6])
-                            ));
-                        }
-                        catch (IndexOutOfRangeException)
-                        {
-                            // Entity description has no size information
-                            LoadEntity(components[1], sectionIndex, components[2], new Vector2(
-                                int.Parse(components[3]),
-                                int.Parse(components[4])
-                            ));
-                        }
+                            ),
+                            extraData: components
+                        );
                         break;
                     case "ti":
                         // Tile
@@ -683,14 +675,8 @@ namespace SixteenBitNuts
             }
         }
 
-        /// <summary>
-        /// Not sizable entities loading from map descriptor file
-        /// </summary>
-        /// <param name="type"></param>
-        /// <param name="sectionIndex"></param>
-        /// <param name="name"></param>
-        /// <param name="position"></param>
-        protected virtual void LoadEntity(string type, int sectionIndex, string name, Vector2 position)
+        
+        protected virtual void LoadEntity(string type, int sectionIndex, string name, Vector2 position, string[] extraData)
         {
             switch (type)
             {
@@ -700,26 +686,28 @@ namespace SixteenBitNuts
                         Position = position
                     };
                     break;
-            }
-        }
-
-        /// <summary>
-        /// Sizable entities loading from map descriptor file
-        /// </summary>
-        /// <param name="type"></param>
-        /// <param name="sectionIndex"></param>
-        /// <param name="name"></param>
-        /// <param name="position"></param>
-        /// <param name="size"></param>
-        protected virtual void LoadEntity(string type, int sectionIndex, string name, Vector2 position, Size size)
-        {
-            switch (type)
-            {
                 case "EventTrigger":
                     sections[sectionIndex].Entities[name] = new EventTrigger(this, name)
                     {
                         Position = position,
-                        Size = size
+                        Size = new Size(
+                            int.Parse(extraData[5]),
+                            int.Parse(extraData[6])
+                        )
+                    };
+                    break;
+                case "Teleport":
+                    sections[sectionIndex].Entities[name] = new Teleport(this, name)
+                    {
+                        Position = position,
+                        Size = new Size(
+                            int.Parse(extraData[5]),
+                            int.Parse(extraData[6])
+                        ),
+                        DestinationPoint = new Vector2(
+                            int.Parse(extraData[7]),
+                            int.Parse(extraData[8])
+                        )
                     };
                     break;
             }
