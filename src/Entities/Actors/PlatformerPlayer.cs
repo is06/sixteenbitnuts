@@ -3,8 +3,20 @@ using Microsoft.Xna.Framework.Input;
 
 namespace SixteenBitNuts
 {
-    public class PlatformerPlayer : Player
+    public abstract class PlatformerPlayer : Player
     {
+        public bool IsRunning { get; set; }
+        public bool IsJumping { get; set; }
+        public bool IsDucking { get; set; }
+        public bool IsAttacking { get; set; }
+        public bool IsPunching { get; set; }
+        public bool IsBouncing { get; set; }
+        public bool IsDashFalling { get; set; }
+        public bool IsFalling { get; set; }
+        public bool IsTouchingTheGround { get; set; }
+        public bool IsTouchingTheCeiling { get; set; }
+        public bool WasOnPlatform { get; set; }
+        public float Weight { get; protected set; }
         public float RunSpeed { get; protected set; }
         public float JumpForce { get; protected set; }
 
@@ -16,6 +28,7 @@ namespace SixteenBitNuts
             Weight = 1f;
             RunSpeed = 1f;
             JumpForce = -6f;
+            IsFalling = true;
         }
 
         public override void Update(GameTime _)
@@ -149,6 +162,32 @@ namespace SixteenBitNuts
             }
 
             #endregion
+        }
+
+        public override void ComputePhysics()
+        {
+            velocity += map.Gravity * Weight;
+
+            if (IsTouchingTheGround)
+                velocity.Y = 0;
+
+            if (IsTouchingTheCeiling)
+            {
+                IsTouchingTheCeiling = false;
+                velocity.Y *= -0.5f;
+            }
+
+            base.ComputePhysics();
+        }
+
+        public override void UpdateHitBox()
+        {
+            base.UpdateHitBox();
+
+            HitBox = new HitBox(
+                new Vector2(position.X, (IsDucking || IsAttacking) ? position.Y + 8 : position.Y),
+                new Size(Size.Width, (IsDucking || IsAttacking) ? Size.Height - 8 : Size.Height)
+            );
         }
     }
 }

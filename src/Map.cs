@@ -45,9 +45,6 @@ namespace SixteenBitNuts
         private float transitionDeltaY;
         private bool transitionIsFinished;
 
-        // Death
-        private readonly Timer deathTimer;
-
         #endregion
 
         #region Properties
@@ -99,8 +96,6 @@ namespace SixteenBitNuts
             // Components
             sections = new Dictionary<int, MapSection>();
             transitionGuide = new TransitionGuide();
-            deathTimer = new Timer { Duration = 2 };
-            deathTimer.OnTimerFinished += DeathTimer_OnTimerFinished;
             mapEditor = new MapEditor(this);
             sectionEditor = new MapSectionEditor(this);
 
@@ -119,14 +114,7 @@ namespace SixteenBitNuts
             layerOffsetFactors[(int)LayerIndex.Foreground2] = new Vector2(1.7f, 1.7f);
         }
 
-        private void DeathTimer_OnTimerFinished()
-        {
-            if (Player != null)
-            {
-                Player.Position = CurrentMapSection.DefaultSpawnPoint.Position;
-                Player.IsControllable = true;
-            }
-        }
+        
 
         /// <summary>
         /// Performs calculations for the map
@@ -141,12 +129,6 @@ namespace SixteenBitNuts
             }
             else
             {
-                #region Misc
-
-                deathTimer.Update(gameTime);
-
-                #endregion
-
                 #region Components positioning
 
                 // Map Sections
@@ -225,35 +207,41 @@ namespace SixteenBitNuts
                                     // Correct position to prevent intersection and block player
                                     Player.Position = CollisionManager.GetCorrectedPosition(Player.HitBox, element.HitBox, side);
 
-                                    // Hit the ground
-                                    Player.IsTouchingTheGround = false;
-                                    if (side == CollisionSide.Top)
+                                    if (Player is PlatformerPlayer hittingPlayer)
                                     {
-                                        Player.IsTouchingTheGround = true;
-
-                                        if (Player.IsFalling)
+                                        // Hit the ground
+                                        hittingPlayer.IsTouchingTheGround = false;
+                                        if (side == CollisionSide.Top)
                                         {
-                                            Player.IsFalling = false;
-                                            Player.WasOnPlatform = true;
-                                        }
-                                    }
+                                            hittingPlayer.IsTouchingTheGround = true;
 
-                                    // Hit the ceiling
-                                    Player.IsTouchingTheCeiling = false;
-                                    if (side == CollisionSide.Bottom)
-                                    {
-                                        Player.IsTouchingTheCeiling = true;
+                                            if (hittingPlayer.IsFalling)
+                                            {
+                                                hittingPlayer.IsFalling = false;
+                                                hittingPlayer.WasOnPlatform = true;
+                                            }
+                                        }
+
+                                        // Hit the ceiling
+                                        hittingPlayer.IsTouchingTheCeiling = false;
+                                        if (side == CollisionSide.Bottom)
+                                        {
+                                            hittingPlayer.IsTouchingTheCeiling = true;
+                                        }
                                     }
                                 }
                             }
                         }
 
-                        // No ground under player's feet: falling
-                        if (!playerIsIntersectingWithObstacle && Player.WasOnPlatform && !Player.IsJumping)
+                        if (Player is PlatformerPlayer fallingPlayer)
                         {
-                            Player.WasOnPlatform = false;
-                            Player.IsFalling = true;
-                            Player.IsTouchingTheGround = false;
+                            // No ground under player's feet: falling
+                            if (!playerIsIntersectingWithObstacle && fallingPlayer.WasOnPlatform && !fallingPlayer.IsJumping)
+                            {
+                                fallingPlayer.WasOnPlatform = false;
+                                fallingPlayer.IsFalling = true;
+                                fallingPlayer.IsTouchingTheGround = false;
+                            } 
                         }
                     }
                 }
@@ -395,16 +383,6 @@ namespace SixteenBitNuts
                     Camera.Update(gameTime);
 
                     transitionIsFinished = false;
-                }
-
-                #endregion
-
-                #region Player falls down
-
-                if (Player != null && Player.Position.Y >= CurrentMapSection.Bounds.Bottom)
-                {
-                    Player.IsControllable = false;
-                    deathTimer.Active = true;
                 }
 
                 #endregion
@@ -664,10 +642,24 @@ namespace SixteenBitNuts
                         break;
                     case "en":
                         // Entities
-                        LoadEntity(components[1], sectionIndex, components[2], new Vector2(
-                            int.Parse(components[3]),
-                            int.Parse(components[4])
-                        ));
+                        try
+                        {
+                            LoadEntity(components[1], sectionIndex, components[2], new Vector2(
+                                int.Parse(components[3]),
+                                int.Parse(components[4])
+                            ), new Size(
+                                int.Parse(components[5]),
+                                int.Parse(components[6])
+                            ));
+                        }
+                        catch (IndexOutOfRangeException)
+                        {
+                            // Entity description has no size information
+                            LoadEntity(components[1], sectionIndex, components[2], new Vector2(
+                                int.Parse(components[3]),
+                                int.Parse(components[4])
+                            ));
+                        }
                         break;
                     case "ti":
                         // Tile
@@ -691,6 +683,13 @@ namespace SixteenBitNuts
             }
         }
 
+        /// <summary>
+        /// Not sizable entities loading from map descriptor file
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="sectionIndex"></param>
+        /// <param name="name"></param>
+        /// <param name="position"></param>
         protected virtual void LoadEntity(string type, int sectionIndex, string name, Vector2 position)
         {
             switch (type)
@@ -704,12 +703,53 @@ namespace SixteenBitNuts
             }
         }
 
+        /// <summary>
+        /// Sizable entities loading from map descriptor file
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="sectionIndex"></param>
+        /// <param name="name"></param>
+        /// <param name="position"></param>
+        /// <param name="size"></param>
+        protected virtual void LoadEntity(string type, int sectionIndex, string name, Vector2 position, Size size)
+        {
+            switch (type)
+            {
+                case "EventTrigger":
+                    sections[sectionIndex].Entities[name] = new EventTrigger(this, name)
+                    {
+                        Position = position,
+                        Size = size
+                    };
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Serialization of map
+        /// </summary>
+        /// <param name="info"></param>
+        /// <param name="context"></param>
         public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             info.AddValue("landscape", landscape);
             info.AddValue("section", sections);
         }
 
+        public override void EditCurrentSection()
+        {
+            isInSectionEditMode = true;
+        }
+
+        public override void EditLayout()
+        {
+            isInMapEditMode = true;
+        }
+
+        /// <summary>
+        /// Saves the current map to a file in binary mode
+        /// </summary>
+        /// <param name="filePath"></param>
         private void SaveToBinary(string filePath)
         {
             var stream = new MemoryStream();
@@ -718,6 +758,10 @@ namespace SixteenBitNuts
             File.WriteAllBytes(filePath, stream.ToArray());
         }
 
+        /// <summary>
+        /// Saves the current map to a file in text mode
+        /// </summary>
+        /// <param name="filePath"></param>
         private void SaveToFile(string filePath)
         {
             var contents = new List<string>
@@ -767,16 +811,6 @@ namespace SixteenBitNuts
 
             File.Delete(filePath);
             File.AppendAllLines(filePath, contents);
-        }
-
-        public override void EditCurrentSection()
-        {
-            isInSectionEditMode = true;
-        }
-
-        public override void EditLayout()
-        {
-            isInMapEditMode = true;
         }
     }
 }
