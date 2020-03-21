@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace SixteenBitNuts
 {
-    public class Label
+    public abstract class Label
     {
         public Vector2 Position { get; set; }
         public string Text { get; set; }

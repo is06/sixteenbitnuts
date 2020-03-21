@@ -2,7 +2,7 @@
 
 namespace SixteenBitNuts
 {
-    public class LoopingMovement : Movement
+    public abstract class LoopingMovement : Movement
     {
         protected float time = 0f;
         public bool IsLooping { get; set; } = true;

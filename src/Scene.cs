@@ -4,7 +4,7 @@ using System;
 namespace SixteenBitNuts
 {
     [Serializable()]
-    public class Scene
+    public abstract class Scene
     {
         public Game Game { get; private set; }
 

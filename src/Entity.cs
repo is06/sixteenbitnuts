@@ -8,7 +8,7 @@ using System.Runtime.Serialization;
 namespace SixteenBitNuts
 {
     [Serializable]
-    public class Entity : MapElement, IEntity, ISerializable
+    public abstract class Entity : MapElement, IEntity, ISerializable
     {
         public string Name { get; private set; }
 

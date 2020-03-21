@@ -30,5 +30,10 @@ namespace SixteenBitNuts
         {
             return new Vector2(Width, Height);
         }
+
+        public override string ToString()
+        {
+            return Width + " " + Height;
+        }
     }
 }

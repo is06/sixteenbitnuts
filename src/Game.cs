@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace SixteenBitNuts
 {
-    public class Game : Microsoft.Xna.Framework.Game
+    public abstract class Game : Microsoft.Xna.Framework.Game
     {
         #region Properties
 

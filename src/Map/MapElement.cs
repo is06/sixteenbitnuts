@@ -4,7 +4,7 @@ using SixteenBitNuts.Interfaces;
 
 namespace SixteenBitNuts
 {
-    public class MapElement : IMapElement
+    public abstract class MapElement : IMapElement
     {
         #region Constants
 

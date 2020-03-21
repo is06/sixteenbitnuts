@@ -2,7 +2,7 @@
 
 namespace SixteenBitNuts
 {
-    public class Movement
+    public abstract class Movement
     {
         public Vector2 Translation { get; protected set; }
         public float Speed { get; set; }
