@@ -8,10 +8,6 @@ namespace SixteenBitNuts
         public bool IsRunning { get; set; }
         public bool IsJumping { get; set; }
         public bool IsDucking { get; set; }
-        public bool IsAttacking { get; set; }
-        public bool IsPunching { get; set; }
-        public bool IsBouncing { get; set; }
-        public bool IsDashFalling { get; set; }
         public bool IsFalling { get; set; }
         public bool IsTouchingTheGround { get; set; }
         public bool IsTouchingTheCeiling { get; set; }
@@ -41,7 +37,7 @@ namespace SixteenBitNuts
             {
                 IsDucking = false;
 
-                if (!IsBouncing && !IsAttacking && !IsJumping && !IsFalling)
+                if (!IsJumping && !IsFalling)
                 {
                     // Gamepad
                     if (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.LeftThumbstickDown) ||
@@ -67,7 +63,7 @@ namespace SixteenBitNuts
                 IsRunning = false;
                 velocity.X = 0;
 
-                if (!IsDucking && !IsAttacking)
+                if (!IsDucking)
                 {
                     // Gamepad
                     if (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.LeftThumbstickLeft) ||
@@ -185,8 +181,8 @@ namespace SixteenBitNuts
             base.UpdateHitBox();
 
             HitBox = new HitBox(
-                new Vector2(position.X, (IsDucking || IsAttacking) ? position.Y + 8 : position.Y),
-                new Size(Size.Width, (IsDucking || IsAttacking) ? Size.Height - 8 : Size.Height)
+                new Vector2(position.X, IsDucking ? position.Y + 8 : position.Y),
+                new Size(Size.Width, IsDucking ? Size.Height - 8 : Size.Height)
             );
         }
     }
