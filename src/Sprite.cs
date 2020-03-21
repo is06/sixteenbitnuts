@@ -91,15 +91,14 @@ namespace SixteenBitNuts
 
         public void Draw(Vector2 position, float layer)
         {
-            Point size = new Point(
-                CurrentAnimation.Size.X,
-                CurrentAnimation.Size.Y
+            Point offset = new Point(
+                CurrentAnimation.Directions[Direction].Offset.X + ((int)Math.Floor(currentAnimationFrame) * CurrentAnimation.Size.X),
+                CurrentAnimation.Directions[Direction].Offset.Y
             );
 
-            Point offset = new Point(
-                CurrentAnimation.DirectionOffsets[Direction].X + ((int)Math.Floor(currentAnimationFrame) * size.X),
-                CurrentAnimation.DirectionOffsets[Direction].Y
-            );
+            SpriteEffects effects = SpriteEffects.None;
+            if (CurrentAnimation.Directions[Direction].FlippedHorizontally) effects |= SpriteEffects.FlipHorizontally;
+            if (CurrentAnimation.Directions[Direction].FlippedVertically) effects |= SpriteEffects.FlipVertically;
 
             game.SpriteBatch?.Draw(
                 texture: texture,
@@ -114,7 +113,7 @@ namespace SixteenBitNuts
                 rotation: 0f,
                 origin: new Vector2(0, 0),
                 scale: Vector2.One,
-                effects: SpriteEffects.None,
+                effects: effects,
                 layerDepth: layer
             );
 
@@ -177,30 +176,42 @@ namespace SixteenBitNuts
                         Length = int.Parse(components[6]),
                         Speed = float.Parse(components[7], CultureInfo.InvariantCulture),
                         Looped = int.Parse(components[8]) == 1,
-                        DirectionOffsets = new Dictionary<Direction, Point>()
+                        Directions = new Dictionary<Direction, SpriteDirection>()
                     };
                 }
                 if (components[0] == "di")
                 {
                     Direction direction = (Direction)int.Parse(components[1]);
 
-                    animations[animationName].DirectionOffsets[direction] = new Point(
-                        int.Parse(components[2]),
-                        int.Parse(components[3])
-                    );
+                    animations[animationName].Directions[direction] = new SpriteDirection
+                    {
+                        Offset = new Point(
+                            int.Parse(components[2]),
+                            int.Parse(components[3])
+                        ),
+                        FlippedHorizontally = int.Parse(components[4]) == 1,
+                        FlippedVertically = int.Parse(components[5]) == 1
+                    };
                 }
             }
         }
     }
 
+    public struct SpriteDirection
+    {
+        public Point Offset;
+        public bool FlippedHorizontally;
+        public bool FlippedVertically;
+    }
+
     public struct SpriteAnimation
     {
-        public string Name { get; set; }
-        public Point Size { get; set; }
-        public Point HitBoxOffset { get; set; }
-        public int Length { get; set; }
-        public float Speed { get; set; }
-        public Dictionary<Direction, Point> DirectionOffsets { get; set; }
-        public bool Looped { get; set; }
+        public string Name;
+        public Point Size;
+        public Point HitBoxOffset;
+        public int Length;
+        public float Speed;
+        public Dictionary<Direction, SpriteDirection> Directions;
+        public bool Looped;
     }
 }
