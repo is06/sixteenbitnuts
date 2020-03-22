@@ -15,8 +15,9 @@ namespace SixteenBitNuts
     public class MapSection : ISerializable
     {
         private Vector2[]? transitionPoints;
+        private readonly string? defaultSpawnPointName;
+
         private readonly Texture2D transitionCornerTexture;
-        private readonly string defaultSpawnPointName;
 
         #region Properties
 
@@ -34,7 +35,7 @@ namespace SixteenBitNuts
                        " " + Bounds.Width +
                        " " + Bounds.Height +
                        " " + Tileset.Name +
-                       " " + DefaultSpawnPoint.Name;
+                       " " + (DefaultSpawnPoint != null ? DefaultSpawnPoint.Name : "");
             }
         }
         public List<IMapElement> Elements
@@ -55,11 +56,16 @@ namespace SixteenBitNuts
             }
         }
 
-        public ISpawnPoint DefaultSpawnPoint
+        public ISpawnPoint? DefaultSpawnPoint
         {
             get
             {
-                return (ISpawnPoint)Entities[defaultSpawnPointName];
+                if (defaultSpawnPointName is string name)
+                {
+                    return (ISpawnPoint)Entities[name];
+                }
+
+                return null;
             }
         }
 
@@ -222,7 +228,7 @@ namespace SixteenBitNuts
             info.AddValue("bounds.Width", Bounds.Width);
             info.AddValue("bounds.Height", Bounds.Height);
             info.AddValue("tileset", Tileset.Name);
-            info.AddValue("defaultSpawnPoint", DefaultSpawnPoint.Name);
+            info.AddValue("defaultSpawnPoint", DefaultSpawnPoint != null ? DefaultSpawnPoint.Name : "");
             info.AddValue("tiles", Tiles);
             info.AddValue("entities", Entities);
         }

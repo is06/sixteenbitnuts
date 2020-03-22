@@ -21,7 +21,6 @@ namespace SixteenBitNuts
 
         public PlatformerPlayer(Map map) : base(map)
         {
-            Position = map.CurrentMapSection.DefaultSpawnPoint.Position;
             Weight = 1f;
             RunSpeed = 1f;
             JumpForce = -6f;
@@ -160,6 +159,21 @@ namespace SixteenBitNuts
             }
 
             #endregion
+        }
+
+        public override void Draw()
+        {
+            if (sprite != null)
+            {
+                var pos = DrawingPosition - sprite.HitBoxOffset;
+
+                if (IsDucking)
+                {
+                    pos.Y -= DuckOffset;
+                }
+
+                sprite.Draw(position: pos, layer: 0f);
+            }
         }
 
         public override void ComputePhysics()

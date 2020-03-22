@@ -506,12 +506,12 @@ namespace SixteenBitNuts
         public void LoadSectionFromIndex(int index)
         {
             currentSectionIndex = index;
-            if (Player != null)
+            isInMapEditMode = false;
+
+            if (Player != null && CurrentMapSection.DefaultSpawnPoint != null)
             {
                 Player.Position = CurrentMapSection.DefaultSpawnPoint.Position;
             }
-
-            isInMapEditMode = false;
         }
 
         /// <summary>
