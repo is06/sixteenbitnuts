@@ -3,5 +3,6 @@
     public interface ITile : IMapElement
     {
         int Id { get; }
+        string MapTextDescription { get; }
     }
 }

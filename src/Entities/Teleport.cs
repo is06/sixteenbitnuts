@@ -8,6 +8,26 @@ namespace SixteenBitNuts
     public class Teleport : Entity, ISerializable
     {
         public Vector2? DestinationPoint { get; set; }
+        public override string MapTextDescription
+        {
+            get
+            {
+                string description = "en " + GetType().Name +
+                       " " + Name +
+                       " " + Position.X +
+                       " " + Position.Y +
+                       " " + Size.Width +
+                       " " + Size.Height;
+
+                if (DestinationPoint is Vector2 point)
+                {
+                    description += " " + point.X;
+                    description += " " + point.Y;
+                }
+
+                return description;
+            }
+        }
 
         public Teleport(Map map, string name) : base(map, name)
         {

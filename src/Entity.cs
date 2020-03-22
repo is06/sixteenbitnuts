@@ -11,6 +11,16 @@ namespace SixteenBitNuts
     public abstract class Entity : MapElement, IEntity, ISerializable
     {
         public string Name { get; private set; }
+        public virtual string MapTextDescription
+        {
+            get
+            {
+                return "en " + GetType().Name +
+                        " " + Name +
+                        " " + Position.X +
+                        " " + Position.Y;
+            }
+        }
 
         protected Texture2D? texture;
         protected Vector2 drawPosition;

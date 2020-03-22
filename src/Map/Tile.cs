@@ -9,6 +9,16 @@ namespace SixteenBitNuts
     public class Tile : MapElement, ITile, ISerializable
     {
         public int Id { get; private set; }
+        public string MapTextDescription
+        {
+            get
+            {
+                return "ti " + Id +
+                       " " + Position.X +
+                       " " + Position.Y +
+                       " 0";
+            }
+        }
 
         private readonly Tileset tileset;
 

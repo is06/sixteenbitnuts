@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace SixteenBitNuts
 {
-    enum LayerIndex : int
+    public enum LayerIndex : int
     {
         StaticBackground = 0,
         Background4 = 1,
@@ -19,7 +19,7 @@ namespace SixteenBitNuts
     }
 
     [Serializable]
-    struct LandscapeLayer : ISerializable
+    public struct LandscapeLayer : ISerializable
     {
         public string Name;
         public LayerIndex Index;
@@ -33,7 +33,7 @@ namespace SixteenBitNuts
     }
 
     [Serializable]
-    class Landscape : ISerializable
+    public class Landscape : ISerializable
     {
         private readonly Map map;
 

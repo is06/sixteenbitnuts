@@ -6,7 +6,6 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
 using SixteenBitNuts.Interfaces;
 
 namespace SixteenBitNuts
@@ -25,7 +24,6 @@ namespace SixteenBitNuts
         #region Fields
 
         // Map
-        private readonly string name;
         private int currentSectionIndex;
         private int nextSectionIndex;
 
@@ -49,6 +47,8 @@ namespace SixteenBitNuts
 
         #region Properties
 
+        public string Name { get; set; }
+        public Landscape? Landscape { get; set; }
         public Dictionary<int, MapSection> Sections => sections;
         public MapSection CurrentMapSection => sections[currentSectionIndex];
         public Player? Player { get; protected set; }
@@ -67,7 +67,6 @@ namespace SixteenBitNuts
         private readonly MapEditor mapEditor;
         private readonly TransitionGuide transitionGuide;
         private readonly Vector2[] layerOffsetFactors;
-        private Landscape? landscape;
 
         #endregion
 
@@ -84,8 +83,7 @@ namespace SixteenBitNuts
         /// <param name="name">The name identifier of the map (used to load data from file)</param>
         public Map(Game game, string name) : base(game)
         {
-            // Fields
-            this.name = name;
+            Name = name;
 
             Camera = new Camera(
                 this,
@@ -293,8 +291,8 @@ namespace SixteenBitNuts
 
                     if (Keyboard.GetState().IsKeyDown(Keys.F12))
                     {
-                        SaveToFile("Data/maps/" + name + ".map");
-                        SaveToBinary("Data/maps/" + name + ".bin");
+                        MapWriter.SaveToFile(MapFileMode.Text, this);
+                        MapWriter.SaveToFile(MapFileMode.Binary, this);
                     }
                 }
 
@@ -445,7 +443,7 @@ namespace SixteenBitNuts
 
                     Game.SpriteBatch?.Begin(transformMatrix: layerTransform, samplerState: SamplerState.PointWrap);
 
-                    landscape?.Draw(layer);
+                    Landscape?.Draw(layer);
 
                     if (layer == (int)LayerIndex.Main)
                     {
@@ -476,21 +474,15 @@ namespace SixteenBitNuts
         {
             if (!isInMapEditMode && isInDebugViewMode)
             {
-                for (int layer = -4; layer <= 2; layer++)
+                Game.SpriteBatch?.Begin(transformMatrix: Camera.Transform);
+
+                foreach (var section in sections)
                 {
-                    Game.SpriteBatch?.Begin(transformMatrix: Camera.Transform);
-
-                    foreach (var section in sections)
-                    {
-                        section.Value.DebugDraw();
-                    }
-                    if (layer == 0)
-                    {
-                        Player?.DebugDraw();
-                    }
-
-                    Game.SpriteBatch?.End();
+                    section.Value.DebugDraw();
                 }
+                Player?.DebugDraw();
+
+                Game.SpriteBatch?.End();
             }
 
             base.DebugDraw();
@@ -585,7 +577,7 @@ namespace SixteenBitNuts
 
             if (lines.Length == 0)
             {
-                throw new GameException("Map file '" + name + ".map' is empty");
+                throw new GameException("Map file '" + Name + ".map' is empty");
             }
 
             int sectionIndex = -1;
@@ -597,15 +589,15 @@ namespace SixteenBitNuts
                 switch (components[0])
                 {
                     case "bg":
-                        landscape = new Landscape(this)
+                        Landscape = new Landscape(this)
                         {
                             Name = components[1]
                         };
                         break;
                     case "ly":
-                        if (landscape != null)
+                        if (Landscape != null)
                         {
-                            landscape.Layers.Add(new LandscapeLayer()
+                            Landscape.Layers.Add(new LandscapeLayer()
                             {
                                 Name = components[2],
                                 Index = (LayerIndex)int.Parse(components[1]),
@@ -720,8 +712,8 @@ namespace SixteenBitNuts
         /// <param name="context"></param>
         public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            info.AddValue("landscape", landscape);
-            info.AddValue("section", sections);
+            info.AddValue("landscape", Landscape);
+            info.AddValue("sections", sections);
         }
 
         public override void EditCurrentSection()
@@ -732,73 +724,6 @@ namespace SixteenBitNuts
         public override void EditLayout()
         {
             isInMapEditMode = true;
-        }
-
-        /// <summary>
-        /// Saves the current map to a file in binary mode
-        /// </summary>
-        /// <param name="filePath"></param>
-        private void SaveToBinary(string filePath)
-        {
-            var stream = new MemoryStream();
-            var formatter = new BinaryFormatter();
-            formatter.Serialize(stream, this);
-            File.WriteAllBytes(filePath, stream.ToArray());
-        }
-
-        /// <summary>
-        /// Saves the current map to a file in text mode
-        /// </summary>
-        /// <param name="filePath"></param>
-        private void SaveToFile(string filePath)
-        {
-            var contents = new List<string>
-            {
-                "map " + name
-            };
-
-            if (landscape != null)
-            {
-                contents.Add("bg " + landscape.Name);
-                foreach (var layer in landscape.Layers)
-                {
-                    contents.Add("ly " + (int)layer.Index + " " + layer.Name);
-                }
-            }
-
-            foreach (var section in sections)
-            {
-                contents.Add(
-                    "se " + section.Value.Bounds.X +
-                    " " + section.Value.Bounds.Y +
-                    " " + section.Value.Bounds.Width +
-                    " " + section.Value.Bounds.Height +
-                    " " + section.Value.Tileset.Name +
-                    " " + section.Value.DefaultSpawnPoint.Name
-                );
-
-                foreach (var tile in section.Value.Tiles)
-                {
-                    contents.Add(
-                        "ti " + tile.Id +
-                        " " + tile.Position.X +
-                        " " + tile.Position.Y +
-                        " 0"
-                    );
-                }
-                foreach (var entity in section.Value.Entities)
-                {
-                    contents.Add(
-                        "en " + entity.Value.GetType().Name +
-                        " " + entity.Key +
-                        " " + entity.Value.Position.X +
-                        " " + entity.Value.Position.Y
-                    );
-                }
-            }
-
-            File.Delete(filePath);
-            File.AppendAllLines(filePath, contents);
         }
     }
 }

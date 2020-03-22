@@ -25,7 +25,18 @@ namespace SixteenBitNuts
         public Tileset Tileset { get; private set; }
         public List<ITile> Tiles { get; set; }
         public Dictionary<string, IEntity> Entities { get; set; }
-
+        public string MapTextDescription
+        {
+            get
+            {
+                return "se " + Bounds.X +
+                       " " + Bounds.Y +
+                       " " + Bounds.Width +
+                       " " + Bounds.Height +
+                       " " + Tileset.Name +
+                       " " + DefaultSpawnPoint.Name;
+            }
+        }
         public List<IMapElement> Elements
         {
             get

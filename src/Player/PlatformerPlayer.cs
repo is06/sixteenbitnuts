@@ -15,6 +15,7 @@ namespace SixteenBitNuts
         public float Weight { get; protected set; }
         public float RunSpeed { get; protected set; }
         public float JumpForce { get; protected set; }
+        public float DuckOffset { get; protected set; }
 
         private bool jumpButtonPressed;
 
@@ -24,6 +25,7 @@ namespace SixteenBitNuts
             Weight = 1f;
             RunSpeed = 1f;
             JumpForce = -6f;
+            DuckOffset = 8f;
             IsFalling = true;
         }
 
@@ -181,8 +183,8 @@ namespace SixteenBitNuts
             base.UpdateHitBox();
 
             HitBox = new HitBox(
-                new Vector2(position.X, IsDucking ? position.Y + 8 : position.Y),
-                new Size(Size.Width, IsDucking ? Size.Height - 8 : Size.Height)
+                new Vector2(position.X, IsDucking ? position.Y + DuckOffset : position.Y),
+                new Size(Size.Width, IsDucking ? Size.Height - DuckOffset : Size.Height)
             );
         }
     }
