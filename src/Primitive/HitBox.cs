@@ -1,4 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
+using SixteenBitNuts.Interfaces;
+using System.Collections.Generic;
 
 namespace SixteenBitNuts
 {
@@ -64,6 +66,14 @@ namespace SixteenBitNuts
             }
         }
 
+        public Vector2 Center
+        {
+            get
+            {
+                return new Vector2(X + Width / 2f, Y + Height / 2f);
+            }
+        }
+
         public HitBox(Vector2 position, Size size)
         {
             Position = position;
@@ -77,6 +87,31 @@ namespace SixteenBitNuts
                 return true;
             }
             return false;
+        }
+
+        public float GetDistanceFrom(HitBox other)
+        {
+            return Vector2.Distance(Center, other.Center);
+        }
+
+        public IMapElement? GetNearestElementIn(List<IMapElement> elements)
+        {
+            if (elements.Count == 0) return null;
+
+            IMapElement nearest = elements[0];
+            float minDistance = GetDistanceFrom(nearest.HitBox);
+
+            foreach (var element in elements)
+            {
+                var distance = GetDistanceFrom(element.HitBox);
+                if (distance < minDistance)
+                {
+                    minDistance = distance;
+                    nearest = element;
+                }
+            }
+
+            return nearest;
         }
     }
 }

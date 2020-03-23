@@ -45,26 +45,6 @@ namespace SixteenBitNuts
             base.Update(gameTime);
         }
 
-        public override void Draw()
-        {
-            if (IsVisible)
-            {
-                map.Game.SpriteBatch?.Draw(
-                    texture: texture,
-                    position: drawPosition,
-                    sourceRectangle: new Rectangle(Point.Zero, Size.ToPoint()),
-                    color: Color.White,
-                    rotation: 0f,
-                    origin: Vector2.Zero,
-                    scale: Vector2.One,
-                    effects: SpriteEffects.None,
-                    layerDepth: 0f
-                );
-            }
-
-            base.Draw();
-        }
-
         public void Destroy()
         {
             IsDestroying = true;

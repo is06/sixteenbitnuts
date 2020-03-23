@@ -203,56 +203,16 @@ namespace SixteenBitNuts
                 }
             }
 
-            var nearestLeft = GetNearestElementFromHitBox(currentHitBox, leftElements);
+            var nearestLeft = currentHitBox.GetNearestElementIn(leftElements);
             if (nearestLeft != null) result.Add(nearestLeft);
-            var nearestRight = GetNearestElementFromHitBox(currentHitBox, rightElements);
+            var nearestRight = currentHitBox.GetNearestElementIn(rightElements);
             if (nearestRight != null) result.Add(nearestRight);
-            var nearestTop = GetNearestElementFromHitBox(currentHitBox, topElements);
+            var nearestTop = currentHitBox.GetNearestElementIn(topElements);
             if (nearestTop != null) result.Add(nearestTop);
-            var nearestBottom = GetNearestElementFromHitBox(currentHitBox, bottomElements);
+            var nearestBottom = currentHitBox.GetNearestElementIn(bottomElements);
             if (nearestBottom != null) result.Add(nearestBottom);
 
             return result;
-        }
-
-        /// <summary>
-        /// Retrieve the nearest element in a list from a hitbox
-        /// </summary>
-        /// <param name="hitBox">The origin hitbox, usually the player hitbox</param>
-        /// <param name="elements">List of element to look into</param>
-        /// <returns>The nearest element</returns>
-        public static IMapElement? GetNearestElementFromHitBox(HitBox hitBox, List<IMapElement> elements)
-        {
-            if (elements.Count == 0) return null;
-
-            IMapElement nearest = elements.First();
-            float minDistance = CollisionManager.GetDistance(hitBox, nearest.HitBox);
-
-            foreach (var element in elements)
-            {
-                var distance = CollisionManager.GetDistance(hitBox, element.HitBox);
-                if (distance < minDistance)
-                {
-                    minDistance = distance;
-                    nearest = element;
-                }
-            }
-
-            return nearest;
-        }
-
-        /// <summary>
-        /// Returns the distance between two hitboxes
-        /// </summary>
-        /// <param name="first">First hitbox</param>
-        /// <param name="second">Second hitbox</param>
-        /// <returns>float</returns>
-        public static float GetDistance(HitBox first, HitBox second)
-        {
-            Vector2 firstCenter = new Vector2(first.X + first.Width / 2f, first.Y + first.Height / 2f);
-            Vector2 secondCenter = new Vector2(second.X + second.Width / 2f, second.Y + second.Height / 2f);
-
-            return Vector2.Distance(firstCenter, secondCenter);
         }
     }
 }
