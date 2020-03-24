@@ -38,11 +38,12 @@ namespace SixteenBitNuts
         private readonly Map map;
 
         public List<LandscapeLayer> Layers { get; set; }
-        public string? Name { get; set; }
+        public string Name { get; }
 
-        public Landscape(Map map)
+        public Landscape(Map map, string name)
         {
             this.map = map;
+            Name = name;
             Layers = new List<LandscapeLayer>();
         }
 

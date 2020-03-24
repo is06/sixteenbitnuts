@@ -589,10 +589,7 @@ namespace SixteenBitNuts
                 switch (components[0])
                 {
                     case "bg":
-                        Landscape = new Landscape(this)
-                        {
-                            Name = components[1]
-                        };
+                        Landscape = new Landscape(this, components[1]);
                         break;
                     case "ly":
                         if (Landscape != null)
