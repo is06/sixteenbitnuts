@@ -56,7 +56,7 @@ namespace SixteenBitNuts
 
         }
 
-        public virtual void Draw()
+        public virtual void Draw(Matrix transform)
         {
 
         }

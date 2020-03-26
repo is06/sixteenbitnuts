@@ -33,7 +33,7 @@ namespace SixteenBitNuts
             IsObstacle = type == TileType.Obstacle;
         }
 
-        public override void Draw()
+        public override void Draw(Matrix _)
         {
             tileset.Draw(Position, Size.ToVector2(), tileset.GetOffsetFromId(Id), Vector2.One);
         }

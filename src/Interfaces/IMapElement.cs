@@ -15,7 +15,7 @@ namespace SixteenBitNuts.Interfaces
         HitBox HitBox { get; }
 
         void Update(GameTime gameTime);
-        void Draw();
+        void Draw(Matrix transform);
         void EditorDraw();
         void DebugDraw();
     }

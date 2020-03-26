@@ -47,8 +47,13 @@ namespace SixteenBitNuts
             Layers = new List<LandscapeLayer>();
         }
 
-        public void Draw(int layerIndex)
+        public void Draw(int layerIndex, Matrix transform)
         {
+            map.Game.SpriteBatch?.Begin(
+                transformMatrix: transform,
+                samplerState: SamplerState.PointWrap
+            );
+
             foreach (var layer in Layers)
             {
                 if ((int)layer.Index == layerIndex)
@@ -66,6 +71,8 @@ namespace SixteenBitNuts
                     );
                 }
             }
+
+            map.Game.SpriteBatch?.End();
         }
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)

@@ -161,7 +161,7 @@ namespace SixteenBitNuts
             #endregion
         }
 
-        public override void Draw()
+        public override void Draw(Matrix transform)
         {
             if (sprite != null)
             {
@@ -172,7 +172,11 @@ namespace SixteenBitNuts
                     pos.Y -= DuckOffset;
                 }
 
-                sprite.Draw(position: pos, layer: 0f);
+                sprite.Draw(
+                    position: pos,
+                    layer: 0f,
+                    transform: transform
+                );
             }
         }
 

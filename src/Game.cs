@@ -16,6 +16,7 @@ namespace SixteenBitNuts
         public Viewport InGameViewport { get; private set; }
         public float ScreenScale => WindowSize.Width / InternalSize.Width;
         public SpriteBatch? SpriteBatch { get; set; }
+        public EffectService? EffectService { get; private set; }
         public TilesetService TilesetService { get; private set; }
 
         #endregion
@@ -34,7 +35,7 @@ namespace SixteenBitNuts
         {
             graphics = new GraphicsDeviceManager(this);
             process = Process.GetCurrentProcess();
-
+            
             TilesetService = new TilesetService(this);
         }
 
@@ -52,6 +53,7 @@ namespace SixteenBitNuts
             TargetElapsedTime = new TimeSpan((int)(1000f / FrameRate * 10000f));
             InGameViewport = new Viewport(0, 0, (int)InternalSize.Width, (int)InternalSize.Height);
             SpriteBatch = new SpriteBatch(GraphicsDevice);
+            EffectService = new EffectService(this);
 
             renderSurface = new RenderTarget2D(GraphicsDevice, (int)InternalSize.Width, (int)InternalSize.Height);
 
@@ -60,7 +62,7 @@ namespace SixteenBitNuts
 
         protected override void LoadContent()
         {
-
+            
         }
 
         protected override void UnloadContent()
@@ -74,6 +76,8 @@ namespace SixteenBitNuts
             Window.Title = WindowTitle + " - " + (process.PrivateMemorySize64 / (1024f * 1024f)) + " MB";
 
             base.Update(gameTime);
+
+            EffectService?.Effects[PostProcessEffect.Chroma].Parameters["time"].SetValue((float)gameTime.TotalGameTime.TotalSeconds);
 
             currentScene?.Update(gameTime);
         }
@@ -96,15 +100,11 @@ namespace SixteenBitNuts
                 GraphicsDevice.SetRenderTarget(null);
 
                 // Render the surface to have the ingame screen
-                SpriteBatch?.Begin(
-                    SpriteSortMode.Immediate,
-                    BlendState.AlphaBlend,
-                    SamplerState.PointClamp,
-                    null,
-                    null,
-                    null, // Effect
-                    null
-                );
+                SpriteBatch?.Begin(SpriteSortMode.Immediate, BlendState.Opaque, SamplerState.PointClamp);
+
+                // Apply post process effects if needed
+                EffectService?.ApplyEffect(PostProcessEffect.Chroma);
+
                 SpriteBatch?.Draw(
                     texture: renderSurface,
                     destinationRectangle: new Rectangle(0, 0, (int)WindowSize.Width, (int)WindowSize.Height),

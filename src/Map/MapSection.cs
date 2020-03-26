@@ -105,19 +105,31 @@ namespace SixteenBitNuts
         /// <summary>
         /// Draw all tiles
         /// </summary>
-        public void Draw(int layer)
+        public void Draw(int layer, Matrix transform)
         {
             // Main layer drawables
             if (layer == (int)LayerIndex.Main)
             {
-                foreach (Tile tile in Tiles)
-                {
-                    tile.Draw();
-                }
+                // First: draw entities
                 foreach (KeyValuePair<string, IEntity> pair in Entities)
                 {
-                    pair.Value.Draw();
+                    pair.Value.Draw(transform);
                 }
+
+                // Second: draw every tiles
+                // There is only one sprite batch for tiles, so only one shader possible
+                // for all tiles
+                Map.Game.SpriteBatch?.Begin(
+                    transformMatrix: transform,
+                    samplerState: SamplerState.PointClamp
+                );
+                foreach (Tile tile in Tiles)
+                {
+                    tile.Draw(transform);
+                }
+                Map.Game.SpriteBatch?.End();
+
+                // In edit mode: draw the editor info for each entities
                 if (Map.IsInSectionEditMode)
                 {
                     foreach (KeyValuePair<string, IEntity> pair in Entities)

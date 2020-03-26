@@ -441,21 +441,17 @@ namespace SixteenBitNuts
                         0
                     );
 
-                    Game.SpriteBatch?.Begin(transformMatrix: layerTransform, samplerState: SamplerState.PointWrap);
-
-                    Landscape?.Draw(layer);
+                    Landscape?.Draw(layer, layerTransform);
 
                     if (layer == (int)LayerIndex.Main)
                     {
-                        Player?.Draw();
+                        Player?.Draw(layerTransform);
                     }
 
                     foreach (KeyValuePair<int, MapSection> section in sections)
                     {
-                        section.Value.Draw(layer);
+                        section.Value.Draw(layer, layerTransform);
                     }
-
-                    Game.SpriteBatch?.End();
                 }
             }
 

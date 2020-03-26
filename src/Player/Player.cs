@@ -116,9 +116,13 @@ namespace SixteenBitNuts
         /// <summary>
         /// Draw player sprite
         /// </summary>
-        public virtual void Draw()
+        public virtual void Draw(Matrix transform)
         {
-            sprite?.Draw(position: DrawingPosition - sprite.HitBoxOffset, layer: 0f);
+            sprite?.Draw(
+                position: DrawingPosition - sprite.HitBoxOffset,
+                layer: 0f,
+                transform: transform
+            );
         }
 
         /// <summary>

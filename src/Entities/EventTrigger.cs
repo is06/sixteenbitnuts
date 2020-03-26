@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 using System.Runtime.Serialization;
 
 namespace SixteenBitNuts
@@ -25,7 +26,7 @@ namespace SixteenBitNuts
 
         }
 
-        public override void Draw()
+        public override void Draw(Matrix transform)
         {
             // Empty draw method to prevent drawing a null texture
             // (we don't need to draw an event trigger after all)

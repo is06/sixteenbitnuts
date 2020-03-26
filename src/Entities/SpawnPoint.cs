@@ -27,9 +27,9 @@ namespace SixteenBitNuts
 
         }
 
-        public override void Draw()
+        public override void Draw(Matrix transform)
         {
-            base.Draw();
+            base.Draw(transform);
         }
 
         public override void EditorDraw()

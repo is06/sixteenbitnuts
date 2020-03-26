@@ -47,7 +47,7 @@ namespace SixteenBitNuts
             }
         }
 
-        public override void Draw()
+        public override void Draw(Matrix transform)
         {
             // Empty draw method to prevent drawing a null texture
         }

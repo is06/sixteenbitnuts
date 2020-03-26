@@ -89,7 +89,7 @@ namespace SixteenBitNuts
             texture = game.Content.Load<Texture2D>("Game/sprites/" + textureName);
         }
 
-        public void Draw(Vector2 position, float layer)
+        public void Draw(Vector2 position, float layer, Matrix transform)
         {
             Point offset = new Point(
                 CurrentAnimation.Directions[Direction].Offset.X + ((int)Math.Floor(currentAnimationFrame) * CurrentAnimation.Size.X),
@@ -99,6 +99,13 @@ namespace SixteenBitNuts
             SpriteEffects effects = SpriteEffects.None;
             if (CurrentAnimation.Directions[Direction].FlippedHorizontally) effects |= SpriteEffects.FlipHorizontally;
             if (CurrentAnimation.Directions[Direction].FlippedVertically) effects |= SpriteEffects.FlipVertically;
+
+            game.SpriteBatch?.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null, transform);
+
+            if (game.EffectService?.Effects[PostProcessEffect.Example] is Effect effect)
+            {
+                effect.CurrentTechnique.Passes[0].Apply();
+            }
 
             game.SpriteBatch?.Draw(
                 texture: texture,
@@ -116,6 +123,8 @@ namespace SixteenBitNuts
                 effects: effects,
                 layerDepth: layer
             );
+
+            game.SpriteBatch?.End();
 
             // Increment animation frame counter
             if (isAnimated)
