@@ -25,18 +25,9 @@ namespace SixteenBitNuts
 
         // Complex functions
 
-        public static float Bezier2(float a, float b, float c, float t)
-        {
-            float s = 1 - t;
-            float s2 = s * s;
-            float t2 = t * t;
-
-            return (s2 * a) + (2 * b * s * t) + (t2 * c);
-        }
-
         public static float NormalizedBezier2(float a, float t)
         {
-            return Bezier2(0, a, 1, t);
+            return MathUtil.Bezier2(0, a, 1, t);
         }
 
         public static float NormalizedBezier3(float b, float c, float t)
