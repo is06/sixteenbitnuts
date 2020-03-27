@@ -93,6 +93,12 @@ namespace SixteenBitNuts
                 // Draws everything in the surface
                 currentScene?.Draw();
 
+                // Apply main display effects
+                if (renderSurface is RenderTarget2D surface)
+                {
+                    EffectService?.UpdateMainDisplayEffects(surface);
+                }
+
                 // Debug visual representation
                 currentScene?.DebugDraw();
 
@@ -101,9 +107,6 @@ namespace SixteenBitNuts
 
                 // Render the surface to have the ingame screen
                 SpriteBatch?.Begin(SpriteSortMode.Immediate, BlendState.Opaque, SamplerState.PointClamp);
-
-                // Apply main display effects if needed
-                EffectService?.UpdateMainDisplayEffects();
 
                 SpriteBatch?.Draw(
                     texture: renderSurface,
