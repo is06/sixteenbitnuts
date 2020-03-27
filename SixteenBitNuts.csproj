@@ -17,8 +17,4 @@
     <PackageReference Include="MonoGame.Content.Builder" Version="3.7.0.9" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="src\Effects\" />
-  </ItemGroup>
-
 </Project>

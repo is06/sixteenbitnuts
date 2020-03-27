@@ -102,11 +102,6 @@ namespace SixteenBitNuts
 
             game.SpriteBatch?.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null, transform);
 
-            if (game.EffectService?.Effects[PostProcessEffect.Example] is Effect effect)
-            {
-                effect.CurrentTechnique.Passes[0].Apply();
-            }
-
             game.SpriteBatch?.Draw(
                 texture: texture,
                 position: new Vector2((float)Math.Round(position.X), (float)Math.Round(position.Y)),

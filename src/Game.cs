@@ -77,7 +77,7 @@ namespace SixteenBitNuts
 
             base.Update(gameTime);
 
-            EffectService?.Effects[PostProcessEffect.Chroma].Parameters["time"].SetValue((float)gameTime.TotalGameTime.TotalSeconds);
+            
 
             currentScene?.Update(gameTime);
         }
@@ -102,8 +102,8 @@ namespace SixteenBitNuts
                 // Render the surface to have the ingame screen
                 SpriteBatch?.Begin(SpriteSortMode.Immediate, BlendState.Opaque, SamplerState.PointClamp);
 
-                // Apply post process effects if needed
-                EffectService?.ApplyEffect(PostProcessEffect.Chroma);
+                // Apply main display effects if needed
+                EffectService?.UpdateMainDisplayEffects();
 
                 SpriteBatch?.Draw(
                     texture: renderSurface,
