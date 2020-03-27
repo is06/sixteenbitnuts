@@ -4,7 +4,7 @@ namespace SixteenBitNuts
 {
     public class Box
     {
-        private readonly Line[] lines;
+        private readonly OldLine[] lines;
 
         public Rectangle Bounds { get; set; }
         public int Thickness { get; set; }
@@ -16,16 +16,16 @@ namespace SixteenBitNuts
             Thickness = thickness;
             Color = color;
 
-            lines = new Line[4];
-            lines[0] = new Line(game, new Rectangle(0, 0, 1, 1), color);
-            lines[1] = new Line(game, new Rectangle(0, 0, 1, 1), color);
-            lines[2] = new Line(game, new Rectangle(0, 0, 1, 1), color);
-            lines[3] = new Line(game, new Rectangle(0, 0, 1, 1), color);
+            lines = new OldLine[4];
+            lines[0] = new OldLine(game, new Rectangle(0, 0, 1, 1), color);
+            lines[1] = new OldLine(game, new Rectangle(0, 0, 1, 1), color);
+            lines[2] = new OldLine(game, new Rectangle(0, 0, 1, 1), color);
+            lines[3] = new OldLine(game, new Rectangle(0, 0, 1, 1), color);
         }
 
         public void Update()
         {
-            foreach (Line line in lines)
+            foreach (OldLine line in lines)
             {
                 line.Color = Color;
             }
@@ -42,7 +42,7 @@ namespace SixteenBitNuts
 
         public void Draw()
         {
-            foreach (Line line in lines)
+            foreach (OldLine line in lines)
             {
                 line.Draw();
             }
