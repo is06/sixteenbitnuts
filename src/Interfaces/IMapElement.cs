@@ -16,7 +16,7 @@ namespace SixteenBitNuts.Interfaces
 
         void Update(GameTime gameTime);
         void Draw(Matrix transform);
-        void EditorDraw();
-        void DebugDraw();
+        void EditorDraw(Matrix transform);
+        void DebugDraw(Matrix transform);
     }
 }

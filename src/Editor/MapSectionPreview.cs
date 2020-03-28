@@ -23,8 +23,10 @@ namespace SixteenBitNuts.Editor
             UpdatePreviewTilesFromRealSection();
         }
 
-        public void Draw()
+        public void Draw(Matrix transform)
         {
+            section.Map.Game.SpriteBatch?.Begin(transformMatrix: transform);
+
             foreach (var position in previewTilePositions)
             {
                 section.Map.Game.SpriteBatch?.Draw(
@@ -33,6 +35,8 @@ namespace SixteenBitNuts.Editor
                     Color.RosyBrown
                 );
             }
+
+            section.Map.Game.SpriteBatch?.End();
         }
 
         public void UpdatePreviewTilesFromRealSection()

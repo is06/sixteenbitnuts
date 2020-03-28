@@ -7,7 +7,7 @@ namespace SixteenBitNuts
 {
     public class EffectService
     {
-        private Game game;
+        private readonly Game game;
 
         public Dictionary<string, MainDisplayEffect> MainDisplayEffects { get; private set; }
 
@@ -18,30 +18,36 @@ namespace SixteenBitNuts
             MainDisplayEffects = new Dictionary<string, MainDisplayEffect>();
         }
 
-        public void UpdateMainDisplayEffects(RenderTarget2D renderTarget)
+        public RenderTarget2D ApplyEnabledDisplayEffects(RenderTarget2D sourceTarget)
         {
             foreach (var mainDisplayEffect in MainDisplayEffects)
             {
-                if (mainDisplayEffect.Value.IsEnabled)
-                {
-                    if (mainDisplayEffect.Value.Effect is Effect effect)
-                    {
-                        mainDisplayEffect.Value.Update();
-
-                        game.GraphicsDevice.SetRenderTarget(renderTarget);
-
-                        game.SpriteBatch?.Begin(effect: effect);
-
-                        game.SpriteBatch?.Draw(
-                            texture: renderTarget,
-                            destinationRectangle: new Rectangle(0, 0, (int)game.InternalSize.Width, (int)game.InternalSize.Height),
-                            color: Color.White
-                        );
-
-                        game.SpriteBatch?.End();
-                    }
-                }
+                sourceTarget = ApplyDisplayEffect(sourceTarget, mainDisplayEffect.Value);
             }
+
+            return sourceTarget;
+        }
+
+        public RenderTarget2D ApplyDisplayEffect(RenderTarget2D sourceTarget, MainDisplayEffect mainDisplayEffect)
+        {
+            if (mainDisplayEffect.IsEnabled)
+            {
+                mainDisplayEffect.Update();
+
+                game.GraphicsDevice.SetRenderTarget(mainDisplayEffect.RenderTarget);
+
+                game.SpriteBatch?.Begin(effect: mainDisplayEffect.Effect, blendState: mainDisplayEffect.BlendState);
+
+                game.SpriteBatch?.Draw(
+                    texture: sourceTarget,
+                    destinationRectangle: new Rectangle(0, 0, (int)game.InternalSize.Width, (int)game.InternalSize.Height),
+                    color: Color.White
+                );
+
+                game.SpriteBatch?.End();
+            }
+
+            return mainDisplayEffect.RenderTarget;
         }
     }
 }

@@ -152,25 +152,21 @@ namespace SixteenBitNuts.Editor
                 }
             }
 
+            Map.Game.SpriteBatch?.End();
+
             // Draw map sections
             foreach (var section in containers)
             {
-                section.Value.Draw();
+                section.Value.Draw(camera.Transform);
             }
 
-            Map.Game.SpriteBatch?.End();
-
-            Map.Game.SpriteBatch?.Begin();
-            frame.Draw();
-            cursorPosition.Draw();
-            Map.Game.SpriteBatch?.End();
+            frame.Draw(Matrix.Identity);
+            cursorPosition.Draw(Matrix.Identity);
         }
 
         public void UIDraw()
         {
-            Map.Game.SpriteBatch?.Begin(samplerState: SamplerState.PointClamp);
             Cursor.Draw();
-            Map.Game.SpriteBatch?.End();
         }
 
         public void UpdateLayout()

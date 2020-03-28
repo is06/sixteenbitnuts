@@ -61,17 +61,17 @@ namespace SixteenBitNuts
 
         }
 
-        public virtual void EditorDraw()
+        public virtual void EditorDraw(Matrix transform)
         {
 
         }
 
-        public virtual void DebugDraw()
+        public virtual void DebugDraw(Matrix transform)
         {
             debugHitBox.Color = DebugColor;
             debugHitBox.Bounds = new Rectangle(Position.ToPoint(), Size.ToPoint());
             debugHitBox.Update();
-            debugHitBox.Draw();
+            debugHitBox.Draw(transform);
         }
 
         protected Texture2D GetTexture(string textureName)

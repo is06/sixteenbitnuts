@@ -32,6 +32,8 @@ namespace SixteenBitNuts.Editor
                 (Position.Y + 6)
             );
 
+            Toolbar.Editor.Map.Game.SpriteBatch?.Begin();
+
             Toolbar.Editor.Map.Game.SpriteBatch?.Draw(
                 texture: texture,
                 position: position,
@@ -43,6 +45,8 @@ namespace SixteenBitNuts.Editor
                 effects: SpriteEffects.None,
                 layerDepth: 0f
             );
+
+            Toolbar.Editor.Map.Game.SpriteBatch?.End();
         }
     }
 }

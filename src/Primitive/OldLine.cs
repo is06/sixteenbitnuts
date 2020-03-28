@@ -20,8 +20,10 @@ namespace SixteenBitNuts
             Color = color;
         }
 
-        public void Draw()
+        public void Draw(Matrix transform)
         {
+            game.SpriteBatch?.Begin(transformMatrix: transform);
+
             game.SpriteBatch?.Draw(
                 texture,
                 new Vector2(Bounds.X, Bounds.Y),
@@ -33,6 +35,8 @@ namespace SixteenBitNuts
                 SpriteEffects.None,
                 0
             );
+
+            game.SpriteBatch?.End();
         }
     }
 }

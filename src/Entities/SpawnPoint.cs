@@ -32,15 +32,17 @@ namespace SixteenBitNuts
             base.Draw(transform);
         }
 
-        public override void EditorDraw()
+        public override void EditorDraw(Matrix transform)
         {
-            DebugDraw();
+            DebugDraw(transform);
 
-            base.EditorDraw();
+            base.EditorDraw(transform);
         }
 
-        public override void DebugDraw()
+        public override void DebugDraw(Matrix transform)
         {
+            map.Game.SpriteBatch?.Begin(transformMatrix: transform);
+
             map.Game.SpriteBatch?.Draw(
                 texture: debugTexture,
                 position: new Vector2((float)Math.Round(Position.X), (float)Math.Round(Position.Y)),
@@ -53,7 +55,9 @@ namespace SixteenBitNuts
                 layerDepth: 0f
             );
 
-            base.DebugDraw();
+            map.Game.SpriteBatch?.End();
+
+            base.DebugDraw(transform);
         }
 
         public override void GetObjectData(SerializationInfo info, StreamingContext context)

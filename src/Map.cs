@@ -56,6 +56,21 @@ namespace SixteenBitNuts
         public int EntityLastIndex { get; set; }
         public bool IsInSectionEditMode => isInSectionEditMode;
         public Vector2 Gravity { get; protected set; }
+        public override bool HasPreMainDisplayEffectDraws
+        {
+            get
+            {
+                foreach (var entity in CurrentMapSection.Entities)
+                {
+                    if (entity.Value.IsVisibleInPreMainDisplay)
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+        }
 
         #endregion
 
@@ -72,7 +87,7 @@ namespace SixteenBitNuts
 
         #region Event handlers
 
-        public event CollisionHandler? OnCollisionWithEntity;
+        public event CollisionHandler? OnPlayerCollidesWithEntity;
 
         #endregion
 
@@ -193,9 +208,9 @@ namespace SixteenBitNuts
                                 );
 
                                 // Entity collision event
-                                if (element is Entity)
+                                if (element is Entity entity)
                                 {
-                                    OnCollisionWithEntity?.Invoke((Entity)element);
+                                    OnPlayerCollidesWithEntity?.Invoke(entity);
                                 }
 
                                 if (element.IsObstacle)
@@ -470,15 +485,11 @@ namespace SixteenBitNuts
         {
             if (!isInMapEditMode && isInDebugViewMode)
             {
-                Game.SpriteBatch?.Begin(transformMatrix: Camera.Transform);
-
                 foreach (var section in sections)
                 {
-                    section.Value.DebugDraw();
+                    section.Value.DebugDraw(Camera.Transform);
                 }
-                Player?.DebugDraw();
-
-                Game.SpriteBatch?.End();
+                Player?.DebugDraw(Camera.Transform);
             }
 
             base.DebugDraw();

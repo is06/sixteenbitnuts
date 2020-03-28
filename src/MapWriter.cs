@@ -75,7 +75,7 @@ namespace SixteenBitNuts
             File.AppendAllLines(filePath, contents);
         }
 
-        private static void SaveInJsonMode(Map map)
+        private static void SaveInJsonMode(Map _)
         {
             
         }

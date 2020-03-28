@@ -7,6 +7,7 @@ namespace SixteenBitNuts
     public abstract class Scene
     {
         public Game Game { get; private set; }
+        public virtual bool HasPreMainDisplayEffectDraws { get; }
 
         public Scene(Game game)
         {
@@ -19,6 +20,11 @@ namespace SixteenBitNuts
         }
 
         public virtual void Draw()
+        {
+
+        }
+
+        public virtual void PreMainDisplayEffectDraw()
         {
 
         }

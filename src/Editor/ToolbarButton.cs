@@ -47,6 +47,8 @@ namespace SixteenBitNuts.Editor
 
         public virtual void Draw()
         {
+            Toolbar.Editor.Map.Game.SpriteBatch?.Begin();
+
             Toolbar.Editor.Map.Game.SpriteBatch?.Draw(
                 buttonTexture,
                 Position,
@@ -58,6 +60,8 @@ namespace SixteenBitNuts.Editor
                 SpriteEffects.None,
                 0
             );
+
+            Toolbar.Editor.Map.Game.SpriteBatch?.End();
         }
     }
 }

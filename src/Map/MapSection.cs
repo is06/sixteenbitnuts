@@ -119,22 +119,17 @@ namespace SixteenBitNuts
                 // Second: draw every tiles
                 // There is only one sprite batch for tiles, so only one shader possible
                 // for all tiles
-                Map.Game.SpriteBatch?.Begin(
-                    transformMatrix: transform,
-                    samplerState: SamplerState.PointClamp
-                );
                 foreach (Tile tile in Tiles)
                 {
                     tile.Draw(transform);
                 }
-                Map.Game.SpriteBatch?.End();
 
                 // In edit mode: draw the editor info for each entities
                 if (Map.IsInSectionEditMode)
                 {
                     foreach (KeyValuePair<string, IEntity> pair in Entities)
                     {
-                        pair.Value.EditorDraw();
+                        pair.Value.EditorDraw(transform);
                     }
                 }
             }
@@ -143,18 +138,20 @@ namespace SixteenBitNuts
         /// <summary>
         /// Draw debug info for in-game elements
         /// </summary>
-        public void DebugDraw()
+        public void DebugDraw(Matrix transform)
         {
             foreach (Tile tile in Tiles)
             {
-                tile.DebugDraw();
+                tile.DebugDraw(transform);
             }
             foreach (KeyValuePair<string, IEntity> pair in Entities)
             {
-                pair.Value.DebugDraw();
+                pair.Value.DebugDraw(transform);
             }
             if (transitionPoints != null)
             {
+                Map.Game.SpriteBatch?.Begin(transformMatrix: transform);
+
                 for (int i = 0; i < transitionPoints.Length; i++)
                 {
                     Map.Game.SpriteBatch?.Draw(
@@ -164,6 +161,8 @@ namespace SixteenBitNuts
                         Color.White
                     );
                 }
+
+                Map.Game.SpriteBatch?.End();
             }
         }
 

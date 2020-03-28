@@ -40,11 +40,11 @@ namespace SixteenBitNuts
             lines[3].Bounds = new Rectangle(Bounds.X + Bounds.Width - Thickness, Bounds.Y, Thickness, Bounds.Height);
         }
 
-        public void Draw()
+        public void Draw(Matrix transform)
         {
             foreach (OldLine line in lines)
             {
-                line.Draw();
+                line.Draw(transform);
             }
         }
     }

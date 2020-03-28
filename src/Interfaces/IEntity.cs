@@ -4,6 +4,7 @@
     {
         string Name { get; }
         string MapTextDescription { get; }
+        bool IsVisibleInPreMainDisplay { get; }
         void Destroy();
     }
 }

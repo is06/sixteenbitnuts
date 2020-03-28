@@ -341,12 +341,12 @@ namespace SixteenBitNuts.Editor
             box.Update();
         }
 
-        public void Draw()
+        public void Draw(Matrix transform)
         {
-            box.Draw();
-            preview.Draw();
-            sizeLabel.Draw();
-            positionLabel.Draw();
+            box.Draw(transform);
+            preview.Draw(transform);
+            sizeLabel.Draw(transform);
+            positionLabel.Draw(transform);
         }
 
         public void UpdateLayout()

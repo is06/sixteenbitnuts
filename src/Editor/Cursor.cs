@@ -62,6 +62,8 @@ namespace SixteenBitNuts.Editor
 
         public void Draw()
         {
+            map.Game.SpriteBatch?.Begin(samplerState: SamplerState.PointClamp);
+
             map.Game.SpriteBatch?.Draw(
                 texture: textures[(int)Type],
                 position: Position.ToVector2(),
@@ -73,6 +75,8 @@ namespace SixteenBitNuts.Editor
                 effects: SpriteEffects.None,
                 layerDepth: 0
             );
+
+            map.Game.SpriteBatch?.End();
         }
     }
 }

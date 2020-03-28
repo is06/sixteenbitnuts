@@ -17,13 +17,18 @@ namespace SixteenBitNuts
         {
             this.scene = scene;
             Text = "";
+            Color = Color.White;
         }
 
-        public virtual void Draw()
+        public virtual void Draw(Matrix transform)
         {
             if (IsVisible && font != null)
             {
+                scene.Game.SpriteBatch?.Begin(transformMatrix: transform);
+
                 scene.Game.SpriteBatch?.DrawString(font, Text, Position, Color, 0f, Vector2.Zero, 1f, SpriteEffects.None, 1f);
+
+                scene.Game.SpriteBatch?.End();
             }
         }
     }

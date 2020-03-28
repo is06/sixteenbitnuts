@@ -180,15 +180,9 @@ namespace SixteenBitNuts.Editor
 
         public void UIDraw()
         {
-            Map.Game.SpriteBatch?.Begin(samplerState: SamplerState.PointClamp);
-
             toolbar.Draw();
             cursor.Draw();
-
-            // Draw frame
-            frame.Draw();
-
-            Map.Game.SpriteBatch?.End();
+            frame.Draw(Matrix.Identity);
         }
 
         protected virtual void AddEntity(string entityType, Vector2 position)

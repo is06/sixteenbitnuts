@@ -128,10 +128,10 @@ namespace SixteenBitNuts
         /// <summary>
         /// Draw debug info of the player sprite
         /// </summary>
-        public virtual void DebugDraw()
+        public virtual void DebugDraw(Matrix transform)
         {
-            debugPreviousFrameHitBox.Draw();
-            debugHitBox.Draw();
+            debugPreviousFrameHitBox.Draw(transform);
+            debugHitBox.Draw(transform);
         }
 
         public void MoveLeft(float value)

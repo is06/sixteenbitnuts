@@ -45,9 +45,9 @@ namespace SixteenBitNuts
             graphicBox?.Update();
         }
 
-        public void Draw()
+        public void Draw(Matrix transform)
         {
-            graphicBox?.Draw();
+            graphicBox?.Draw(transform);
         }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace SixteenBitNuts.Effects
 {
-    class ChromaticAberration : MainDisplayEffect
+    public class ChromaticAberration : MainDisplayEffect
     {
         public float Offset { get; set; }
 

@@ -23,7 +23,8 @@ namespace SixteenBitNuts
 
         #region Components
 
-        private RenderTarget2D? renderSurface;        
+        private RenderTarget2D? renderSurface;
+        private RenderTarget2D? preMainDisplayEffectRenderTarget;
         private readonly GraphicsDeviceManager graphics;
         private Process process;
 
@@ -56,6 +57,7 @@ namespace SixteenBitNuts
             EffectService = new EffectService(this);
 
             renderSurface = new RenderTarget2D(GraphicsDevice, (int)InternalSize.Width, (int)InternalSize.Height);
+            preMainDisplayEffectRenderTarget = new RenderTarget2D(GraphicsDevice, (int)InternalSize.Width, (int)InternalSize.Height);
 
             base.Initialize();
         }
@@ -93,10 +95,16 @@ namespace SixteenBitNuts
                 // Draws everything in the surface
                 currentScene?.Draw();
 
-                // Apply main display effects
-                if (renderSurface is RenderTarget2D surface)
+                if (currentScene != null && currentScene.HasPreMainDisplayEffectDraws)
                 {
-                    EffectService?.UpdateMainDisplayEffects(surface);
+                    GraphicsDevice.SetRenderTarget(preMainDisplayEffectRenderTarget);
+                    currentScene.PreMainDisplayEffectDraw();
+                }
+
+                // Apply visual display effects
+                if (EffectService is EffectService service && renderSurface != null)
+                {
+                    renderSurface = service.ApplyEnabledDisplayEffects(renderSurface);
                 }
 
                 // Debug visual representation
