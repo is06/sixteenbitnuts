@@ -108,7 +108,7 @@ namespace SixteenBitNuts
         public void Draw(int layer, Matrix transform)
         {
             // Main layer drawables
-            if (layer == (int)LayerIndex.Main)
+            if (layer == 0)
             {
                 // First: draw entities
                 foreach (KeyValuePair<string, IEntity> pair in Entities)

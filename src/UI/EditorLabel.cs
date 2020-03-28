@@ -9,7 +9,7 @@ namespace SixteenBitNuts
         {
             try
             {
-                font = scene.Game.Content.Load<SpriteFont>("Engine/fonts/numbers");
+                font = scene.Game.Content.Load<SpriteFont>("Engine/fonts/nes");
             }
             catch (Exception e)
             {

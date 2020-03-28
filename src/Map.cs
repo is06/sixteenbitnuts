@@ -43,6 +43,10 @@ namespace SixteenBitNuts
         private float transitionDeltaY;
         private bool transitionIsFinished;
 
+        // Landscape
+        private int minLandscapeLayerIndex;
+        private int maxLandscapeLayerIndex;
+
         #endregion
 
         #region Properties
@@ -81,7 +85,6 @@ namespace SixteenBitNuts
 
         private readonly MapEditor mapEditor;
         private readonly TransitionGuide transitionGuide;
-        private readonly Vector2[] layerOffsetFactors;
 
         #endregion
 
@@ -114,17 +117,6 @@ namespace SixteenBitNuts
 
             // Load map descriptor
             LoadFromFile("Data/maps/" + name + ".map");
-
-            // Layer transformations
-            layerOffsetFactors = new Vector2[8];
-            layerOffsetFactors[(int)LayerIndex.StaticBackground] = Vector2.Zero;
-            layerOffsetFactors[(int)LayerIndex.Background4] = new Vector2(0.1f, 0.1f);
-            layerOffsetFactors[(int)LayerIndex.Background3] = new Vector2(0.2f, 0.2f);
-            layerOffsetFactors[(int)LayerIndex.Background2] = new Vector2(0.4f, 0.4f);
-            layerOffsetFactors[(int)LayerIndex.Background1] = new Vector2(0.6f, 0.6f);
-            layerOffsetFactors[(int)LayerIndex.Main] = new Vector2(1, 1);
-            layerOffsetFactors[(int)LayerIndex.Foreground1] = new Vector2(1.4f, 1.4f);
-            layerOffsetFactors[(int)LayerIndex.Foreground2] = new Vector2(1.7f, 1.7f);
         }
 
         
@@ -447,25 +439,37 @@ namespace SixteenBitNuts
             }
             else
             {
-                for (int layer = 0; layer < 8; layer++)
+                for (int layer = minLandscapeLayerIndex; layer <= maxLandscapeLayerIndex; layer++)
                 {
                     var layerTransform = Matrix.Identity;
+                    var offsetX = 1.0f;
+                    var offsetY = 1.0f;
+
+                    if (Landscape != null && Landscape.Layers.ContainsKey(layer))
+                    {
+                        offsetX = Landscape.Layers[layer].TransformOffset.X / 100;
+                        offsetY = Landscape.Layers[layer].TransformOffset.Y / 100;
+                    }
+
                     layerTransform.Translation = new Vector3(
-                        Camera.Transform.Translation.X * layerOffsetFactors[layer].X,
-                        Camera.Transform.Translation.Y * layerOffsetFactors[layer].Y,
+                        Camera.Transform.Translation.X * offsetX,
+                        Camera.Transform.Translation.Y * offsetY,
                         0
                     );
 
-                    Landscape?.Draw(layer, layerTransform);
-
-                    if (layer == (int)LayerIndex.Main)
+                    if (Landscape != null && Landscape.Layers.ContainsKey(layer))
                     {
-                        Player?.Draw(layerTransform);
+                        Landscape.Draw(layer, layerTransform);
                     }
 
-                    foreach (KeyValuePair<int, MapSection> section in sections)
+                    if (layer == 0)
                     {
-                        section.Value.Draw(layer, layerTransform);
+                        Player?.Draw(layerTransform);
+
+                        foreach (KeyValuePair<int, MapSection> section in sections)
+                        {
+                            section.Value.Draw(layer, layerTransform);
+                        }
                     }
                 }
             }
@@ -599,15 +603,20 @@ namespace SixteenBitNuts
                         Landscape = new Landscape(this, components[1]);
                         break;
                     case "ly":
-                        if (Landscape != null)
+                        var layerIndex = int.Parse(components[1]);
+                        if (layerIndex > maxLandscapeLayerIndex) maxLandscapeLayerIndex = layerIndex;
+                        if (layerIndex < minLandscapeLayerIndex) minLandscapeLayerIndex = layerIndex;
+                        if (layerIndex == 0)
                         {
-                            Landscape.Layers.Add(new LandscapeLayer()
-                            {
-                                Name = components[2],
-                                Index = (LayerIndex)int.Parse(components[1]),
-                                Texture = Game.Content.Load<Texture2D>("Game/backgrounds/" + components[2])
-                            });
+                            throw new GameException("Unable to use an index 0 for a landscape layer because it is reserved for main entities and tiles.");
                         }
+                        Landscape?.Layers.Add(layerIndex, new LandscapeLayer()
+                        {
+                            Name = components[2],
+                            Index = layerIndex,
+                            Texture = Game.Content.Load<Texture2D>("Game/backgrounds/" + Landscape.Name + "/" + components[2]),
+                            TransformOffset = new Vector2(int.Parse(components[3]), int.Parse(components[4])),
+                        });
                         break;
                     case "se":
                         // Begin section

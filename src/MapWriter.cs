@@ -52,7 +52,7 @@ namespace SixteenBitNuts
                 contents.Add("bg " + landscape.Name);
                 foreach (var layer in landscape.Layers)
                 {
-                    contents.Add("ly " + (int)layer.Index + " " + layer.Name);
+                    contents.Add("ly " + layer.Value.Index + " " + layer.Value.Name);
                 }
             }
 

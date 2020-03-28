@@ -6,29 +6,20 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace SixteenBitNuts
 {
-    public enum LayerIndex : int
-    {
-        StaticBackground = 0,
-        Background4 = 1,
-        Background3 = 2,
-        Background2 = 3,
-        Background1 = 4,
-        Main = 5,
-        Foreground1 = 6,
-        Foreground2 = 7
-    }
-
     [Serializable]
     public struct LandscapeLayer : ISerializable
     {
         public string Name;
-        public LayerIndex Index;
+        public int Index;
         public Texture2D Texture;
+        public Vector2 TransformOffset;
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             info.AddValue("name", Name);
             info.AddValue("index", Index);
+            info.AddValue("offsetX", TransformOffset.X);
+            info.AddValue("offsetY", TransformOffset.Y);
         }
     }
 
@@ -37,14 +28,14 @@ namespace SixteenBitNuts
     {
         private readonly Map map;
 
-        public List<LandscapeLayer> Layers { get; set; }
+        public Dictionary<int, LandscapeLayer> Layers { get; set; }
         public string Name { get; }
 
         public Landscape(Map map, string name)
         {
             this.map = map;
             Name = name;
-            Layers = new List<LandscapeLayer>();
+            Layers = new Dictionary<int, LandscapeLayer>();
         }
 
         public void Draw(int layerIndex, Matrix transform)
@@ -53,25 +44,17 @@ namespace SixteenBitNuts
                 transformMatrix: transform,
                 samplerState: SamplerState.PointWrap
             );
-
-            foreach (var layer in Layers)
-            {
-                if ((int)layer.Index == layerIndex)
-                {
-                    map.Game.SpriteBatch?.Draw(
-                        texture: layer.Texture,
-                        position: Vector2.Zero,
-                        sourceRectangle: new Rectangle(0, 0, 1024, 270),
-                        color: Color.White,
-                        rotation: 0f,
-                        origin: Vector2.Zero,
-                        scale: Vector2.One,
-                        effects: SpriteEffects.None,
-                        layerDepth: 0f
-                    );
-                }
-            }
-
+            map.Game.SpriteBatch?.Draw(
+                texture: Layers[layerIndex].Texture,
+                position: Vector2.Zero,
+                sourceRectangle: new Rectangle(0, 0, 1024, 270),
+                color: Color.White,
+                rotation: 0f,
+                origin: Vector2.Zero,
+                scale: Vector2.One,
+                effects: SpriteEffects.None,
+                layerDepth: 0f
+            );
             map.Game.SpriteBatch?.End();
         }
 
