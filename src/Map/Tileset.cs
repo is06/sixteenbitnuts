@@ -12,10 +12,11 @@ namespace SixteenBitNuts
         private readonly Texture2D texture;
         private readonly Box debugHitBox;
         protected readonly Dictionary<int, TileElement> elements;
+        protected Dictionary<string, TilesetGroup> groups;
 
         public string Name { get; private set; }
         public Game Game { get; private set; }
-
+        
         public Tileset(Game game, string name)
         {
             // Properties
@@ -33,8 +34,10 @@ namespace SixteenBitNuts
             }
             
             debugHitBox = new Box(Game, new Rectangle(0, 0, 16, 16), 1, Color.DarkRed);
-            elements = new Dictionary<int, TileElement>();
             
+            elements = new Dictionary<int, TileElement>();
+            groups = new Dictionary<string, TilesetGroup>();
+
             LoadFromFile("Data/tilesets/" + name + ".tileset");
         }
 
@@ -96,7 +99,9 @@ namespace SixteenBitNuts
 
         protected virtual void LoadFromFile(string fileName)
         {
-            int index = 0;
+            int elementIndex = 0;
+            string groupName = "";
+
             string[] lines;
             try
             {
@@ -111,6 +116,27 @@ namespace SixteenBitNuts
             {
                 string[] components = line.Split(' ');
 
+                if (components[0] == "gr")
+                {
+                    TilesetGroup group;
+                    group.Name = groupName = components[1];
+                    group.IsAutoTilingEnabled = components[2] == "1";
+                    group.Definitions = new Dictionary<TilesetGroupDefinitionType, TilesetGroupDefinition>();
+
+                    groups[groupName] = group;
+                }
+
+                if (components[0] == "gd")
+                {
+                    TilesetGroupDefinition definition;
+                    definition.Type = TilesetGroupDefinition.GetTypeFromString(components[1]);
+                    definition.TileIndex = int.Parse(components[2]);
+                    if (definition.Type is TilesetGroupDefinitionType type)
+                    {
+                        groups[groupName].Definitions?.Add(type, definition);
+                    }
+                }
+
                 if (components[0] == "ti")
                 {
                     TileElement element;
@@ -118,8 +144,8 @@ namespace SixteenBitNuts
                     element.Offset = new Vector2(int.Parse(components[3]), int.Parse(components[4]));
                     element.Type = (TileType)int.Parse(components[5]);
 
-                    elements[index] = element;
-                    index++;
+                    elements[elementIndex] = element;
+                    elementIndex++;
                 }
             }
         }

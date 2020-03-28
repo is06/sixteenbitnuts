@@ -273,18 +273,15 @@ namespace SixteenBitNuts
                 {
                     keySectionEditModePressed = true;
 
-                    if (Player != null)
+                    if (isInSectionEditMode)
                     {
-                        if (isInSectionEditMode)
-                        {
-                            isInSectionEditMode = false;
-                            Player.IsControllable = true;
-                        }
-                        else
-                        {
-                            isInSectionEditMode = true;
-                            Player.IsControllable = false;
-                        }
+                        isInSectionEditMode = false;
+                        if (Player != null) Player.IsControllable = true;
+                    }
+                    else
+                    {
+                        isInSectionEditMode = true;
+                        if (Player != null) Player.IsControllable = false;
                     }
                 }
                 if (Keyboard.GetState().IsKeyUp(Keys.F2))
