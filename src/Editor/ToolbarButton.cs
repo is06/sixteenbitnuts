@@ -47,7 +47,7 @@ namespace SixteenBitNuts.Editor
 
         public virtual void Draw()
         {
-            Toolbar.Editor.Map.Game.SpriteBatch?.Begin();
+            Toolbar.Editor.Map.Game.SpriteBatch?.Begin(samplerState: SamplerState.PointClamp);
 
             Toolbar.Editor.Map.Game.SpriteBatch?.Draw(
                 buttonTexture,

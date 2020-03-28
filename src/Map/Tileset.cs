@@ -40,7 +40,7 @@ namespace SixteenBitNuts
 
         public void Draw(Vector2 position, Vector2 size, Vector2 offset, Vector2 scale, Matrix transform)
         {
-            Game.SpriteBatch?.Begin(transformMatrix: transform);
+            Game.SpriteBatch?.Begin(transformMatrix: transform, samplerState: SamplerState.PointClamp);
 
             Game.SpriteBatch?.Draw(
                 texture: texture,
