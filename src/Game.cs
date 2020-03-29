@@ -32,6 +32,20 @@ namespace SixteenBitNuts
 
         #endregion
 
+        #region FMOD
+
+        public FMOD.Studio.System FmodSystem => fmodSystem;
+
+        private FMOD.Studio.System fmodSystem;
+
+        private FMOD.Studio.Bank masterBank;
+        private FMOD.Studio.Bank stringBank;
+        private FMOD.Studio.Bank musicBank;
+
+        private FMOD.Studio.EventInstance currentMusic;
+
+        #endregion
+
         public Game()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -59,17 +73,40 @@ namespace SixteenBitNuts
             renderSurface = new RenderTarget2D(GraphicsDevice, (int)InternalSize.Width, (int)InternalSize.Height);
             preMainDisplayEffectRenderTarget = new RenderTarget2D(GraphicsDevice, (int)InternalSize.Width, (int)InternalSize.Height);
 
+            #region FMOD Initialization
+            
+            FMOD.RESULT result;
+
+            // Initialize
+            result = FMOD.Studio.System.create(out fmodSystem);
+            if (result != FMOD.RESULT.OK)
+            {
+                Console.WriteLine(FMOD.Error.String(result));
+            }
+
+            result = fmodSystem.initialize(32, FMOD.Studio.INITFLAGS.NORMAL, FMOD.INITFLAGS.NORMAL, IntPtr.Zero);
+            if (result != FMOD.RESULT.OK)
+            {
+                Console.WriteLine(FMOD.Error.String(result));
+            }
+
+            #endregion
+
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
-            
+            fmodSystem.loadBankFile("Audio/Master.bank", FMOD.Studio.LOAD_BANK_FLAGS.NORMAL, out masterBank);
+            fmodSystem.loadBankFile("Audio/Master.strings.bank", FMOD.Studio.LOAD_BANK_FLAGS.NORMAL, out stringBank);
+            fmodSystem.loadBankFile("Audio/music.bank", FMOD.Studio.LOAD_BANK_FLAGS.NORMAL, out musicBank);
         }
 
         protected override void UnloadContent()
         {
-            // TODO: Unload any non ContentManager content here
+            musicBank.unload();
+            stringBank.unload();
+            masterBank.unload();
         }
 
         protected override void Update(GameTime gameTime)
@@ -79,7 +116,7 @@ namespace SixteenBitNuts
 
             base.Update(gameTime);
 
-            
+            fmodSystem.update();
 
             currentScene?.Update(gameTime);
         }
@@ -139,11 +176,25 @@ namespace SixteenBitNuts
 
         }
 
+        public void StartMusic(string name)
+        {
+            fmodSystem.getEvent("event:/music/" + name, out FMOD.Studio.EventDescription eventDescription);
+            eventDescription.createInstance(out currentMusic);
+            currentMusic.start();
+        }
+
+        public void SetMusicParameter(string name, float value)
+        {
+            currentMusic.setParameterByName(name, value);
+        }
+
         protected override void Dispose(bool disposing)
         {
             SpriteBatch?.Dispose();
             renderSurface?.Dispose();
             graphics.Dispose();
+
+            fmodSystem.release();
 
             base.Dispose(disposing);
         }
