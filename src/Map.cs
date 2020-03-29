@@ -117,6 +117,9 @@ namespace SixteenBitNuts
 
             // Load map descriptor
             LoadFromFile("Data/maps/" + name + ".map");
+
+            // Initialization of the toolbar only after loading a map
+            sectionEditor.InitializeToolbar();
         }
 
         
@@ -658,20 +661,34 @@ namespace SixteenBitNuts
                     case "ti":
                         // Tile
                         int elementId = int.Parse(components[1]);
-                        Vector2 position = new Vector2
+                        var position = new Vector2
                         {
                             X = int.Parse(components[2]),
                             Y = int.Parse(components[3])
                         };
-
-                        sections[sectionIndex].Tiles.Add(new Tile(
+                        var tileToAdd = new Tile(
                             this,
                             sections[sectionIndex].Tileset,
                             elementId,
                             position,
                             sections[sectionIndex].Tileset.GetSizeFromId(elementId),
                             sections[sectionIndex].Tileset.GetTypeFromId(elementId)
-                        ));
+                        );
+                        foreach (var tilesetGroup in CurrentMapSection.Tileset.Groups)
+                        {
+                            if (tilesetGroup.Value.Definitions != null)
+                            {
+                                foreach (var definition in tilesetGroup.Value.Definitions)
+                                {
+                                    if (definition.Value.TileIndex == elementId)
+                                    {
+                                        tileToAdd.GroupName = tilesetGroup.Value.Name;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        sections[sectionIndex].Tiles.Add(tileToAdd);
                         break;
                 }
             }

@@ -9,18 +9,15 @@ namespace SixteenBitNuts.Editor
 
         public string Type { get; private set; }
 
-        public EntityToolbarButton(Toolbar bar, string type) : base(bar)
+        public EntityToolbarButton(Toolbar bar, string type, string textureName) : base(bar)
         {
             Type = type;
 
-            if (type == "spawn")
+            texture = type switch
             {
-                texture = bar.Editor.Map.Game.Content.Load<Texture2D>("Engine/editor/" + type);
-            }
-            else
-            {
-                texture = bar.Editor.Map.Game.Content.Load<Texture2D>("Game/sprites/entities/" + type);
-            }
+                "spawn" => bar.Editor.Map.Game.Content.Load<Texture2D>("Engine/editor/" + textureName),
+                _ => bar.Editor.Map.Game.Content.Load<Texture2D>("Game/sprites/entities/" + type),
+            };
         }
 
         public override void Draw()

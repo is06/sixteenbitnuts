@@ -8,7 +8,8 @@ namespace SixteenBitNuts
     [Serializable]
     public class Tile : MapElement, ITile, ISerializable
     {
-        public int Id { get; private set; }
+        public int Id { get; set; }
+        public string? GroupName { get; set; }
         public string MapTextDescription
         {
             get

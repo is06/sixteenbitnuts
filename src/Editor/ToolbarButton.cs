@@ -16,6 +16,7 @@ namespace SixteenBitNuts.Editor
 
         public Vector2 Position { get; set; }
         public int Id { get; set; }
+        public string? GroupName { get; set; }
         public bool IsSelected { get; set; }
         public Toolbar Toolbar { get; private set; }
         public Rectangle HitBox

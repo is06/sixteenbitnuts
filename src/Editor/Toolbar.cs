@@ -9,26 +9,28 @@ namespace SixteenBitNuts.Editor
         public List<ToolbarButton> Buttons { get; }
         public System.Type? SelectedButtonType { get; set; }
         public int SelectedTileId { get; set; }
+        public string? SelectedGroupName { get; set; }
         public string? SelectedEntityType { get; set; }
 
         public Toolbar(MapSectionEditor editor)
         {
             Editor = editor;
-            SelectedTileId = 4;
+            SelectedTileId = 0;
             Buttons = new List<ToolbarButton>();
 
-            int position = 256;
-            for (int i = 0; i <= 8; i++)
+            int position = 16;
+
+            foreach (var group in Editor.Map.CurrentMapSection.Tileset.Groups)
             {
-                Buttons.Add(new TileToolbarButton(this)
+                Buttons.Add(new TileToolbarButton(this, isGroup: true)
                 {
-                    Id = i,
+                    GroupName = group.Value.Name,
                     Position = new Vector2(position, 16),
                 });
-                position += 66;
+                position += 64;
             }
 
-            Buttons.Add(new EntityToolbarButton(this, "spawn")
+            Buttons.Add(new EntityToolbarButton(this, "spawn", "spawn")
             {
                 Id = 100,
                 Position = new Vector2(position, 16),
