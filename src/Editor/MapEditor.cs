@@ -40,7 +40,7 @@ namespace SixteenBitNuts.Editor
                 Color = Color.White,
                 Text = "0;0"
             };
-            frame = new Box(map.Game, new Rectangle(0, 0, (int)map.Game.InternalSize.Width, (int)map.Game.InternalSize.Height), 2, Color.BlueViolet);
+            frame = new Box(map.Game, new Rectangle(0, 0, (int)map.Game.InternalSize.Width, (int)map.Game.InternalSize.Height), Color.BlueViolet);
             gridTexture = map.Game.Content.Load<Texture2D>("Engine/editor/grid");
 
             foreach (var section in map.Sections)

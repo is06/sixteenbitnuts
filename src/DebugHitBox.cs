@@ -21,17 +21,16 @@ namespace SixteenBitNuts
             }
         }
 
-        public DebugHitBox(Game game, int thickness, Color color)
+        public DebugHitBox(Game game, Color color)
         {
-            InitGraphicBox(game, thickness, color);
+            InitGraphicBox(game, color);
         }
 
-        protected virtual void InitGraphicBox(Game game, int thickness, Color color)
+        protected virtual void InitGraphicBox(Game game, Color color)
         {
             graphicBox = new Box(
                 game,
                 new Rectangle(0, 0, 0, 0),
-                thickness,
                 color
             );
         }

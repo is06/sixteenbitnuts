@@ -4,7 +4,7 @@ namespace SixteenBitNuts.Editor
 {
     public class TileToolbarButton : ToolbarButton
     {
-        private bool isGroup;
+        private readonly bool isGroup;
 
         public TileToolbarButton(Toolbar bar, bool isGroup) : base(bar)
         {

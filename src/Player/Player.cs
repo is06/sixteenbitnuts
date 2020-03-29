@@ -60,8 +60,7 @@ namespace SixteenBitNuts
         protected Map map;
         protected Sprite? sprite;
 
-        protected DebugHitBox debugHitBox;  
-        protected DebugHitBox debugPreviousFrameHitBox;
+        protected DebugHitBox debugHitBox;
 
         #endregion
 
@@ -84,8 +83,7 @@ namespace SixteenBitNuts
             IsControllable = true;
 
             // Debug
-            debugHitBox = new DebugHitBox(map.Game, 1, Color.Cyan);
-            debugPreviousFrameHitBox = new DebugHitBox(map.Game, 2, Color.DarkOliveGreen);
+            debugHitBox = new DebugHitBox(map.Game, Color.Cyan);
         }
 
         /// <summary>
@@ -110,7 +108,6 @@ namespace SixteenBitNuts
         public virtual void UpdateDebugHitBoxes()
         {
             debugHitBox.Update(HitBox);
-            debugPreviousFrameHitBox.Update(PreviousFrameHitBox);
         }
 
         /// <summary>
@@ -130,7 +127,6 @@ namespace SixteenBitNuts
         /// </summary>
         public virtual void DebugDraw(Matrix transform)
         {
-            debugPreviousFrameHitBox.Draw(transform);
             debugHitBox.Draw(transform);
         }
 

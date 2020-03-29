@@ -64,7 +64,7 @@ namespace SixteenBitNuts.Editor
 
             previousSectionPosition = new Point(0, 0);
 
-            box = new Box(map.Game, bounds, 1, Color.Ivory);
+            box = new Box(map.Game, bounds, Color.Ivory);
             preview = new MapSectionPreview(this);
             sizeLabel = new EditorLabel(map)
             {

@@ -6,12 +6,6 @@ namespace SixteenBitNuts
 {
     public abstract class MapElement : IMapElement
     {
-        #region Constants
-
-        private const int DEBUG_BOX_THICKNESS = 1;
-
-        #endregion
-
         #region Properties
 
         public Color DebugColor { get; set; }
@@ -45,7 +39,6 @@ namespace SixteenBitNuts
             debugHitBox = new Box(
                 map.Game,
                 new Rectangle(Position.ToPoint(), Size.ToPoint()),
-                DEBUG_BOX_THICKNESS,
                 DebugColor
             );
             IsVisible = true;

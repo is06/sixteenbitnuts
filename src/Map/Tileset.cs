@@ -34,7 +34,7 @@ namespace SixteenBitNuts
                 throw new GameException("Exception while loading tileset texture '" + name + "' (" + e.Message + ")");
             }
             
-            debugHitBox = new Box(Game, new Rectangle(0, 0, 16, 16), 1, Color.DarkRed);
+            debugHitBox = new Box(Game, new Rectangle(0, 0, 16, 16), Color.DarkRed);
             
             elements = new Dictionary<int, TileElement>();
 
