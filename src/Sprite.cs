@@ -20,6 +20,8 @@ namespace SixteenBitNuts
         private float currentAnimationFrame;
         private bool isAnimated;
 
+        public Effects.SpriteEffect? Effect { get; set; }
+
         #endregion
 
         #region Properties
@@ -96,11 +98,22 @@ namespace SixteenBitNuts
                 CurrentAnimation.Directions[Direction].Offset.Y
             );
 
-            SpriteEffects effects = SpriteEffects.None;
-            if (CurrentAnimation.Directions[Direction].FlippedHorizontally) effects |= SpriteEffects.FlipHorizontally;
-            if (CurrentAnimation.Directions[Direction].FlippedVertically) effects |= SpriteEffects.FlipVertically;
+            SpriteEffects flipEffects = SpriteEffects.None;
+            if (CurrentAnimation.Directions[Direction].FlippedHorizontally) flipEffects |= SpriteEffects.FlipHorizontally;
+            if (CurrentAnimation.Directions[Direction].FlippedVertically) flipEffects |= SpriteEffects.FlipVertically;
 
-            game.SpriteBatch?.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null, transform);
+            Effect?.Effect?.Parameters["TextureSize"].SetValue(texture.Bounds.Size.ToVector2());
+            Effect?.Update();
+
+            game.SpriteBatch?.Begin(
+                SpriteSortMode.Immediate,
+                BlendState.AlphaBlend,
+                SamplerState.PointClamp,
+                null,
+                null,
+                Effect?.Effect,
+                transform
+            );
 
             game.SpriteBatch?.Draw(
                 texture: texture,
@@ -115,7 +128,7 @@ namespace SixteenBitNuts
                 rotation: 0f,
                 origin: new Vector2(0, 0),
                 scale: Vector2.One,
-                effects: effects,
+                effects: flipEffects,
                 layerDepth: layer
             );
 

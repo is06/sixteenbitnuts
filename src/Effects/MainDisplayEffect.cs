@@ -2,9 +2,8 @@
 
 namespace SixteenBitNuts.Effects
 {
-    public abstract class MainDisplayEffect
+    public abstract class MainDisplayEffect : VisualEffect
     {
-        public Effect? Effect { get; set; }
         public bool IsEnabled { get; set; }
         public BlendState BlendState { get; set;  }
         public RenderTarget2D RenderTarget { get; private set; }
@@ -17,11 +16,6 @@ namespace SixteenBitNuts.Effects
 
             BlendState = BlendState.AlphaBlend;
             RenderTarget = new RenderTarget2D(game.GraphicsDevice, (int)game.InternalSize.Width, (int)game.InternalSize.Height);
-        }
-
-        public virtual void Update()
-        {
-            
         }
     }
 }
