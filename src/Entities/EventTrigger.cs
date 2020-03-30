@@ -5,21 +5,9 @@ using System.Runtime.Serialization;
 namespace SixteenBitNuts
 {
     [Serializable]
-    public class EventTrigger : Entity, ISerializable
+    public abstract class EventTrigger : Entity, ISerializable
     {
         public bool IsEnabled { get; set; }
-        public override string MapTextDescription
-        {
-            get
-            {
-                return "en " + GetType().Name +
-                       " " + Name +
-                       " " + Position.X +
-                       " " + Position.Y +
-                       " " + Size.Width +
-                       " " + Size.Height;
-            }
-        }
 
         public EventTrigger(Map map, string name) : base(map, name)
         {

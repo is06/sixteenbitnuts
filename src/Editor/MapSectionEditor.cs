@@ -81,7 +81,7 @@ namespace SixteenBitNuts.Editor
                     if (toolbar.SelectedButtonType == typeof(TileToolbarButton) && !TileAlreadyAtPosition(drawerPosition))
                     {
                         // Draw the tile
-                        Map.CurrentMapSection.Tiles.Add(new Tile(
+                        Map.CurrentMapSection.ForegroundTiles.Add(new Tile(
                             Map,
                             Map.CurrentMapSection.Tileset,
                             toolbar.SelectedTileId,
@@ -128,11 +128,11 @@ namespace SixteenBitNuts.Editor
 
                 if (!hasErasedAnEntity)
                 {
-                    foreach (Tile tile in Map.CurrentMapSection.Tiles)
+                    foreach (Tile tile in Map.CurrentMapSection.ForegroundTiles)
                     {
                         if (tile.Position == eraserPosition)
                         {
-                            Map.CurrentMapSection.Tiles.Remove(tile);
+                            Map.CurrentMapSection.ForegroundTiles.Remove(tile);
                             UpdateTilesTypes();
                             break;
                         }
@@ -233,7 +233,7 @@ namespace SixteenBitNuts.Editor
 
         private bool TileAlreadyAtPosition(Vector2 position)
         {
-            foreach (var tile in Map.CurrentMapSection.Tiles)
+            foreach (var tile in Map.CurrentMapSection.ForegroundTiles)
             {
                 if (tile.Position == position)
                 {
@@ -259,95 +259,98 @@ namespace SixteenBitNuts.Editor
 
         private void UpdateTilesTypes()
         {
-            foreach (var tile in Map.CurrentMapSection.Tiles)
+            foreach (var element in Map.CurrentMapSection.Elements)
             {
-                TilesetGroup? currentGroup = null;
-
-                foreach (var groupPair in Map.CurrentMapSection.Tileset.Groups)
+                if (element is Tile tile)
                 {
-                    if (tile.GroupName == groupPair.Value.Name)
+                    TilesetGroup? currentGroup = null;
+
+                    foreach (var groupPair in Map.CurrentMapSection.Tileset.Groups)
                     {
-                        currentGroup = groupPair.Value;
-                        break;
+                        if (tile.GroupName == groupPair.Value.Name)
+                        {
+                            currentGroup = groupPair.Value;
+                            break;
+                        }
                     }
-                }
 
-                if (currentGroup is TilesetGroup group)
-                {
-                    var side = GetTilePresenceSides(tile, group);
-
-                    if (group.Definitions != null)
+                    if (currentGroup is TilesetGroup group)
                     {
-                        if (side.HasFlag(PresenceSide.Bottom) && side.HasFlag(PresenceSide.Top))
+                        var side = GetTilePresenceSides(tile, group);
+
+                        if (group.Definitions != null)
                         {
-                            if (side.HasFlag(PresenceSide.Left) && side.HasFlag(PresenceSide.Right))
+                            if (side.HasFlag(PresenceSide.Bottom) && side.HasFlag(PresenceSide.Top))
                             {
-                                tile.Id = group.Definitions[TilesetGroupDefinitionType.Center].TileIndex;
+                                if (side.HasFlag(PresenceSide.Left) && side.HasFlag(PresenceSide.Right))
+                                {
+                                    tile.Id = group.Definitions[TilesetGroupDefinitionType.Center].TileIndex;
+                                }
+                                else if (side.HasFlag(PresenceSide.Left))
+                                {
+                                    tile.Id = group.Definitions[TilesetGroupDefinitionType.Right].TileIndex;
+                                }
+                                else if (side.HasFlag(PresenceSide.Right))
+                                {
+                                    tile.Id = group.Definitions[TilesetGroupDefinitionType.Left].TileIndex;
+                                }
+                                else
+                                {
+                                    tile.Id = group.Definitions[TilesetGroupDefinitionType.VerticalNarrowCenter].TileIndex;
+                                }
                             }
-                            else if (side.HasFlag(PresenceSide.Left))
+                            else if (side.HasFlag(PresenceSide.Bottom))
                             {
-                                tile.Id = group.Definitions[TilesetGroupDefinitionType.Right].TileIndex;
+                                if (side.HasFlag(PresenceSide.Left) && side.HasFlag(PresenceSide.Right))
+                                {
+                                    tile.Id = group.Definitions[TilesetGroupDefinitionType.Top].TileIndex;
+                                }
+                                else if (side.HasFlag(PresenceSide.Left))
+                                {
+                                    tile.Id = group.Definitions[TilesetGroupDefinitionType.TopRight].TileIndex;
+                                }
+                                else if (side.HasFlag(PresenceSide.Right))
+                                {
+                                    tile.Id = group.Definitions[TilesetGroupDefinitionType.TopLeft].TileIndex;
+                                }
+                                else
+                                {
+                                    tile.Id = group.Definitions[TilesetGroupDefinitionType.VerticalNarrowTop].TileIndex;
+                                }
                             }
-                            else if (side.HasFlag(PresenceSide.Right))
+                            else if (side.HasFlag(PresenceSide.Top))
                             {
-                                tile.Id = group.Definitions[TilesetGroupDefinitionType.Left].TileIndex;
+                                if (side.HasFlag(PresenceSide.Left) && side.HasFlag(PresenceSide.Right))
+                                {
+                                    tile.Id = group.Definitions[TilesetGroupDefinitionType.Bottom].TileIndex;
+                                }
+                                else if (side.HasFlag(PresenceSide.Left))
+                                {
+                                    tile.Id = group.Definitions[TilesetGroupDefinitionType.BottomRight].TileIndex;
+                                }
+                                else if (side.HasFlag(PresenceSide.Right))
+                                {
+                                    tile.Id = group.Definitions[TilesetGroupDefinitionType.BottomLeft].TileIndex;
+                                }
+                                else
+                                {
+                                    tile.Id = group.Definitions[TilesetGroupDefinitionType.VerticalNarrowBottom].TileIndex;
+                                }
                             }
                             else
                             {
-                                tile.Id = group.Definitions[TilesetGroupDefinitionType.VerticalNarrowCenter].TileIndex;
-                            }
-                        }
-                        else if (side.HasFlag(PresenceSide.Bottom))
-                        {
-                            if (side.HasFlag(PresenceSide.Left) && side.HasFlag(PresenceSide.Right))
-                            {
-                                tile.Id = group.Definitions[TilesetGroupDefinitionType.Top].TileIndex;
-                            }
-                            else if (side.HasFlag(PresenceSide.Left))
-                            {
-                                tile.Id = group.Definitions[TilesetGroupDefinitionType.TopRight].TileIndex;
-                            }
-                            else if (side.HasFlag(PresenceSide.Right))
-                            {
-                                tile.Id = group.Definitions[TilesetGroupDefinitionType.TopLeft].TileIndex;
-                            }
-                            else
-                            {
-                                tile.Id = group.Definitions[TilesetGroupDefinitionType.VerticalNarrowTop].TileIndex;
-                            }
-                        }
-                        else if (side.HasFlag(PresenceSide.Top))
-                        {
-                            if (side.HasFlag(PresenceSide.Left) && side.HasFlag(PresenceSide.Right))
-                            {
-                                tile.Id = group.Definitions[TilesetGroupDefinitionType.Bottom].TileIndex;
-                            }
-                            else if (side.HasFlag(PresenceSide.Left))
-                            {
-                                tile.Id = group.Definitions[TilesetGroupDefinitionType.BottomRight].TileIndex;
-                            }
-                            else if (side.HasFlag(PresenceSide.Right))
-                            {
-                                tile.Id = group.Definitions[TilesetGroupDefinitionType.BottomLeft].TileIndex;
-                            }
-                            else
-                            {
-                                tile.Id = group.Definitions[TilesetGroupDefinitionType.VerticalNarrowBottom].TileIndex;
-                            }
-                        }
-                        else
-                        {
-                            if (side.HasFlag(PresenceSide.Left) && side.HasFlag(PresenceSide.Right))
-                            {
-                                tile.Id = group.Definitions[TilesetGroupDefinitionType.HorizontalNarrowCenter].TileIndex;
-                            }
-                            else if (side.HasFlag(PresenceSide.Left))
-                            {
-                                tile.Id = group.Definitions[TilesetGroupDefinitionType.HorizontalNarrowRight].TileIndex;
-                            }
-                            else if (side.HasFlag(PresenceSide.Right))
-                            {
-                                tile.Id = group.Definitions[TilesetGroupDefinitionType.HorizontalNarrowLeft].TileIndex;
+                                if (side.HasFlag(PresenceSide.Left) && side.HasFlag(PresenceSide.Right))
+                                {
+                                    tile.Id = group.Definitions[TilesetGroupDefinitionType.HorizontalNarrowCenter].TileIndex;
+                                }
+                                else if (side.HasFlag(PresenceSide.Left))
+                                {
+                                    tile.Id = group.Definitions[TilesetGroupDefinitionType.HorizontalNarrowRight].TileIndex;
+                                }
+                                else if (side.HasFlag(PresenceSide.Right))
+                                {
+                                    tile.Id = group.Definitions[TilesetGroupDefinitionType.HorizontalNarrowLeft].TileIndex;
+                                }
                             }
                         }
                     }
@@ -359,25 +362,28 @@ namespace SixteenBitNuts.Editor
         {
             PresenceSide side = PresenceSide.None;
 
-            foreach (var currentTile in Map.CurrentMapSection.Tiles)
+            foreach (var element in Map.CurrentMapSection.Elements)
             {
-                if (currentTile.GroupName == group.Name)
+                if (element is Tile currentTile)
                 {
-                    if (currentTile.Position.X == tile.Position.X && currentTile.Position.Y == tile.Position.Y - 16)
+                    if (currentTile.GroupName == group.Name)
                     {
-                        side |= PresenceSide.Top;
-                    }
-                    if (currentTile.Position.X == tile.Position.X && currentTile.Position.Y == tile.Position.Y + 16)
-                    {
-                        side |= PresenceSide.Bottom;
-                    }
-                    if (currentTile.Position.X == tile.Position.X - 16 && currentTile.Position.Y == tile.Position.Y)
-                    {
-                        side |= PresenceSide.Left;
-                    }
-                    if (currentTile.Position.X == tile.Position.X + 16 && currentTile.Position.Y == tile.Position.Y)
-                    {
-                        side |= PresenceSide.Right;
+                        if (currentTile.Position.X == tile.Position.X && currentTile.Position.Y == tile.Position.Y - 16)
+                        {
+                            side |= PresenceSide.Top;
+                        }
+                        if (currentTile.Position.X == tile.Position.X && currentTile.Position.Y == tile.Position.Y + 16)
+                        {
+                            side |= PresenceSide.Bottom;
+                        }
+                        if (currentTile.Position.X == tile.Position.X - 16 && currentTile.Position.Y == tile.Position.Y)
+                        {
+                            side |= PresenceSide.Left;
+                        }
+                        if (currentTile.Position.X == tile.Position.X + 16 && currentTile.Position.Y == tile.Position.Y)
+                        {
+                            side |= PresenceSide.Right;
+                        }
                     }
                 }
             }

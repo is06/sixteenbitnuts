@@ -60,7 +60,7 @@ namespace SixteenBitNuts
             {
                 contents.Add(section.Value.MapTextDescription);
 
-                foreach (var tile in section.Value.Tiles)
+                foreach (var tile in section.Value.ForegroundTiles)
                 {
                     contents.Add(tile.MapTextDescription);
                 }

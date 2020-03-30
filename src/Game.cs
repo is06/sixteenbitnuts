@@ -41,6 +41,7 @@ namespace SixteenBitNuts
         private FMOD.Studio.Bank masterBank;
         private FMOD.Studio.Bank stringBank;
         private FMOD.Studio.Bank musicBank;
+        private FMOD.Studio.Bank sfxBank;
 
         private FMOD.Studio.EventInstance currentMusic;
 
@@ -84,7 +85,7 @@ namespace SixteenBitNuts
                 Console.WriteLine(FMOD.Error.String(result));
             }
 
-            result = fmodSystem.initialize(32, FMOD.Studio.INITFLAGS.NORMAL, FMOD.INITFLAGS.NORMAL, IntPtr.Zero);
+            result = fmodSystem.initialize(32, FMOD.Studio.INITFLAGS.LIVEUPDATE, FMOD.INITFLAGS.NORMAL, IntPtr.Zero);
             if (result != FMOD.RESULT.OK)
             {
                 Console.WriteLine(FMOD.Error.String(result));
@@ -100,6 +101,7 @@ namespace SixteenBitNuts
             fmodSystem.loadBankFile("Audio/Master.bank", FMOD.Studio.LOAD_BANK_FLAGS.NORMAL, out masterBank);
             fmodSystem.loadBankFile("Audio/Master.strings.bank", FMOD.Studio.LOAD_BANK_FLAGS.NORMAL, out stringBank);
             fmodSystem.loadBankFile("Audio/music.bank", FMOD.Studio.LOAD_BANK_FLAGS.NORMAL, out musicBank);
+            fmodSystem.loadBankFile("Audio/sfx.bank", FMOD.Studio.LOAD_BANK_FLAGS.NORMAL, out sfxBank);
         }
 
         protected override void UnloadContent()
@@ -107,6 +109,7 @@ namespace SixteenBitNuts
             musicBank.unload();
             stringBank.unload();
             masterBank.unload();
+            sfxBank.unload();
         }
 
         protected override void Update(GameTime gameTime)
@@ -176,16 +179,37 @@ namespace SixteenBitNuts
 
         }
 
-        public void StartMusic(string name)
+        public void PlayMusic(string name)
         {
-            fmodSystem.getEvent("event:/music/" + name, out FMOD.Studio.EventDescription eventDescription);
+            FMOD.RESULT result = fmodSystem.getEvent("event:/music/" + name, out FMOD.Studio.EventDescription eventDescription);
+            if (result != FMOD.RESULT.OK)
+            {
+                Console.WriteLine(FMOD.Error.String(result) + " (event:/music/" + name + ")");
+            }
             eventDescription.createInstance(out currentMusic);
-            currentMusic.start();
+
+            result = eventDescription.loadSampleData();
+            if (result == FMOD.RESULT.OK)
+            {
+                currentMusic.start();
+            }
         }
 
         public void SetMusicParameter(string name, float value)
         {
             currentMusic.setParameterByName(name, value);
+        }
+
+        public void PlaySound(string name)
+        {
+            FMOD.RESULT result = fmodSystem.getEvent("event:/sfx/" + name, out FMOD.Studio.EventDescription eventDescription);
+            if (result != FMOD.RESULT.OK)
+            {
+                Console.WriteLine(FMOD.Error.String(result) + " (event:/sfx/" + name + ")");
+            }
+
+            eventDescription.createInstance(out FMOD.Studio.EventInstance sound);
+            sound.start();
         }
 
         protected override void Dispose(bool disposing)

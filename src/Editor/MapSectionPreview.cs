@@ -45,7 +45,7 @@ namespace SixteenBitNuts.Editor
 
             if (section.RealSection != null)
             {
-                foreach (var tile in section.RealSection.Tiles)
+                foreach (var tile in section.RealSection.ForegroundTiles)
                 {
                     previewTilePositions.Add(new Point(
                         (int)((tile.Position.X / MapEditor.SCALE) - (section.RealSection.Bounds.Location.X / MapEditor.SCALE)),

@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using SixteenBitNuts.Editor;
 using System;
+using System.Globalization;
 using System.IO;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
@@ -52,6 +53,7 @@ namespace SixteenBitNuts
         #region Properties
 
         public string Name { get; set; }
+        public string? MusicName { get; set; }
         public Landscape? Landscape { get; set; }
         public Dictionary<int, MapSection> Sections => sections;
         public MapSection CurrentMapSection => sections[currentSectionIndex];
@@ -120,9 +122,13 @@ namespace SixteenBitNuts
 
             // Initialization of the toolbar only after loading a map
             sectionEditor.InitializeToolbar();
-        }
 
-        
+            // Play the specified music if any
+            if (MusicName is string musicName)
+            {
+                Game.PlayMusic(musicName);
+            }
+        }        
 
         /// <summary>
         /// Performs calculations for the map
@@ -206,6 +212,11 @@ namespace SixteenBitNuts
                                 if (element is Entity entity)
                                 {
                                     OnPlayerCollidesWithEntity?.Invoke(entity);
+
+                                    if (element is MusicParamTrigger musicParamTrigger)
+                                    {
+                                        musicParamTrigger.Trigger();
+                                    }
                                 }
 
                                 if (element.IsObstacle)
@@ -464,11 +475,16 @@ namespace SixteenBitNuts
 
                     if (layer == 0)
                     {
+                        foreach (KeyValuePair<int, MapSection> section in sections)
+                        {
+                            section.Value.DrawBackground(layerTransform);
+                        }
+
                         Player?.Draw(layerTransform);
 
                         foreach (KeyValuePair<int, MapSection> section in sections)
                         {
-                            section.Value.Draw(layer, layerTransform);
+                            section.Value.DrawForeground(layerTransform);
                         }
                     }
                 }
@@ -599,6 +615,9 @@ namespace SixteenBitNuts
 
                 switch (components[0])
                 {
+                    case "mu":
+                        MusicName = components[1];
+                        break;
                     case "bg":
                         Landscape = new Landscape(this, components[1]);
                         break;
@@ -688,7 +707,7 @@ namespace SixteenBitNuts
                                 }
                             }
                         }
-                        sections[sectionIndex].Tiles.Add(tileToAdd);
+                        sections[sectionIndex].ForegroundTiles.Add(tileToAdd);
                         break;
                 }
             }
@@ -705,14 +724,16 @@ namespace SixteenBitNuts
                         Position = position
                     };
                     break;
-                case "EventTrigger":
-                    sections[sectionIndex].Entities[name] = new EventTrigger(this, name)
+                case "MusicParamTrigger":
+                    sections[sectionIndex].Entities[name] = new MusicParamTrigger(this, name)
                     {
                         Position = position,
                         Size = new Size(
                             int.Parse(extraData[5]),
                             int.Parse(extraData[6])
-                        )
+                        ),
+                        ParamName = extraData[7],
+                        ParamValue = float.Parse(extraData[8], CultureInfo.InvariantCulture)
                     };
                     break;
                 case "Teleport":

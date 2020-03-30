@@ -3,6 +3,13 @@ using Microsoft.Xna.Framework.Input;
 
 namespace SixteenBitNuts
 {
+    public enum PlatformerPlayerActionType
+    {
+        Jump
+    }
+
+    public delegate void PlatformerPlayerActionHandler(PlatformerPlayerActionType type);
+
     public abstract class PlatformerPlayer : Player
     {
         public bool IsRunning { get; set; }
@@ -16,6 +23,8 @@ namespace SixteenBitNuts
         public float RunSpeed { get; protected set; }
         public float JumpForce { get; protected set; }
         public float DuckOffset { get; protected set; }
+
+        public event PlatformerPlayerActionHandler? OnPerformAction;
 
         private bool jumpButtonPressed;
 
@@ -112,6 +121,7 @@ namespace SixteenBitNuts
             {
                 if (!IsDucking && IsTouchingTheGround && !jumpButtonPressed && Keyboard.GetState().IsKeyDown(Keys.C))
                 {
+                    OnPerformAction?.Invoke(PlatformerPlayerActionType.Jump);
                     velocity.Y = JumpForce;
                     IsTouchingTheGround = false;
                     jumpButtonPressed = true;

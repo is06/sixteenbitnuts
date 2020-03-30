@@ -24,7 +24,8 @@ namespace SixteenBitNuts
         public Map Map { get; private set; }
         public Rectangle Bounds { get; set; }
         public Tileset Tileset { get; private set; }
-        public List<ITile> Tiles { get; set; }
+        public List<ITile> BackgroundTiles { get; set; }
+        public List<ITile> ForegroundTiles { get; set; }
         public Dictionary<string, IEntity> Entities { get; set; }
         public string MapTextDescription
         {
@@ -38,12 +39,20 @@ namespace SixteenBitNuts
                        " " + (DefaultSpawnPoint != null ? DefaultSpawnPoint.Name : "");
             }
         }
+
+        /// <summary>
+        /// This is a potential memory consumption problem... we will see in the future
+        /// </summary>
         public List<IMapElement> Elements
         {
             get
             {
                 var elements = new List<IMapElement>();
-                foreach (var tile in Tiles)
+                foreach (var tile in BackgroundTiles)
+                {
+                    elements.Add(tile);
+                }
+                foreach (var tile in ForegroundTiles)
                 {
                     elements.Add(tile);
                 }
@@ -84,7 +93,8 @@ namespace SixteenBitNuts
             Bounds = bounds;
             Tileset = tileset;
 
-            Tiles = new List<ITile>();
+            BackgroundTiles = new List<ITile>();
+            ForegroundTiles = new List<ITile>();
             Entities = new Dictionary<string, IEntity>();
 
             SetTransitionPoints(bounds);
@@ -103,34 +113,42 @@ namespace SixteenBitNuts
         }
 
         /// <summary>
-        /// Draw all tiles
+        /// Draw all background tiles
         /// </summary>
-        public void Draw(int layer, Matrix transform)
+        /// <param name="transform"></param>
+        public void DrawBackground(Matrix transform)
         {
-            // Main layer drawables
-            if (layer == 0)
+            foreach (Tile tile in BackgroundTiles)
             {
-                // First: draw entities
+                tile.Draw(transform);
+            }
+        }
+
+        /// <summary>
+        /// Draw all foreground tiles
+        /// </summary>
+        public void DrawForeground(Matrix transform)
+        {
+            // First: draw entities
+            foreach (KeyValuePair<string, IEntity> pair in Entities)
+            {
+                pair.Value.Draw(transform);
+            }
+
+            // Second: draw every tiles
+            // There is only one sprite batch for tiles, so only one shader possible
+            // for all tiles
+            foreach (Tile tile in ForegroundTiles)
+            {
+                tile.Draw(transform);
+            }
+
+            // In edit mode: draw the editor info for each entities
+            if (Map.IsInSectionEditMode)
+            {
                 foreach (KeyValuePair<string, IEntity> pair in Entities)
                 {
-                    pair.Value.Draw(transform);
-                }
-
-                // Second: draw every tiles
-                // There is only one sprite batch for tiles, so only one shader possible
-                // for all tiles
-                foreach (Tile tile in Tiles)
-                {
-                    tile.Draw(transform);
-                }
-
-                // In edit mode: draw the editor info for each entities
-                if (Map.IsInSectionEditMode)
-                {
-                    foreach (KeyValuePair<string, IEntity> pair in Entities)
-                    {
-                        pair.Value.EditorDraw(transform);
-                    }
+                    pair.Value.EditorDraw(transform);
                 }
             }
         }
@@ -140,7 +158,11 @@ namespace SixteenBitNuts
         /// </summary>
         public void DebugDraw(Matrix transform)
         {
-            foreach (Tile tile in Tiles)
+            foreach (Tile tile in BackgroundTiles)
+            {
+                tile.DebugDraw(transform);
+            }
+            foreach (Tile tile in ForegroundTiles)
             {
                 tile.DebugDraw(transform);
             }
@@ -217,7 +239,7 @@ namespace SixteenBitNuts
             SetTransitionPoints(Bounds);
 
             // Move tiles in the section
-            foreach (Tile tile in Tiles)
+            foreach (Tile tile in ForegroundTiles)
             {
                 tile.Position = new Vector2(tile.Position.X + positionOffset.X, tile.Position.Y + positionOffset.Y);
             }
@@ -240,7 +262,8 @@ namespace SixteenBitNuts
             info.AddValue("bounds.Height", Bounds.Height);
             info.AddValue("tileset", Tileset.Name);
             info.AddValue("defaultSpawnPoint", DefaultSpawnPoint != null ? DefaultSpawnPoint.Name : "");
-            info.AddValue("tiles", Tiles);
+            info.AddValue("tiles", BackgroundTiles);
+            info.AddValue("tiles", ForegroundTiles);
             info.AddValue("entities", Entities);
         }
 
