@@ -9,6 +9,7 @@ namespace SixteenBitNuts.Editor
         public List<ToolbarButton> Buttons { get; }
         public System.Type? SelectedButtonType { get; set; }
         public int SelectedTileId { get; set; }
+        public Tileset? SelectedTileset { get; set; }
         public string? SelectedGroupName { get; set; }
         public string? SelectedEntityType { get; set; }
 
@@ -20,14 +21,18 @@ namespace SixteenBitNuts.Editor
 
             int position = 16;
 
-            foreach (var group in Editor.Map.CurrentMapSection.Tileset.Groups)
+            foreach (var tileset in Editor.Map.Game.TilesetService.Tilesets)
             {
-                Buttons.Add(new TileToolbarButton(this, isGroup: true)
+                foreach (var group in tileset.Value.Groups)
                 {
-                    GroupName = group.Value.Name,
-                    Position = new Vector2(position, 16),
-                });
-                position += 64;
+                    Buttons.Add(new TileToolbarButton(this, isGroup: true)
+                    {
+                        Tileset = tileset.Value,
+                        GroupName = group.Value.Name,
+                        Position = new Vector2(position, 16),
+                    });
+                    position += 64;
+                }
             }
 
             Buttons.Add(new EntityToolbarButton(this, "spawn", "spawn")

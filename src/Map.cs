@@ -635,6 +635,7 @@ namespace SixteenBitNuts
             }
 
             int sectionIndex = -1;
+            Tileset? tileset = null;
 
             foreach (string line in lines)
             {
@@ -643,12 +644,15 @@ namespace SixteenBitNuts
                 switch (components[0])
                 {
                     case "mu":
+                        // Music
                         MusicName = components[1];
                         break;
                     case "bg":
+                        // Background
                         Landscape = new Landscape(this, components[1]);
                         break;
                     case "ly":
+                        // Background layer
                         var layerIndex = int.Parse(components[1]);
                         if (layerIndex > maxLandscapeLayerIndex) maxLandscapeLayerIndex = layerIndex;
                         if (layerIndex < minLandscapeLayerIndex) minLandscapeLayerIndex = layerIndex;
@@ -678,8 +682,7 @@ namespace SixteenBitNuts
                             sections[sectionIndex] = new MapSection(
                                 this,
                                 bounds,
-                                Game.TilesetService.Get(components[5]),
-                                components[6]
+                                components[5]
                             );
                             mapEditor.MapSectionContainers.Add(
                                 sectionIndex,
@@ -704,6 +707,11 @@ namespace SixteenBitNuts
                             extraData: components
                         );
                         break;
+                    case "ts":
+                        // Tileset marker (every following ti marker are in the tileset section)
+                        tileset = Game.TilesetService.Get(components[1]);
+                        sections[sectionIndex].TilesetSections.Add(new TilesetSection() { Tileset = tileset });
+                        break;
                     case "ti":
                         // Tile
                         int elementId = int.Parse(components[1]);
@@ -712,35 +720,33 @@ namespace SixteenBitNuts
                             X = int.Parse(components[2]),
                             Y = int.Parse(components[3])
                         };
-                        var tileToAdd = new Tile(
-                            this,
-                            sections[sectionIndex].Tileset,
-                            elementId,
-                            position,
-                            sections[sectionIndex].Tileset.GetSizeFromId(elementId),
-                            sections[sectionIndex].Tileset.GetTypeFromId(elementId)
-                        );
-
-                        foreach (var tilesetGroup in CurrentMapSection.Tileset.Groups)
+                        if (tileset?.GetSizeFromId(elementId) is Size size && tileset?.GetTypeFromId(elementId) is TileType type)
                         {
-                            if (tilesetGroup.Value.Definitions != null)
+                            var tileToAdd = new Tile(this, tileset, elementId, position, size, type);
+
+                            if (tileset != null)
                             {
-                                foreach (var definition in tilesetGroup.Value.Definitions)
+                                foreach (var tilesetGroup in tileset.Groups)
                                 {
-                                    if (definition.Value.TileIndex == elementId)
+                                    if (tilesetGroup.Value.Definitions != null)
                                     {
-                                        tileToAdd.GroupName = tilesetGroup.Value.Name;
-                                        break;
+                                        foreach (var definition in tilesetGroup.Value.Definitions)
+                                        {
+                                            if (definition.Value.TileIndex == elementId)
+                                            {
+                                                tileToAdd.GroupName = tilesetGroup.Value.Name;
+                                                break;
+                                            }
+                                        }
                                     }
                                 }
                             }
+
+                            if (tileset?.GetLayerFromId(elementId) == TileLayer.Background)
+                                sections[sectionIndex].BackgroundTiles.Add(tileToAdd);
+                            else
+                                sections[sectionIndex].ForegroundTiles.Add(tileToAdd);
                         }
-                        
-                        if (sections[sectionIndex].Tileset.GetLayerFromId(elementId) == TileLayer.Background)
-                            sections[sectionIndex].BackgroundTiles.Add(tileToAdd);
-                        else
-                            sections[sectionIndex].ForegroundTiles.Add(tileToAdd);
-                        
                         break;
                 }
             }

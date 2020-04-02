@@ -62,6 +62,7 @@ namespace SixteenBitNuts.Editor
                             toolbar.SelectedTileId = button.Id;
                             toolbar.SelectedGroupName = button.GroupName;
                             toolbar.SelectedButtonType = button.GetType();
+                            toolbar.SelectedTileset = button.Tileset;
 
                             if (button.GetType() == typeof(EntityToolbarButton))
                             {
@@ -80,25 +81,22 @@ namespace SixteenBitNuts.Editor
                     // Draw a tile
                     if (toolbar.SelectedButtonType == typeof(TileToolbarButton) && !TileAlreadyAtPosition(drawerPosition))
                     {
-                        var tileToAdd = new Tile(
-                            Map,
-                            Map.CurrentMapSection.Tileset,
-                            toolbar.SelectedTileId,
-                            drawerPosition,
-                            Map.CurrentMapSection.Tileset.GetSizeFromId(toolbar.SelectedTileId),
-                            Map.CurrentMapSection.Tileset.GetTypeFromId(toolbar.SelectedTileId))
+                        if (toolbar.SelectedTileset?.GetSizeFromId(toolbar.SelectedTileId) is Size size && toolbar.SelectedTileset?.GetTypeFromId(toolbar.SelectedTileId) is TileType type)
                         {
-                            GroupName = toolbar.SelectedGroupName
-                        };
+                            var tileToAdd = new Tile(Map, toolbar.SelectedTileset, toolbar.SelectedTileId, drawerPosition, size, type)
+                            {
+                                GroupName = toolbar.SelectedGroupName
+                            };
 
-                        // Draw the tile
-                        if (Map.CurrentMapSection.Tileset.GetLayerFromId(toolbar.SelectedTileId) == TileLayer.Background)
-                            Map.CurrentMapSection.BackgroundTiles.Add(tileToAdd);
-                        else
-                            Map.CurrentMapSection.ForegroundTiles.Add(tileToAdd);                        
+                            // Draw the tile
+                            if (toolbar.SelectedTileset.GetLayerFromId(toolbar.SelectedTileId) == TileLayer.Background)
+                                Map.CurrentMapSection.BackgroundTiles.Add(tileToAdd);
+                            else
+                                Map.CurrentMapSection.ForegroundTiles.Add(tileToAdd);
 
-                        // Update the id of every tiles of the same group
-                        UpdateTilesTypes();
+                            // Update the id of every tiles of the same group
+                            UpdateTilesTypes();
+                        }
                     }
 
                     // Draw an entity
@@ -265,11 +263,11 @@ namespace SixteenBitNuts.Editor
         {
             foreach (var element in Map.CurrentMapSection.Elements)
             {
-                if (element is Tile tile)
+                if (element is Tile tile && toolbar?.SelectedTileset is Tileset tileset)
                 {
                     TilesetGroup? currentGroup = null;
 
-                    foreach (var groupPair in Map.CurrentMapSection.Tileset.Groups)
+                    foreach (var groupPair in tileset.Groups)
                     {
                         if (tile.GroupName == groupPair.Value.Name)
                         {

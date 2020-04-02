@@ -93,7 +93,7 @@ namespace SixteenBitNuts.Editor
                 MapSectionContainers.Add(nextSectionIndex, new MapSectionContainer(Map, this, nextSectionIndex, bounds));
 
                 var defaultSpawnPoint = new SpawnPoint(Map, "spawn01");
-                var mapSection = new SixteenBitNuts.MapSection(Map, bounds, Map.Game.TilesetService.Get("beta"), defaultSpawnPoint.Name);
+                var mapSection = new SixteenBitNuts.MapSection(Map, bounds, defaultSpawnPoint.Name);
                 mapSection.Entities.Add(defaultSpawnPoint.Name, defaultSpawnPoint);
                 Map.Sections.Add(nextSectionIndex, mapSection);
             }

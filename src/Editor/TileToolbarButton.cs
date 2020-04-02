@@ -15,22 +15,25 @@ namespace SixteenBitNuts.Editor
         {
             base.Draw();
 
-            if (isGroup && GroupName != null)
+            if (Tileset is Tileset tileset)
             {
-                var definitions = Toolbar.Editor.Map.CurrentMapSection.Tileset.Groups[GroupName].Definitions;
-                if (definitions != null)
+                if (isGroup && GroupName != null)
                 {
-                    Id = definitions[TilesetGroupDefinitionType.Single].TileIndex;
+                    var definitions = tileset.Groups[GroupName].Definitions;
+                    if (definitions != null)
+                    {
+                        Id = definitions[TilesetGroupDefinitionType.Single].TileIndex;
+                    }
                 }
-            }
 
-            Toolbar.Editor.Map.CurrentMapSection.Tileset.Draw(
-                Position + new Vector2(6, 6),
-                Toolbar.Editor.Map.CurrentMapSection.Tileset.GetSizeFromId(Id).ToVector2(),
-                Toolbar.Editor.Map.CurrentMapSection.Tileset.GetOffsetFromId(Id),
-                new Vector2(3, 3),
-                Matrix.Identity
-            );
+                tileset.Draw(
+                    Position + new Vector2(6, 6),
+                    tileset.GetSizeFromId(Id).ToVector2(),
+                    tileset.GetOffsetFromId(Id),
+                    new Vector2(3, 3),
+                    Matrix.Identity
+                );
+            }
         }
     }
 }

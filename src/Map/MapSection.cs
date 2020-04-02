@@ -23,7 +23,7 @@ namespace SixteenBitNuts
 
         public Map Map { get; private set; }
         public Rectangle Bounds { get; set; }
-        public Tileset Tileset { get; private set; }
+        public List<TilesetSection> TilesetSections { get; set; }
         public List<ITile> BackgroundTiles { get; set; }
         public List<ITile> ForegroundTiles { get; set; }
         public Dictionary<string, IEntity> Entities { get; set; }
@@ -35,7 +35,6 @@ namespace SixteenBitNuts
                        " " + Bounds.Y +
                        " " + Bounds.Width +
                        " " + Bounds.Height +
-                       " " + Tileset.Name +
                        " " + (DefaultSpawnPoint != null ? DefaultSpawnPoint.Name : "");
             }
         }
@@ -79,7 +78,7 @@ namespace SixteenBitNuts
         /// <summary>
         /// Constructor
         /// </summary>
-        public MapSection(Map map, Rectangle bounds, Tileset tileset, string defaultSpawnPointName)
+        public MapSection(Map map, Rectangle bounds, string defaultSpawnPointName)
         {
             Map = map;
             this.defaultSpawnPointName = defaultSpawnPointName;
@@ -87,8 +86,8 @@ namespace SixteenBitNuts
 
             // Properties
             Bounds = bounds;
-            Tileset = tileset;
 
+            TilesetSections = new List<TilesetSection>();
             BackgroundTiles = new List<ITile>();
             ForegroundTiles = new List<ITile>();
             Entities = new Dictionary<string, IEntity>();
@@ -256,7 +255,6 @@ namespace SixteenBitNuts
             info.AddValue("bounds.Y", Bounds.Y);
             info.AddValue("bounds.Width", Bounds.Width);
             info.AddValue("bounds.Height", Bounds.Height);
-            info.AddValue("tileset", Tileset.Name);
             info.AddValue("defaultSpawnPoint", DefaultSpawnPoint != null ? DefaultSpawnPoint.Name : "");
             info.AddValue("back_tiles", BackgroundTiles);
             info.AddValue("front_tiles", ForegroundTiles);

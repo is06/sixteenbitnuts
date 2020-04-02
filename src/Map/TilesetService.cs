@@ -5,22 +5,24 @@ namespace SixteenBitNuts
     public class TilesetService
     {
         private readonly Game game;
-        private readonly Dictionary<string, Tileset> tilesets = new Dictionary<string, Tileset>();
+        public Dictionary<string, Tileset> Tilesets { get; private set; }
 
         public TilesetService(Game game)
         {
             this.game = game;
+
+            Tilesets = new Dictionary<string, Tileset>();
         }
 
         public Tileset Get(string name)
         {
-            if (tilesets.ContainsKey(name))
+            if (Tilesets.ContainsKey(name))
             {
-                return tilesets[name];
+                return Tilesets[name];
             }
 
             var tileset = new Tileset(game, name);
-            tilesets.Add(name, tileset);
+            Tilesets.Add(name, tileset);
             return tileset;
         }
     }
