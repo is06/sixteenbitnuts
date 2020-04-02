@@ -47,7 +47,7 @@ namespace SixteenBitNuts
             map.Game.SpriteBatch?.Draw(
                 texture: Layers[layerIndex].Texture,
                 position: Vector2.Zero,
-                sourceRectangle: new Rectangle(0, 0, 1024, 270),
+                sourceRectangle: new Rectangle(0, 0, (int)map.Size.Width, (int)map.Size.Height),
                 color: Color.White,
                 rotation: 0f,
                 origin: Vector2.Zero,

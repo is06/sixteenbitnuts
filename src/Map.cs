@@ -77,6 +77,33 @@ namespace SixteenBitNuts
                 return false;
             }
         }
+        public Size Size
+        {
+            get
+            {
+                float minTop = 0f;
+                float minLeft = 0f;
+                float maxRight = 0f;
+                float maxBottom = 0f;
+
+                foreach (var section in Sections)
+                {
+                    if (section.Value.Bounds.Top < minTop)
+                        minTop = section.Value.Bounds.Top;
+
+                    if (section.Value.Bounds.Left < minLeft)
+                        minLeft = section.Value.Bounds.Left;
+
+                    if (section.Value.Bounds.Right > maxRight)
+                        maxRight = section.Value.Bounds.Right;
+
+                    if (section.Value.Bounds.Bottom > maxBottom)
+                        maxBottom = section.Value.Bounds.Bottom;
+                }
+
+                return new Size(maxRight - minLeft, maxBottom - minTop);
+            }
+        }
 
         #endregion
 
