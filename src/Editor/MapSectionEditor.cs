@@ -80,18 +80,22 @@ namespace SixteenBitNuts.Editor
                     // Draw a tile
                     if (toolbar.SelectedButtonType == typeof(TileToolbarButton) && !TileAlreadyAtPosition(drawerPosition))
                     {
-                        // Draw the tile
-                        Map.CurrentMapSection.ForegroundTiles.Add(new Tile(
+                        var tileToAdd = new Tile(
                             Map,
                             Map.CurrentMapSection.Tileset,
                             toolbar.SelectedTileId,
                             drawerPosition,
                             Map.CurrentMapSection.Tileset.GetSizeFromId(toolbar.SelectedTileId),
-                            Map.CurrentMapSection.Tileset.GetTypeFromId(toolbar.SelectedTileId)
-                        )
+                            Map.CurrentMapSection.Tileset.GetTypeFromId(toolbar.SelectedTileId))
                         {
                             GroupName = toolbar.SelectedGroupName
-                        });
+                        };
+
+                        // Draw the tile
+                        if (Map.CurrentMapSection.Tileset.GetLayerFromId(toolbar.SelectedTileId) == TileLayer.Background)
+                            Map.CurrentMapSection.BackgroundTiles.Add(tileToAdd);
+                        else
+                            Map.CurrentMapSection.ForegroundTiles.Add(tileToAdd);                        
 
                         // Update the id of every tiles of the same group
                         UpdateTilesTypes();

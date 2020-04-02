@@ -48,10 +48,6 @@ namespace SixteenBitNuts
             get
             {
                 var elements = new List<IMapElement>();
-                foreach (var tile in BackgroundTiles)
-                {
-                    elements.Add(tile);
-                }
                 foreach (var tile in ForegroundTiles)
                 {
                     elements.Add(tile);
@@ -262,8 +258,8 @@ namespace SixteenBitNuts
             info.AddValue("bounds.Height", Bounds.Height);
             info.AddValue("tileset", Tileset.Name);
             info.AddValue("defaultSpawnPoint", DefaultSpawnPoint != null ? DefaultSpawnPoint.Name : "");
-            info.AddValue("tiles", BackgroundTiles);
-            info.AddValue("tiles", ForegroundTiles);
+            info.AddValue("back_tiles", BackgroundTiles);
+            info.AddValue("front_tiles", ForegroundTiles);
             info.AddValue("entities", Entities);
         }
 

@@ -85,7 +85,7 @@ namespace SixteenBitNuts
                 Console.WriteLine(FMOD.Error.String(result));
             }
 
-            result = fmodSystem.initialize(32, FMOD.Studio.INITFLAGS.LIVEUPDATE, FMOD.INITFLAGS.NORMAL, IntPtr.Zero);
+            result = fmodSystem.initialize(32, FMOD.Studio.INITFLAGS.NORMAL, FMOD.INITFLAGS.NORMAL, IntPtr.Zero);
             if (result != FMOD.RESULT.OK)
             {
                 Console.WriteLine(FMOD.Error.String(result));

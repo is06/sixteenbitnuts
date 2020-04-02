@@ -693,6 +693,7 @@ namespace SixteenBitNuts
                             sections[sectionIndex].Tileset.GetSizeFromId(elementId),
                             sections[sectionIndex].Tileset.GetTypeFromId(elementId)
                         );
+
                         foreach (var tilesetGroup in CurrentMapSection.Tileset.Groups)
                         {
                             if (tilesetGroup.Value.Definitions != null)
@@ -707,7 +708,12 @@ namespace SixteenBitNuts
                                 }
                             }
                         }
-                        sections[sectionIndex].ForegroundTiles.Add(tileToAdd);
+                        
+                        if (sections[sectionIndex].Tileset.GetLayerFromId(elementId) == TileLayer.Background)
+                            sections[sectionIndex].BackgroundTiles.Add(tileToAdd);
+                        else
+                            sections[sectionIndex].ForegroundTiles.Add(tileToAdd);
+                        
                         break;
                 }
             }

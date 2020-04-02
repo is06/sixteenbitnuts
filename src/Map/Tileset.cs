@@ -97,6 +97,11 @@ namespace SixteenBitNuts
             return elements[id].Type;
         }
 
+        public TileLayer GetLayerFromId(int id)
+        {
+            return elements[id].Layer;
+        }
+
         protected virtual void LoadFromFile(string fileName)
         {
             int elementIndex = 0;
@@ -143,6 +148,7 @@ namespace SixteenBitNuts
                     element.Size = new Size(int.Parse(components[1]), int.Parse(components[2]));
                     element.Offset = new Vector2(int.Parse(components[3]), int.Parse(components[4]));
                     element.Type = (TileType)int.Parse(components[5]);
+                    element.Layer = (TileLayer)int.Parse(components[6]);
 
                     elements[elementIndex] = element;
                     elementIndex++;
