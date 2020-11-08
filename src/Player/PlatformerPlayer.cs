@@ -37,9 +37,9 @@ namespace SixteenBitNuts
             IsFalling = true;
         }
 
-        public override void Update(GameTime _)
+        public override void Update(GameTime gameTime)
         {
-            base.Update(_);
+            base.Update(gameTime);
 
             #region Ducking
 
@@ -182,11 +182,7 @@ namespace SixteenBitNuts
                     pos.Y -= DuckOffset;
                 }
 
-                sprite.Draw(
-                    position: pos,
-                    layer: 0f,
-                    transform: transform
-                );
+                sprite.Draw(position: pos, layer: 0f, transform: transform);
             }
         }
 
