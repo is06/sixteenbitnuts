@@ -5,7 +5,7 @@ namespace SixteenBitNuts.Editor
 {
     public class EntityToolbarButton : ToolbarButton
     {
-        private readonly Texture2D texture;
+        protected Texture2D? texture;
 
         public string Type { get; private set; }
 
@@ -16,7 +16,7 @@ namespace SixteenBitNuts.Editor
             texture = type switch
             {
                 "spawn" => bar.Editor.Map.Game.Content.Load<Texture2D>("Engine/editor/" + textureName),
-                _ => bar.Editor.Map.Game.Content.Load<Texture2D>("Game/sprites/entities/" + type),
+                _ => null,
             };
         }
 
@@ -29,7 +29,7 @@ namespace SixteenBitNuts.Editor
                 (Position.Y + 6)
             );
 
-            Toolbar.Editor.Map.Game.SpriteBatch?.Begin();
+            Toolbar.Editor.Map.Game.SpriteBatch?.Begin(samplerState: SamplerState.PointClamp);
 
             Toolbar.Editor.Map.Game.SpriteBatch?.Draw(
                 texture: texture,

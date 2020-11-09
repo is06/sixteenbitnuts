@@ -46,6 +46,30 @@ namespace SixteenBitNuts
             base.Update(gameTime);
         }
 
+        public override void Draw(Matrix transform)
+        {
+            if (IsVisible)
+            {
+                map.Game.SpriteBatch?.Begin(transformMatrix: transform, samplerState: SamplerState.PointClamp);
+
+                map.Game.SpriteBatch?.Draw(
+                    texture: texture,
+                    position: drawPosition,
+                    sourceRectangle: new Rectangle(Point.Zero, Size.ToPoint()),
+                    color: Color.White,
+                    rotation: 0f,
+                    origin: Vector2.Zero,
+                    scale: Vector2.One,
+                    effects: SpriteEffects.None,
+                    layerDepth: 0f
+                );
+
+                map.Game.SpriteBatch?.End();
+            }
+
+            base.Draw(transform);
+        }
+
         public void Destroy()
         {
             IsDestroying = true;
