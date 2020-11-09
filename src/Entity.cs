@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using SixteenBitNuts.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -23,7 +22,7 @@ namespace SixteenBitNuts
             }
         }
 
-        protected Texture2D? texture;
+        protected Sprite? sprite;
         protected Vector2 drawPosition;
         protected List<Movement> movements = new List<Movement>();
 
@@ -50,21 +49,7 @@ namespace SixteenBitNuts
         {
             if (IsVisible)
             {
-                map.Game.SpriteBatch?.Begin(transformMatrix: transform, samplerState: SamplerState.PointClamp);
-
-                map.Game.SpriteBatch?.Draw(
-                    texture: texture,
-                    position: drawPosition,
-                    sourceRectangle: new Rectangle(Point.Zero, Size.ToPoint()),
-                    color: Color.White,
-                    rotation: 0f,
-                    origin: Vector2.Zero,
-                    scale: Vector2.One,
-                    effects: SpriteEffects.None,
-                    layerDepth: 0f
-                );
-
-                map.Game.SpriteBatch?.End();
+                sprite?.Draw(drawPosition, 0f, transform);
             }
 
             base.Draw(transform);
