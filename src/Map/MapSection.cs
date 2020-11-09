@@ -113,6 +113,18 @@ namespace SixteenBitNuts
         /// <param name="transform"></param>
         public void DrawBackground(Matrix transform)
         {
+            // First: draw entities only if they ARE BEHIND the player
+            foreach (KeyValuePair<string, IEntity> pair in Entities)
+            {
+                if (pair.Value.IsBehindThePlayer)
+                {
+                    pair.Value.Draw(transform);
+                }
+            }
+
+            // Second: draw every tiles
+            // There is only one sprite batch for tiles, so only one shader possible
+            // for all tiles
             foreach (Tile tile in BackgroundTiles)
             {
                 tile.Draw(transform);
@@ -124,10 +136,13 @@ namespace SixteenBitNuts
         /// </summary>
         public void DrawForeground(Matrix transform)
         {
-            // First: draw entities
+            // First: draw entities only if they ARE NOT BEHIND the player
             foreach (KeyValuePair<string, IEntity> pair in Entities)
             {
-                pair.Value.Draw(transform);
+                if (!pair.Value.IsBehindThePlayer)
+                {
+                    pair.Value.Draw(transform);
+                }
             }
 
             // Second: draw every tiles

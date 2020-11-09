@@ -53,14 +53,6 @@ namespace SixteenBitNuts
 
         public Direction Direction { get; set; }
 
-        public Vector2 HitBoxOffset
-        {
-            get
-            {
-                return animations[currentAnimationName].HitBoxOffset.ToVector2();
-            }
-        }
-
         #endregion
 
         #region Components
@@ -115,9 +107,11 @@ namespace SixteenBitNuts
                 transform
             );
 
+            var drawPosition = new Vector2((float)Math.Round(position.X), (float)Math.Round(position.Y));
+
             game.SpriteBatch?.Draw(
                 texture: texture,
-                position: new Vector2((float)Math.Round(position.X), (float)Math.Round(position.Y)),
+                position: drawPosition - CurrentAnimation.HitBoxOffset.ToVector2(),
                 sourceRectangle: new Rectangle(
                     offset.X,
                     offset.Y,
