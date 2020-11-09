@@ -175,7 +175,7 @@ namespace SixteenBitNuts
         {
             if (sprite != null)
             {
-                var pos = DrawingPosition - sprite.HitBoxOffset;
+                var pos = DrawingPosition;
 
                 if (IsDucking)
                 {

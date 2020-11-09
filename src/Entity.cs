@@ -10,6 +10,7 @@ namespace SixteenBitNuts
     public abstract class Entity : MapElement, IEntity, ISerializable
     {
         public string Name { get; private set; }
+        public bool IsBehindThePlayer { get; set; }
         public bool IsVisibleInPreMainDisplay { get; set; }
         public virtual string MapTextDescription
         {

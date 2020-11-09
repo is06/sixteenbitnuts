@@ -116,7 +116,7 @@ namespace SixteenBitNuts
         public virtual void Draw(Matrix transform)
         {
             sprite?.Draw(
-                position: DrawingPosition - sprite.HitBoxOffset,
+                position: DrawingPosition,
                 layer: 0f,
                 transform: transform
             );
