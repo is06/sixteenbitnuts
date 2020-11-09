@@ -194,9 +194,9 @@ namespace SixteenBitNuts
                     foreach (var element in CurrentMapSection.Elements)
                     {
                         // If element has destroying flag: remove it from the list
-                        if (element is Entity && element.IsDestroying)
+                        if (element is Entity entity && element.IsDestroying)
                         {
-                            CurrentMapSection.Entities.Remove(((Entity)element).Name);
+                            CurrentMapSection.Entities.Remove(entity.Name);
                         }
 
                         element.DebugColor = Color.LimeGreen;
