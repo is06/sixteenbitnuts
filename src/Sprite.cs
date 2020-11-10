@@ -17,8 +17,6 @@ namespace SixteenBitNuts
 
         private string? textureName;
         private string currentAnimationName;
-        private float currentAnimationFrame;
-        private bool isAnimated;
 
         public Effects.SpriteEffect? Effect { get; set; }
 
@@ -26,6 +24,9 @@ namespace SixteenBitNuts
 
         #region Properties
 
+        public bool IsAnimated { get; set; }
+        public bool IsVisible { get; set; }
+        public float CurrentAnimationFrame { get; private set; }
         public string AnimationName
         {
             get
@@ -37,12 +38,11 @@ namespace SixteenBitNuts
                 if (value != currentAnimationName)
                 {
                     currentAnimationName = value;
-                    currentAnimationFrame = 0f;
-                    isAnimated = true;
+                    CurrentAnimationFrame = 0f;
+                    IsAnimated = true;
                 }
             }
         }
-
         public SpriteAnimation CurrentAnimation
         {
             get
@@ -50,7 +50,6 @@ namespace SixteenBitNuts
                 return animations[AnimationName];
             }
         }
-
         public Direction Direction { get; set; }
 
         #endregion
@@ -69,9 +68,10 @@ namespace SixteenBitNuts
 
             // Fields
             currentAnimationName = "idle";
-            currentAnimationFrame = 0f;
 
             // Properties
+            CurrentAnimationFrame = 0f;
+            IsVisible = true;
             Direction = Direction.Right;
 
             // Components
@@ -85,66 +85,69 @@ namespace SixteenBitNuts
 
         public void Draw(Vector2 position, float layer, Matrix transform)
         {
-            Point offset = new Point(
-                CurrentAnimation.Directions[Direction].Offset.X + ((int)Math.Floor(currentAnimationFrame) * CurrentAnimation.Size.X),
-                CurrentAnimation.Directions[Direction].Offset.Y
-            );
-
-            SpriteEffects flipEffects = SpriteEffects.None;
-            if (CurrentAnimation.Directions[Direction].FlippedHorizontally) flipEffects |= SpriteEffects.FlipHorizontally;
-            if (CurrentAnimation.Directions[Direction].FlippedVertically) flipEffects |= SpriteEffects.FlipVertically;
-
-            Effect?.Effect?.Parameters["TextureSize"]?.SetValue(texture.Bounds.Size.ToVector2());
-            Effect?.Update();
-
-            game.SpriteBatch?.Begin(
-                SpriteSortMode.Immediate,
-                BlendState.AlphaBlend,
-                SamplerState.PointClamp,
-                null,
-                null,
-                Effect?.Effect,
-                transform
-            );
-
-            var drawPosition = new Vector2((float)Math.Round(position.X), (float)Math.Round(position.Y));
-
-            game.SpriteBatch?.Draw(
-                texture: texture,
-                position: drawPosition - CurrentAnimation.HitBoxOffset.ToVector2(),
-                sourceRectangle: new Rectangle(
-                    offset.X,
-                    offset.Y,
-                    CurrentAnimation.Size.X,
-                    CurrentAnimation.Size.Y
-                ),
-                color: Color.White,
-                rotation: 0f,
-                origin: new Vector2(0, 0),
-                scale: Vector2.One,
-                effects: flipEffects,
-                layerDepth: layer
-            );
-
-            game.SpriteBatch?.End();
-
-            // Increment animation frame counter
-            if (isAnimated)
+            if (IsVisible)
             {
-                currentAnimationFrame += CurrentAnimation.Speed;
-            }
-            
-            // End of animation sequence
-            if (currentAnimationFrame >= CurrentAnimation.Length)
-            {
-                if (CurrentAnimation.Looped)
+                Point offset = new Point(
+                    CurrentAnimation.Directions[Direction].Offset.X + ((int)Math.Floor(CurrentAnimationFrame) * CurrentAnimation.Size.X),
+                    CurrentAnimation.Directions[Direction].Offset.Y
+                );
+
+                SpriteEffects flipEffects = SpriteEffects.None;
+                if (CurrentAnimation.Directions[Direction].FlippedHorizontally) flipEffects |= SpriteEffects.FlipHorizontally;
+                if (CurrentAnimation.Directions[Direction].FlippedVertically) flipEffects |= SpriteEffects.FlipVertically;
+
+                Effect?.Effect?.Parameters["TextureSize"]?.SetValue(texture.Bounds.Size.ToVector2());
+                Effect?.Update();
+
+                game.SpriteBatch?.Begin(
+                    SpriteSortMode.Immediate,
+                    BlendState.AlphaBlend,
+                    SamplerState.PointClamp,
+                    null,
+                    null,
+                    Effect?.Effect,
+                    transform
+                );
+
+                var drawPosition = new Vector2((float)Math.Round(position.X), (float)Math.Round(position.Y));
+
+                game.SpriteBatch?.Draw(
+                    texture: texture,
+                    position: drawPosition - CurrentAnimation.HitBoxOffset.ToVector2(),
+                    sourceRectangle: new Rectangle(
+                        offset.X,
+                        offset.Y,
+                        CurrentAnimation.Size.X,
+                        CurrentAnimation.Size.Y
+                    ),
+                    color: Color.White,
+                    rotation: 0f,
+                    origin: new Vector2(0, 0),
+                    scale: Vector2.One,
+                    effects: flipEffects,
+                    layerDepth: layer
+                );
+
+                game.SpriteBatch?.End();
+
+                // Increment animation frame counter
+                if (IsAnimated)
                 {
-                    currentAnimationFrame = 0;
+                    CurrentAnimationFrame += CurrentAnimation.Speed;
                 }
-                else
+
+                // End of animation sequence
+                if (CurrentAnimationFrame >= CurrentAnimation.Length)
                 {
-                    OnAnimationFinished?.Invoke(this);
-                    isAnimated = false;
+                    if (CurrentAnimation.Looped)
+                    {
+                        CurrentAnimationFrame = 0;
+                    }
+                    else
+                    {
+                        OnAnimationFinished?.Invoke(this);
+                        IsAnimated = false;
+                    }
                 }
             }
         }
@@ -152,6 +155,11 @@ namespace SixteenBitNuts
         public void DebugDraw()
         {
             // TODO: The problem is the variety of sprite size in animations
+        }
+
+        public void ResetCurrentAnimation()
+        {
+            CurrentAnimationFrame = 0f;
         }
 
         protected virtual void LoadFromFile(string fileName)
