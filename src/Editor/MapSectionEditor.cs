@@ -19,9 +19,11 @@ namespace SixteenBitNuts.Editor
         private readonly Cursor cursor;
         private readonly Texture2D gridTexture;
         private readonly Box frame;
+        private bool hasErasedAnEntity;
         private IEntity? selectedEntity;
         private Box? selectedEntityBox;
-        private bool hasErasedAnEntity;
+        private bool isMovingAnEntity;
+        private bool hasPressedAnEntity;
 
         public MapSectionEditor(Map map)
         {
@@ -58,6 +60,7 @@ namespace SixteenBitNuts.Editor
                 {
                     foreach (ToolbarButton button in toolbar.Buttons)
                     {
+                        // Click on a toolbar button
                         if (button.HitBox.Contains(cursor.Position))
                         {
                             cursor.Type = CursorType.Crosshair;
@@ -100,10 +103,30 @@ namespace SixteenBitNuts.Editor
                         // Select an entity
                         if (toolbar.SelectedButtonType == ToolbarButtonType.Selection)
                         {
-                            SelectEntity(cursor.InGamePosition);
+                            hasPressedAnEntity = true;
                         }
                     }
                 }
+
+                if (selectedEntity != null && selectedEntity.HitBox.Contains(cursor.InGamePosition))
+                {
+                    isMovingAnEntity = true;
+                }
+            }
+
+            if (Mouse.GetState().LeftButton == ButtonState.Released)
+            {
+                if (toolbar != null)
+                {
+                    // Select an entity
+                    if (hasPressedAnEntity && toolbar.SelectedButtonType == ToolbarButtonType.Selection)
+                    {
+                        SelectEntity(cursor.InGamePosition);
+                        hasPressedAnEntity = false;
+                    }
+                }
+
+                isMovingAnEntity = false;
             }
 
             #endregion
@@ -147,7 +170,11 @@ namespace SixteenBitNuts.Editor
 
             #region Move an entity
 
-
+            if (isMovingAnEntity && selectedEntity != null && selectedEntityBox != null)
+            {
+                selectedEntity.Position = GetGridSnapedPosition();
+                selectedEntityBox.Bounds = selectedEntity.HitBox.ToRectangle();
+            }
 
             #endregion
 
@@ -259,12 +286,17 @@ namespace SixteenBitNuts.Editor
             }
         }
 
-        private void SelectEntity(Vector2 drawerPosition)
+        private void SelectEntity(Vector2 position)
         {
-            if (GetEntityAtPosition(drawerPosition) is IEntity entity)
+            if (GetEntityAtPosition(position) is IEntity entity)
             {
                 selectedEntity = entity;
                 selectedEntityBox = new Box(Map.Game, entity.HitBox.ToRectangle(), Color.OrangeRed);
+            }
+            else
+            {
+                selectedEntity = null;
+                selectedEntityBox = null;
             }
         }
 
