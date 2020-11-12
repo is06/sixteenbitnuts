@@ -11,8 +11,6 @@ namespace SixteenBitNuts.Editor
     {
         private const int DEFAULT_GRID_SIZE = 16;
 
-        private bool hasErasedAnEntity;
-
         public Map Map { get; private set; }
         public int GridSize { get; protected set; }
 
@@ -21,6 +19,9 @@ namespace SixteenBitNuts.Editor
         private readonly Cursor cursor;
         private readonly Texture2D gridTexture;
         private readonly Box frame;
+        private IEntity? selectedEntity;
+        private Box? selectedEntityBox;
+        private bool hasErasedAnEntity;
 
         public MapSectionEditor(Map map)
         {
@@ -29,7 +30,7 @@ namespace SixteenBitNuts.Editor
             {
                 GridSize = DEFAULT_GRID_SIZE;
             }
-            cursor = new Cursor(map, map.Camera);
+            cursor = new Cursor(map, map.Camera) { Type = CursorType.Arrow };
             gridTexture = map.Game.Content.Load<Texture2D>("Engine/editor/grid");
             frame = new Box(map.Game, new Rectangle(0, 0, (int)map.Game.WindowSize.Width, (int)map.Game.WindowSize.Height), Color.Green);
         }
@@ -44,6 +45,7 @@ namespace SixteenBitNuts.Editor
             toolbar?.Update();
             cursor.Update();
             frame.Update();
+            selectedEntityBox?.Update();
 
             #region Draw tile/entity
 
@@ -58,53 +60,47 @@ namespace SixteenBitNuts.Editor
                     {
                         if (button.HitBox.Contains(cursor.Position))
                         {
+                            cursor.Type = CursorType.Crosshair;
+
                             clickedOnBarElement = true;
                             toolbar.SelectedTileId = button.Id;
                             toolbar.SelectedGroupName = button.GroupName;
-                            toolbar.SelectedButtonType = button.GetType();
+                            toolbar.SelectedButtonType = button.Type;
                             toolbar.SelectedTileset = button.Tileset;
 
-                            if (button.GetType() == typeof(EntityToolbarButton))
+                            if (button.Type == ToolbarButtonType.Entity && button is EntityToolbarButton toolbarButton)
                             {
-                                toolbar.SelectedEntityType = ((EntityToolbarButton)button).Type;
+                                toolbar.SelectedEntityType = toolbarButton.EntityType;
+                            }
+                            if (button.Type == ToolbarButtonType.Selection)
+                            {
+                                cursor.Type = CursorType.Arrow;
                             }
 
                             break;
                         }
                     }
-                }
-                
-                if (!clickedOnBarElement && toolbar != null)
-                {
-                    var drawerPosition = GetGridSnapedPosition();
 
-                    // Draw a tile
-                    if (toolbar.SelectedButtonType == typeof(TileToolbarButton) && !TileAlreadyAtPosition(drawerPosition))
+                    if (!clickedOnBarElement)
                     {
-                        if (toolbar.SelectedTileset?.GetSizeFromId(toolbar.SelectedTileId) is Size size && toolbar.SelectedTileset?.GetTypeFromId(toolbar.SelectedTileId) is TileType type)
+                        var drawerPosition = GetGridSnapedPosition();
+
+                        // Draw a tile
+                        if (toolbar.SelectedButtonType == ToolbarButtonType.Tile && !TileAlreadyAtPosition(drawerPosition))
                         {
-                            var tileToAdd = new Tile(Map, toolbar.SelectedTileset, toolbar.SelectedTileId, drawerPosition, size, type)
-                            {
-                                GroupName = toolbar.SelectedGroupName
-                            };
-
-                            // Draw the tile
-                            if (toolbar.SelectedTileset.GetLayerFromId(toolbar.SelectedTileId) == TileLayer.Background)
-                                Map.CurrentMapSection.BackgroundTiles.Add(tileToAdd);
-                            else
-                                Map.CurrentMapSection.ForegroundTiles.Add(tileToAdd);
-
-                            // Update the id of every tiles of the same group
-                            UpdateTilesTypes();
+                            DrawSelectedTile(drawerPosition);
                         }
-                    }
 
-                    // Draw an entity
-                    if (toolbar.SelectedButtonType == typeof(EntityToolbarButton) && !EntityAlreadyAtPosition(drawerPosition))
-                    {
-                        if (toolbar.SelectedEntityType != null)
+                        // Draw an entity
+                        if (toolbar.SelectedButtonType == ToolbarButtonType.Entity && GetEntityAtPosition(drawerPosition) == null)
                         {
-                            AddEntity(toolbar.SelectedEntityType, drawerPosition);
+                            DrawSelectedEntity(drawerPosition);
+                        }
+
+                        // Select an entity
+                        if (toolbar.SelectedButtonType == ToolbarButtonType.Selection)
+                        {
+                            SelectEntity(cursor.InGamePosition);
                         }
                     }
                 }
@@ -146,6 +142,12 @@ namespace SixteenBitNuts.Editor
             {
                 hasErasedAnEntity = false;
             }
+
+            #endregion
+
+            #region Move an entity
+
+
 
             #endregion
 
@@ -193,6 +195,9 @@ namespace SixteenBitNuts.Editor
                 }
             }
             Map.Game.SpriteBatch?.End();
+
+            // Draw entity selections
+            selectedEntityBox?.Draw(Map.Camera.Transform);
         }
 
         public void UIDraw()
@@ -224,6 +229,45 @@ namespace SixteenBitNuts.Editor
             }
         }
 
+        private void DrawSelectedTile(Vector2 drawerPosition)
+        {
+            if (toolbar != null
+                && toolbar.SelectedTileset?.GetSizeFromId(toolbar.SelectedTileId) is Size size
+                && toolbar.SelectedTileset?.GetTypeFromId(toolbar.SelectedTileId) is TileType type)
+            {
+                var tileToAdd = new Tile(Map, toolbar.SelectedTileset, toolbar.SelectedTileId, drawerPosition, size, type)
+                {
+                    GroupName = toolbar.SelectedGroupName
+                };
+
+                // Draw the tile
+                if (toolbar.SelectedTileset.GetLayerFromId(toolbar.SelectedTileId) == TileLayer.Background)
+                    Map.CurrentMapSection.BackgroundTiles.Add(tileToAdd);
+                else
+                    Map.CurrentMapSection.ForegroundTiles.Add(tileToAdd);
+
+                // Update the id of every tiles of the same group
+                UpdateTilesTypes();
+            }
+        }
+
+        private void DrawSelectedEntity(Vector2 drawerPosition)
+        {
+            if (toolbar != null && toolbar.SelectedEntityType != null)
+            {
+                AddEntity(toolbar.SelectedEntityType, drawerPosition);
+            }
+        }
+
+        private void SelectEntity(Vector2 drawerPosition)
+        {
+            if (GetEntityAtPosition(drawerPosition) is IEntity entity)
+            {
+                selectedEntity = entity;
+                selectedEntityBox = new Box(Map.Game, entity.HitBox.ToRectangle(), Color.OrangeRed);
+            }
+        }
+
         private Vector2 GetGridSnapedPosition()
         {
             var position = cursor.InGamePosition;
@@ -246,17 +290,17 @@ namespace SixteenBitNuts.Editor
             return false;
         }
 
-        private bool EntityAlreadyAtPosition(Vector2 position)
+        private IEntity? GetEntityAtPosition(Vector2 position)
         {
-            foreach (KeyValuePair<string, IEntity> entity in Map.CurrentMapSection.Entities)
+            foreach (var entity in Map.CurrentMapSection.Entities)
             {
-                if (entity.Value.Position == position)
+                if (entity.Value.HitBox.Contains(position))
                 {
-                    return true;
+                    return entity.Value;
                 }
             }
 
-            return false;
+            return null;
         }
 
         private void UpdateTilesTypes()

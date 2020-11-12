@@ -4,16 +4,18 @@ using System;
 
 namespace SixteenBitNuts.Editor
 {
+    public enum ToolbarButtonType
+    {
+        Tile,
+        Entity,
+        Selection,
+    }
+
     public class ToolbarButton
     {
-        #region Constants
-
         public const int BUTTON_SIZE = 60;
 
-        #endregion
-
-        #region Properties
-
+        public ToolbarButtonType Type { get; set; }
         public Vector2 Position { get; set; }
         public int Id { get; set; }
         public Tileset? Tileset { get; set; }
@@ -33,18 +35,12 @@ namespace SixteenBitNuts.Editor
             }
         }
 
-        #endregion
-
-        #region Components
-
         private readonly Texture2D buttonTexture;
 
-        #endregion
-
-        public ToolbarButton(Toolbar bar)
+        public ToolbarButton(Toolbar toolbar)
         {
-            Toolbar = bar;
-            buttonTexture = bar.Editor.Map.Game.Content.Load<Texture2D>("Engine/editor/entity_button");
+            Toolbar = toolbar;
+            buttonTexture = toolbar.Editor.Map.Game.Content.Load<Texture2D>("Engine/editor/entity_button");
         }
 
         public virtual void Draw()

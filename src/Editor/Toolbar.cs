@@ -5,13 +5,17 @@ namespace SixteenBitNuts.Editor
 {
     public class Toolbar
     {
+        private const int TOOLBAR_POSITION_Y = 16;
+
         public MapSectionEditor Editor { get; private set; }
         public List<ToolbarButton> Buttons { get; }
-        public System.Type? SelectedButtonType { get; set; }
+        public ToolbarButtonType? SelectedButtonType { get; set; }
         public int SelectedTileId { get; set; }
         public Tileset? SelectedTileset { get; set; }
         public string? SelectedGroupName { get; set; }
         public string? SelectedEntityType { get; set; }
+        
+        private int nextButtonPosition = 16;
 
         public Toolbar(MapSectionEditor editor)
         {
@@ -19,27 +23,30 @@ namespace SixteenBitNuts.Editor
             SelectedTileId = 0;
             Buttons = new List<ToolbarButton>();
 
-            int position = 16;
+            AddButton(new SelectionToolbarButton(this) { Id = 900 });
 
             foreach (var tileset in Editor.Map.Game.TilesetService.Tilesets)
             {
+                // Create every tileset groups defined by "gr" lines in tileset descriptor
                 foreach (var group in tileset.Value.Groups)
                 {
-                    Buttons.Add(new TileToolbarButton(this, isGroup: true)
+                    var button = new TileToolbarButton(this, isGroup: true)
                     {
                         Tileset = tileset.Value,
-                        GroupName = group.Value.Name,
-                        Position = new Vector2(position, 16),
-                    });
-                    position += 64;
+                        GroupName = group.Value.Name
+                    };
+                    AddButton(button);
                 }
             }
 
-            Buttons.Add(new EntityToolbarButton(this, "spawn", "spawn")
-            {
-                Id = 100,
-                Position = new Vector2(position, 16),
-            });
+            AddButton(new EntityToolbarButton(this, "spawn", "spawn"));
+        }
+
+        public void AddButton(ToolbarButton button)
+        {
+            button.Position = new Vector2(nextButtonPosition, TOOLBAR_POSITION_Y);
+            Buttons.Add(button);
+            nextButtonPosition += 64;
         }
 
         public void Update()

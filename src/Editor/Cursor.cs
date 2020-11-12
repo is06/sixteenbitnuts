@@ -9,14 +9,15 @@ namespace SixteenBitNuts.Editor
         Crosshair = 0,
         ResizeHorizontal = 1,
         ResizeVertical = 2,
-        Move = 3
+        Move = 3,
+        Arrow = 4,
     }
 
     class Cursor
     {
         private readonly Map map;
         private readonly Camera camera;
-        private readonly Texture2D[] textures = new Texture2D[4];
+        private readonly Texture2D[] textures = new Texture2D[5];
         private Point position;
 
         public CursorType Type { get; set; }
@@ -52,6 +53,7 @@ namespace SixteenBitNuts.Editor
             textures[(int)CursorType.ResizeHorizontal] = map.Game.Content.Load<Texture2D>("Engine/editor/cursor_resize_horizontal");
             textures[(int)CursorType.ResizeVertical] = map.Game.Content.Load<Texture2D>("Engine/editor/cursor_resize_vertical");
             textures[(int)CursorType.Move] = map.Game.Content.Load<Texture2D>("Engine/editor/cursor_move");
+            textures[(int)CursorType.Arrow] = map.Game.Content.Load<Texture2D>("Engine/editor/cursor_arrow");
         }
 
         public void Update()

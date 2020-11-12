@@ -7,13 +7,14 @@ namespace SixteenBitNuts.Editor
     {
         protected Texture2D? texture;
 
-        public string Type { get; private set; }
+        public string EntityType { get; private set; }
 
-        public EntityToolbarButton(Toolbar bar, string type, string textureName) : base(bar)
+        public EntityToolbarButton(Toolbar bar, string entityType, string? textureName) : base(bar)
         {
-            Type = type;
+            Type = ToolbarButtonType.Entity;
+            EntityType = entityType;
 
-            texture = type switch
+            texture = entityType switch
             {
                 "spawn" => bar.Editor.Map.Game.Content.Load<Texture2D>("Engine/editor/" + textureName),
                 _ => null,
@@ -24,26 +25,26 @@ namespace SixteenBitNuts.Editor
         {
             base.Draw();
 
-            Vector2 position = new Vector2(
-                (Position.X + 6),
-                (Position.Y + 6)
-            );
+            if (texture != null)
+            {
+                Vector2 position = new Vector2(Position.X + 6, Position.Y + 6);
 
-            Toolbar.Editor.Map.Game.SpriteBatch?.Begin(samplerState: SamplerState.PointClamp);
+                Toolbar.Editor.Map.Game.SpriteBatch?.Begin(samplerState: SamplerState.PointClamp);
 
-            Toolbar.Editor.Map.Game.SpriteBatch?.Draw(
-                texture: texture,
-                position: position,
-                sourceRectangle: new Rectangle(0, 0, 16, 16),
-                color: Color.White,
-                rotation: 0f,
-                origin: Vector2.Zero,
-                scale: 3f,
-                effects: SpriteEffects.None,
-                layerDepth: 0f
-            );
+                Toolbar.Editor.Map.Game.SpriteBatch?.Draw(
+                    texture: texture,
+                    position: position,
+                    sourceRectangle: new Rectangle(0, 0, 16, 16),
+                    color: Color.White,
+                    rotation: 0f,
+                    origin: Vector2.Zero,
+                    scale: 3f,
+                    effects: SpriteEffects.None,
+                    layerDepth: 0f
+                );
 
-            Toolbar.Editor.Map.Game.SpriteBatch?.End();
+                Toolbar.Editor.Map.Game.SpriteBatch?.End();
+            }
         }
     }
 }
