@@ -71,8 +71,15 @@ namespace SixteenBitNuts.Editor
                             toolbar.SelectedButtonType = button.Type;
                             toolbar.SelectedTileset = button.Tileset;
 
+                            if (button.Type == ToolbarButtonType.Tile)
+                            {
+                                selectedEntity = null;
+                                selectedEntityBox = null;
+                            }
                             if (button.Type == ToolbarButtonType.Entity && button is EntityToolbarButton toolbarButton)
                             {
+                                selectedEntity = null;
+                                selectedEntityBox = null;
                                 toolbar.SelectedEntityType = toolbarButton.EntityType;
                             }
                             if (button.Type == ToolbarButtonType.Selection)
@@ -158,6 +165,16 @@ namespace SixteenBitNuts.Editor
                             break;
                         }
                     }
+                }
+            }
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Delete) || Keyboard.GetState().IsKeyDown(Keys.Back))
+            {
+                if (selectedEntity != null)
+                {
+                    Map.CurrentMapSection.Entities.Remove(selectedEntity.Name);
+                    selectedEntity = null;
+                    selectedEntityBox = null;
                 }
             }
 

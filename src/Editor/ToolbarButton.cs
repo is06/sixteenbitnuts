@@ -11,7 +11,7 @@ namespace SixteenBitNuts.Editor
         Selection,
     }
 
-    public class ToolbarButton
+    public abstract class ToolbarButton
     {
         public const int BUTTON_SIZE = 60;
 

@@ -1,50 +1,21 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
 
 namespace SixteenBitNuts.Editor
 {
-    public class EntityToolbarButton : ToolbarButton
+    public class EntityToolbarButton : IconableToolbarButton
     {
-        protected Texture2D? texture;
-
         public string EntityType { get; private set; }
 
-        public EntityToolbarButton(Toolbar bar, string entityType, string? textureName) : base(bar)
+        public EntityToolbarButton(Toolbar toolbar, string entityType, string? textureName) : base(toolbar)
         {
             Type = ToolbarButtonType.Entity;
             EntityType = entityType;
 
-            texture = entityType switch
+            iconTexture = entityType switch
             {
-                "spawn" => bar.Editor.Map.Game.Content.Load<Texture2D>("Engine/editor/" + textureName),
+                "spawn" => toolbar.Editor.Map.Game.Content.Load<Texture2D>("Engine/editor/" + textureName),
                 _ => null,
             };
-        }
-
-        public override void Draw()
-        {
-            base.Draw();
-
-            if (texture != null)
-            {
-                Vector2 position = new Vector2(Position.X + 6, Position.Y + 6);
-
-                Toolbar.Editor.Map.Game.SpriteBatch?.Begin(samplerState: SamplerState.PointClamp);
-
-                Toolbar.Editor.Map.Game.SpriteBatch?.Draw(
-                    texture: texture,
-                    position: position,
-                    sourceRectangle: new Rectangle(0, 0, 16, 16),
-                    color: Color.White,
-                    rotation: 0f,
-                    origin: Vector2.Zero,
-                    scale: 3f,
-                    effects: SpriteEffects.None,
-                    layerDepth: 0f
-                );
-
-                Toolbar.Editor.Map.Game.SpriteBatch?.End();
-            }
         }
     }
 }

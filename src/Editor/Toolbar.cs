@@ -5,6 +5,7 @@ namespace SixteenBitNuts.Editor
 {
     public class Toolbar
     {
+        private const int TOOLBAR_SELECTION_TOOL_ID = 900;
         private const int TOOLBAR_POSITION_Y = 16;
 
         public MapSectionEditor Editor { get; private set; }
@@ -20,10 +21,10 @@ namespace SixteenBitNuts.Editor
         public Toolbar(MapSectionEditor editor)
         {
             Editor = editor;
-            SelectedTileId = 0;
+            SelectedTileId = TOOLBAR_SELECTION_TOOL_ID;
             Buttons = new List<ToolbarButton>();
 
-            AddButton(new SelectionToolbarButton(this) { Id = 900 });
+            AddButton(new SelectionToolbarButton(this) { Id = TOOLBAR_SELECTION_TOOL_ID });
 
             foreach (var tileset in Editor.Map.Game.TilesetService.Tilesets)
             {
