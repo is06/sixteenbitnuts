@@ -6,8 +6,9 @@ namespace SixteenBitNuts.Editor
     {
         private readonly bool isGroup;
 
-        public TileToolbarButton(Toolbar bar, bool isGroup) : base(bar)
+        public TileToolbarButton(Toolbar toolbar, bool isGroup) : base(toolbar)
         {
+            Type = ToolbarButtonType.Tile;
             this.isGroup = isGroup;
         }
 

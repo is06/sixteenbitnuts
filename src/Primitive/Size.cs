@@ -17,7 +17,7 @@ namespace SixteenBitNuts
         {
             get
             {
-                return Width / Height;
+                return Ratio(Width, Height);
             }
         }
 
@@ -34,6 +34,11 @@ namespace SixteenBitNuts
         public override string ToString()
         {
             return Width + " " + Height;
+        }
+
+        public static float Ratio(float width, float height)
+        {
+            return width / height;
         }
     }
 }

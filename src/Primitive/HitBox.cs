@@ -80,13 +80,14 @@ namespace SixteenBitNuts
             Size = size;
         }
 
+        public bool Contains(Vector2 point)
+        {
+            return point.X >= Left && point.X < Right && point.Y >= Top && point.Y < Bottom;
+        }
+
         public bool Intersects(HitBox other)
         {
-            if (Left < other.Right && Right > other.Left && Top <= other.Bottom && Bottom >= other.Top)
-            {
-                return true;
-            }
-            return false;
+            return Left < other.Right && Right > other.Left && Top <= other.Bottom && Bottom >= other.Top;
         }
 
         public float GetDistanceFrom(HitBox other)
@@ -112,6 +113,11 @@ namespace SixteenBitNuts
             }
 
             return nearest;
+        }
+
+        public Rectangle ToRectangle()
+        {
+            return new Rectangle((int)X, (int)Y, (int)Width, (int)Height);
         }
     }
 }
