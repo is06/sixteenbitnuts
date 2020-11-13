@@ -13,6 +13,7 @@ namespace SixteenBitNuts
         public Size WindowSize { get; protected set; }
         public Size InternalSize { get; protected set; }
         public int FrameRate { get; protected set; }
+        public bool FullScreen { get; protected set; }
         public Viewport InGameViewport { get; private set; }
         public float ScreenScale => WindowSize.Width / InternalSize.Width;
         public SpriteBatch? SpriteBatch { get; set; }
@@ -60,6 +61,7 @@ namespace SixteenBitNuts
             // Graphics
             graphics.PreferredBackBufferWidth = (int)WindowSize.Width;
             graphics.PreferredBackBufferHeight = (int)WindowSize.Height;
+            graphics.IsFullScreen = FullScreen;
             graphics.ApplyChanges();
 
             // Misc
