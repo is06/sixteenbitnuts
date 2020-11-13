@@ -49,11 +49,11 @@ namespace SixteenBitNuts.Editor
             this.map = map;
             this.camera = camera;
 
-            textures[(int)CursorType.Crosshair] = map.Game.Content.Load<Texture2D>("Engine/editor/cursor_crosshair");
-            textures[(int)CursorType.ResizeHorizontal] = map.Game.Content.Load<Texture2D>("Engine/editor/cursor_resize_horizontal");
-            textures[(int)CursorType.ResizeVertical] = map.Game.Content.Load<Texture2D>("Engine/editor/cursor_resize_vertical");
-            textures[(int)CursorType.Move] = map.Game.Content.Load<Texture2D>("Engine/editor/cursor_move");
-            textures[(int)CursorType.Arrow] = map.Game.Content.Load<Texture2D>("Engine/editor/cursor_arrow");
+            textures[(int)CursorType.Crosshair] = map.Game.Content.Load<Texture2D>("EngineGraphics/Editor/cursor_crosshair");
+            textures[(int)CursorType.ResizeHorizontal] = map.Game.Content.Load<Texture2D>("EngineGraphics/Editor/cursor_resize_horizontal");
+            textures[(int)CursorType.ResizeVertical] = map.Game.Content.Load<Texture2D>("EngineGraphics/Editor/cursor_resize_vertical");
+            textures[(int)CursorType.Move] = map.Game.Content.Load<Texture2D>("EngineGraphics/Editor/cursor_move");
+            textures[(int)CursorType.Arrow] = map.Game.Content.Load<Texture2D>("EngineGraphics/Editor/cursor_arrow");
         }
 
         public void Update()

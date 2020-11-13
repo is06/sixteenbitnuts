@@ -145,7 +145,7 @@ namespace SixteenBitNuts
             sectionEditor = new MapSectionEditor(this);
 
             // Load map descriptor
-            LoadFromFile("Data/maps/" + name + ".map");
+            LoadFromFile("Content/Descriptors/Maps/" + name + ".map");
 
             // Initialization of the toolbar only after loading a map
             sectionEditor.InitializeToolbar();
@@ -664,7 +664,7 @@ namespace SixteenBitNuts
                         {
                             Name = components[2],
                             Index = layerIndex,
-                            Texture = Game.Content.Load<Texture2D>("Game/backgrounds/" + Landscape.Name + "/" + components[2]),
+                            Texture = Game.Content.Load<Texture2D>("Graphics/Backgrounds/" + Landscape.Name + "/" + components[2]),
                             TransformOffset = new Vector2(int.Parse(components[3]), int.Parse(components[4])),
                         });
                         break;

@@ -6,7 +6,7 @@ namespace SixteenBitNuts.Effects
     {
         public Sepia(Game game) : base(game)
         {
-            Effect = game.Content.Load<Effect>("Engine/effects/sepia");
+            Effect = game.Content.Load<Effect>("EngineGraphics/Effects/sepia");
         }
 
         public override void Update()
