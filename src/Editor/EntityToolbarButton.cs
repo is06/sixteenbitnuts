@@ -13,7 +13,7 @@ namespace SixteenBitNuts.Editor
 
             iconTexture = entityType switch
             {
-                "spawn" => toolbar.Editor.Map.Game.Content.Load<Texture2D>("Engine/editor/" + textureName),
+                "spawn" => toolbar.Editor.Map.Game.Content.Load<Texture2D>("EngineGraphics/Editor/" + textureName),
                 _ => null,
             };
         }

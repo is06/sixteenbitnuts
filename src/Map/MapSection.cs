@@ -82,7 +82,7 @@ namespace SixteenBitNuts
         {
             Map = map;
             this.defaultSpawnPointName = defaultSpawnPointName;
-            transitionCornerTexture = Map.Game.Content.Load<Texture2D>("Engine/editor/transition_corner");
+            transitionCornerTexture = Map.Game.Content.Load<Texture2D>("EngineGraphics/Editor/transition_corner");
 
             // Properties
             Bounds = bounds;

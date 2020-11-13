@@ -40,7 +40,7 @@ namespace SixteenBitNuts.Editor
         public ToolbarButton(Toolbar toolbar)
         {
             Toolbar = toolbar;
-            buttonTexture = toolbar.Editor.Map.Game.Content.Load<Texture2D>("Engine/editor/entity_button");
+            buttonTexture = toolbar.Editor.Map.Game.Content.Load<Texture2D>("EngineGraphics/Editor/entity_button");
         }
 
         public virtual void Draw()

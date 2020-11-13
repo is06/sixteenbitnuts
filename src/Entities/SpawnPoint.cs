@@ -19,7 +19,7 @@ namespace SixteenBitNuts
 
         protected virtual void LoadDebugTexture()
         {
-            debugTexture = GetTexture("Engine/editor/spawn");
+            debugTexture = GetTexture("EngineGraphics/editor/spawn");
         }
 
         public override void Update(GameTime gameTime)

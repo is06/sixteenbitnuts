@@ -10,7 +10,7 @@ namespace SixteenBitNuts.Effects
 
         public Outline(Game game) : base()
         {
-            Effect = game.Content.Load<Effect>("Engine/effects/outline");
+            Effect = game.Content.Load<Effect>("EngineGraphics/Effects/outline");
         }
 
         public override void Update()

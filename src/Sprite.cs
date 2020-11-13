@@ -78,9 +78,9 @@ namespace SixteenBitNuts
             animations = new Dictionary<string, SpriteAnimation>();
 
             // Loading sprite descriptor and texture
-            LoadFromFile("Data/sprites/" + name + ".sprite");
+            LoadFromFile("Content/Descriptors/Sprites/" + name + ".sprite");
 
-            texture = game.Content.Load<Texture2D>("Game/sprites/" + textureName);
+            texture = game.Content.Load<Texture2D>("Graphics/Sprites/" + textureName);
         }
 
         public void Draw(Vector2 position, float layer, Matrix transform)

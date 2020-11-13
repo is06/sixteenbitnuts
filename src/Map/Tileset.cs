@@ -27,7 +27,7 @@ namespace SixteenBitNuts
             // Components
             try
             {
-                texture = Game.Content.Load<Texture2D>("Game/tilesets/" + name);
+                texture = Game.Content.Load<Texture2D>("Graphics/Tilesets/" + name);
             }
             catch (ContentLoadException e)
             {
@@ -38,7 +38,7 @@ namespace SixteenBitNuts
             
             elements = new Dictionary<int, TileElement>();
 
-            LoadFromFile("Data/tilesets/" + name + ".tileset");
+            LoadFromFile("Content/Descriptors/tilesets/" + name + ".tileset");
         }
 
         public void Draw(Vector2 position, Vector2 size, Vector2 offset, Vector2 scale, Matrix transform)

@@ -8,7 +8,7 @@ namespace SixteenBitNuts.Effects
 
         public Glow(Game game) : base(game)
         {
-            Effect = game.Content.Load<Effect>("Engine/effects/glow");
+            Effect = game.Content.Load<Effect>("EngineGraphics/Effects/glow");
             Amount = 1f;
             BlendState = BlendState.Additive;
         }

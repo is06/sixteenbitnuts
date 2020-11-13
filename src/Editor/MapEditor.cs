@@ -41,7 +41,7 @@ namespace SixteenBitNuts.Editor
                 Text = "0;0"
             };
             frame = new Box(map.Game, new Rectangle(0, 0, (int)map.Game.InternalSize.Width, (int)map.Game.InternalSize.Height), Color.BlueViolet);
-            gridTexture = map.Game.Content.Load<Texture2D>("Engine/editor/grid");
+            gridTexture = map.Game.Content.Load<Texture2D>("EngineGraphics/Editor/grid");
 
             foreach (var section in map.Sections)
             {
