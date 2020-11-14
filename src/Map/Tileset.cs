@@ -38,7 +38,7 @@ namespace SixteenBitNuts
             
             elements = new Dictionary<int, TileElement>();
 
-            LoadFromFile("Content/Descriptors/tilesets/" + name + ".tileset");
+            LoadFromFile("Content/Descriptors/Tilesets/" + name + ".tileset");
         }
 
         public void Draw(Vector2 position, Vector2 size, Vector2 offset, Vector2 scale, Matrix transform)

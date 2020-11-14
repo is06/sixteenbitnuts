@@ -664,7 +664,7 @@ namespace SixteenBitNuts
                         {
                             Name = components[2],
                             Index = layerIndex,
-                            Texture = Game.Content.Load<Texture2D>("Graphics/Backgrounds/" + Landscape.Name + "/" + components[2]),
+                            Texture = Game.Content.Load<Texture2D>("Graphics/Landscapes/" + Landscape.Name + "/" + components[2]),
                             TransformOffset = new Vector2(int.Parse(components[3]), int.Parse(components[4])),
                         });
                         break;
