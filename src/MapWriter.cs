@@ -35,7 +35,7 @@ namespace SixteenBitNuts
             var formatter = new BinaryFormatter();
             formatter.Serialize(stream, map);
 
-            string filePath = "Data/maps/" + map.Name + ".bin";
+            string filePath = "Content/Descriptors/Maps/" + map.Name + ".bin";
             File.Delete(filePath);
             File.WriteAllBytes(filePath, stream.ToArray());
         }
@@ -75,7 +75,7 @@ namespace SixteenBitNuts
                 }
             }
 
-            string filePath = "Data/maps/" + map.Name + ".map";
+            string filePath = "Content/Descriptors/Maps/" + map.Name + ".map";
             File.Delete(filePath);
             File.AppendAllLines(filePath, contents);
         }

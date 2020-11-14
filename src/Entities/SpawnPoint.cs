@@ -11,6 +11,19 @@ namespace SixteenBitNuts
     {
         private Texture2D? debugTexture;
 
+        public override string MapTextDescription
+        {
+            get
+            {
+                string description = "en " + GetType().Name +
+                       " " + Name +
+                       " " + Position.X +
+                       " " + Position.Y;
+
+                return description;
+            }
+        }
+
         public SpawnPoint(Map map, string name) : base(map, name)
         {
             IsVisible = false;
@@ -58,11 +71,6 @@ namespace SixteenBitNuts
             map.Game.SpriteBatch?.End();
 
             base.DebugDraw(transform);
-        }
-
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            base.GetObjectData(info, context);
         }
     }
 }
