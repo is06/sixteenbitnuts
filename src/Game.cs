@@ -5,6 +5,9 @@ using System.Diagnostics;
 
 namespace SixteenBitNuts
 {
+    /// <summary>
+    /// A 16-bit nuts game class that handles the main loop, rendering of the game, effects, audio
+    /// </summary>
     public abstract class Game : Microsoft.Xna.Framework.Game
     {
         #region Properties
@@ -100,10 +103,10 @@ namespace SixteenBitNuts
 
         protected override void LoadContent()
         {
-            fmodSystem.loadBankFile("Audio/Master.bank", FMOD.Studio.LOAD_BANK_FLAGS.NORMAL, out masterBank);
-            fmodSystem.loadBankFile("Audio/Master.strings.bank", FMOD.Studio.LOAD_BANK_FLAGS.NORMAL, out stringBank);
-            fmodSystem.loadBankFile("Audio/music.bank", FMOD.Studio.LOAD_BANK_FLAGS.NORMAL, out musicBank);
-            fmodSystem.loadBankFile("Audio/sfx.bank", FMOD.Studio.LOAD_BANK_FLAGS.NORMAL, out sfxBank);
+            fmodSystem.loadBankFile("Content/Audio/Desktop/Master.bank", FMOD.Studio.LOAD_BANK_FLAGS.NORMAL, out masterBank);
+            fmodSystem.loadBankFile("Content/Audio/Desktop/Master.strings.bank", FMOD.Studio.LOAD_BANK_FLAGS.NORMAL, out stringBank);
+            fmodSystem.loadBankFile("Content/Audio/Desktop/Music.bank", FMOD.Studio.LOAD_BANK_FLAGS.NORMAL, out musicBank);
+            fmodSystem.loadBankFile("Content/Audio/Desktop/SFX.bank", FMOD.Studio.LOAD_BANK_FLAGS.NORMAL, out sfxBank);
         }
 
         protected override void UnloadContent()
@@ -183,10 +186,10 @@ namespace SixteenBitNuts
 
         public void PlayMusic(string name)
         {
-            FMOD.RESULT result = fmodSystem.getEvent("event:/music/" + name, out FMOD.Studio.EventDescription eventDescription);
+            FMOD.RESULT result = fmodSystem.getEvent("event:/Music/" + name, out FMOD.Studio.EventDescription eventDescription);
             if (result != FMOD.RESULT.OK)
             {
-                Console.WriteLine(FMOD.Error.String(result) + " (event:/music/" + name + ")");
+                Console.WriteLine(FMOD.Error.String(result) + " (event:/Music/" + name + ")");
             }
             eventDescription.createInstance(out currentMusic);
 
@@ -204,10 +207,10 @@ namespace SixteenBitNuts
 
         public void PlaySound(string name)
         {
-            FMOD.RESULT result = fmodSystem.getEvent("event:/sfx/" + name, out FMOD.Studio.EventDescription eventDescription);
+            FMOD.RESULT result = fmodSystem.getEvent("event:/SFX/" + name, out FMOD.Studio.EventDescription eventDescription);
             if (result != FMOD.RESULT.OK)
             {
-                Console.WriteLine(FMOD.Error.String(result) + " (event:/sfx/" + name + ")");
+                Console.WriteLine(FMOD.Error.String(result) + " (event:/SFX/" + name + ")");
             }
 
             eventDescription.createInstance(out FMOD.Studio.EventInstance sound);
