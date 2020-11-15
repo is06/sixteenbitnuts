@@ -11,7 +11,7 @@ using SixteenBitNuts.Interfaces;
 
 namespace SixteenBitNuts
 {
-    public delegate void CollisionHandler(Entity entity);
+    public delegate void CollisionHandler(Collider collider, Entity entity, CollisionSide side);
 
     /// <summary>
     /// Class representing an in-game map
@@ -57,7 +57,21 @@ namespace SixteenBitNuts
         public Landscape? Landscape { get; set; }
         public Dictionary<int, MapSection> Sections => sections;
         public MapSection CurrentMapSection => sections[currentSectionIndex];
-        public Player? Player { get; protected set; }
+        public Player? Player
+        {
+            get
+            {
+                return player;
+            }
+            protected set
+            {
+                player = value;
+                if (player != null)
+                {
+                    colliders["player"] = player;
+                }
+            }
+        }
         public Camera Camera { get; private set; }
         public int EntityLastIndex { get; set; }
         public bool IsInSectionEditMode => isInSectionEditMode;
@@ -109,7 +123,9 @@ namespace SixteenBitNuts
 
         #region Components
 
+        private Player? player;
         protected readonly Dictionary<int, MapSection> sections;
+        protected Dictionary<string, Collider> colliders;
         protected MapSectionEditor sectionEditor;
 
         private readonly MapEditor mapEditor;
@@ -119,7 +135,7 @@ namespace SixteenBitNuts
 
         #region Event handlers
 
-        public event CollisionHandler? OnPlayerCollidesWithEntity;
+        public event CollisionHandler? OnColliderCollidesWithEntity;
 
         #endregion
 
@@ -143,6 +159,7 @@ namespace SixteenBitNuts
             transitionGuide = new TransitionGuide();
             mapEditor = new MapEditor(this);
             sectionEditor = new MapSectionEditor(this);
+            colliders = new Dictionary<string, Collider>();
 
             // Load map descriptor
             LoadFromFile("Content/Descriptors/Maps/" + name + ".map");
@@ -202,7 +219,7 @@ namespace SixteenBitNuts
                         element.DebugColor = Color.LimeGreen;
                         
                         // We take only elements that are at below a certain distance from the player
-                        if (Player != null && Vector2.Distance(Player.Position, element.Position) <= NEAR_ELEMENT_THRESHOLD)
+                        if (Player != null && !element.IsDestroying && Vector2.Distance(Player.Position, element.Position) <= NEAR_ELEMENT_THRESHOLD)
                         {
                             nearElements.Add(element);
                         }
@@ -219,26 +236,26 @@ namespace SixteenBitNuts
                 {
                     bool playerIsIntersectingWithObstacle = false;
 
-                    if (Player != null)
+                    foreach (var collider in colliders)
                     {
-                        foreach (var element in CollisionManager.GetResolutionElementsFromHitBox(Player.HitBox, Player.PreviousFrameHitBox, nearElements))
+                        foreach (var element in CollisionManager.GetResolutionElementsFromHitBox(collider.Value.HitBox, collider.Value.PreviousFrameHitBox, nearElements))
                         {
                             element.DebugColor = Color.Red;
 
                             // Player collisions
-                            if (Player.HitBox.Intersects(element.HitBox))
+                            if (collider.Value.HitBox.Intersects(element.HitBox))
                             {
                                 // Detect the collision side of the obstacle
                                 CollisionSide side = CollisionManager.GetCollisionSide(
-                                    moving: Player.PreviousFrameHitBox,
+                                    moving: collider.Value.PreviousFrameHitBox,
                                     stopped: element.HitBox,
-                                    movingVelocity: Player.Velocity
+                                    movingVelocity: collider.Value.Velocity
                                 );
 
                                 // Entity collision event
                                 if (element is Entity entity)
                                 {
-                                    OnPlayerCollidesWithEntity?.Invoke(entity);
+                                    OnColliderCollidesWithEntity?.Invoke(collider.Value, entity, side);
 
                                     if (element is MusicParamTrigger musicParamTrigger)
                                     {
@@ -246,12 +263,12 @@ namespace SixteenBitNuts
                                     }
                                 }
 
-                                if (element.IsObstacle)
+                                if (collider.Value.IsPlayer && element.IsObstacle)
                                 {
                                     playerIsIntersectingWithObstacle = true;
 
                                     // Correct position to prevent intersection and block player
-                                    Player.Position = CollisionManager.GetCorrectedPosition(Player.HitBox, element.HitBox, side);
+                                    collider.Value.Position = CollisionManager.GetCorrectedPosition(collider.Value.HitBox, element.HitBox, side);
 
                                     if (Player is PlatformerPlayer hittingPlayer)
                                     {
@@ -278,7 +295,10 @@ namespace SixteenBitNuts
                                 }
                             }
                         }
+                    }
 
+                    if (Player != null)
+                    {
                         if (Player is PlatformerPlayer fallingPlayer)
                         {
                             // No ground under player's feet: falling
@@ -447,7 +467,10 @@ namespace SixteenBitNuts
 
             if (isInDebugViewMode)
             {
-                Player?.UpdateDebugHitBoxes();
+                foreach (var collider in colliders)
+                {
+                    collider.Value.UpdateDebugHitBoxes();
+                }
             }
 
             #region Map Editor
@@ -536,7 +559,10 @@ namespace SixteenBitNuts
                 {
                     section.Value.DebugDraw(Camera.Transform);
                 }
-                Player?.DebugDraw(Camera.Transform);
+                foreach (var collider in colliders)
+                {
+                    collider.Value.DebugDraw(Camera.Transform);
+                }
             }
 
             base.DebugDraw();
