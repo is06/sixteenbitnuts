@@ -88,7 +88,7 @@ namespace SixteenBitNuts
             if (IsVisible)
             {
                 Point offset = new Point(
-                    CurrentAnimation.Directions[Direction].Offset.X + ((int)Math.Floor(CurrentAnimationFrame) * CurrentAnimation.Size.X),
+                    CurrentAnimation.Directions[Direction].Offset.X + (int)(Math.Floor(CurrentAnimationFrame) * CurrentAnimation.Size.Width),
                     CurrentAnimation.Directions[Direction].Offset.Y
                 );
 
@@ -117,8 +117,8 @@ namespace SixteenBitNuts
                     sourceRectangle: new Rectangle(
                         offset.X,
                         offset.Y,
-                        CurrentAnimation.Size.X,
-                        CurrentAnimation.Size.Y
+                        (int)CurrentAnimation.Size.Width,
+                        (int)CurrentAnimation.Size.Height
                     ),
                     color: Color.White,
                     rotation: 0f,
@@ -180,39 +180,49 @@ namespace SixteenBitNuts
             {
                 string[] components = line.Split(' ');
 
-                if (components[0] == "tx")
+                switch (components[0])
                 {
-                    textureName = components[1];
-                }
-                if (components[0] == "an")
-                {
-                    animationName = components[1];
-                    animations[animationName] = new SpriteAnimation()
-                    {
-                        Name = components[1],
-                        Size = new Point(int.Parse(components[2]), int.Parse(components[3])),
-                        HitBoxOffset = new Point(int.Parse(components[4]), int.Parse(components[5])),
-                        Length = int.Parse(components[6]),
-                        Speed = float.Parse(components[7], CultureInfo.InvariantCulture),
-                        Looped = int.Parse(components[8]) == 1,
-                        Directions = new Dictionary<Direction, SpriteDirection>()
-                    };
-                }
-                if (components[0] == "di")
-                {
-                    Direction direction = (Direction)int.Parse(components[1]);
-
-                    animations[animationName].Directions[direction] = new SpriteDirection
-                    {
-                        Offset = new Point(
-                            int.Parse(components[2]),
-                            int.Parse(components[3])
-                        ),
-                        FlippedHorizontally = int.Parse(components[4]) == 1,
-                        FlippedVertically = int.Parse(components[5]) == 1
-                    };
+                    case "tx": LoadTexture(components); break;
+                    case "an": animationName = LoadAnimation(components); break;
+                    case "di": LoadAnimationDirection(animationName, components); break;
                 }
             }
+        }
+
+        private void LoadTexture(string[] components)
+        {
+            textureName = components[1];
+        }
+
+        private string LoadAnimation(string[] components)
+        {
+            var animationName = components[1];
+            animations[animationName] = new SpriteAnimation()
+            {
+                Name = components[1],
+                Size = new Size(int.Parse(components[2]), int.Parse(components[3])),
+                HitBoxOffset = new Point(int.Parse(components[4]), int.Parse(components[5])),
+                Length = int.Parse(components[6]),
+                Speed = float.Parse(components[7], CultureInfo.InvariantCulture),
+                Looped = int.Parse(components[8]) == 1,
+                Directions = new Dictionary<Direction, SpriteDirection>()
+            };
+            return animationName;
+        }
+
+        private void LoadAnimationDirection(string animationName, string[] components)
+        {
+            Direction direction = (Direction)int.Parse(components[1]);
+
+            animations[animationName].Directions[direction] = new SpriteDirection
+            {
+                Offset = new Point(
+                    int.Parse(components[2]),
+                    int.Parse(components[3])
+                ),
+                FlippedHorizontally = int.Parse(components[4]) == 1,
+                FlippedVertically = int.Parse(components[5]) == 1
+            };
         }
     }
 
@@ -226,7 +236,7 @@ namespace SixteenBitNuts
     public struct SpriteAnimation
     {
         public string Name;
-        public Point Size;
+        public Size Size;
         public Point HitBoxOffset;
         public int Length;
         public float Speed;
