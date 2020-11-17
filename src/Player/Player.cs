@@ -6,34 +6,11 @@ namespace SixteenBitNuts
     /// <summary>
     /// Class representing the playable character
     /// </summary>
-    public abstract class Player
+    public abstract class Player : Collider
     {
-        protected Vector2 position;
-        protected Vector2 velocity;
-
-        #region Properties
-
         public bool IsControllable { get; set; }
         public Direction Direction { get; set; }
-        public Size Size { get; set; }
-        public HitBox HitBox { get; set; }
-        public HitBox PreviousFrameHitBox { get; set; }
-        public Vector2 Position
-        {
-            get
-            {
-                return position;
-            }
-            set
-            {
-                position = value;
-                HitBox = new HitBox
-                {
-                    Position = position,
-                    Size = HitBox.Size
-                };
-            }
-        }
+        
         public Vector2 DrawingPosition
         {
             get
@@ -41,49 +18,22 @@ namespace SixteenBitNuts
                 return new Vector2((float)Math.Round(position.X), (float)Math.Round(position.Y));
             }
         }
-        public Vector2 Velocity
-        {
-            get
-            {
-                return velocity;
-            }
-            set
-            {
-                velocity = value;
-            }
-        }
-
-        #endregion
-
-        #region Components
-
-        protected Map map;
+        
         protected Sprite? sprite;
-
-        protected DebugHitBox debugHitBox;
-
-        #endregion
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="map"></param>
         /// <param name="position"></param>
-        public Player(Map map)
+        public Player(Map map) : base(map)
         {
             // Fields
-            this.map = map;
             Direction = Direction.Right;
-
-            // Hitboxes
-            HitBox = new HitBox(position, Size);
-            PreviousFrameHitBox = new HitBox(position, Size);
 
             // Properties
             IsControllable = true;
-
-            // Debug
-            debugHitBox = new DebugHitBox(map.Game, Color.Cyan);
+            IsPlayer = true;
         }
 
         /// <summary>
@@ -105,11 +55,6 @@ namespace SixteenBitNuts
             
         }
 
-        public virtual void UpdateDebugHitBoxes()
-        {
-            debugHitBox.Update(HitBox);
-        }
-
         /// <summary>
         /// Draw player sprite
         /// </summary>
@@ -120,14 +65,6 @@ namespace SixteenBitNuts
                 layer: 0f,
                 transform: transform
             );
-        }
-
-        /// <summary>
-        /// Draw debug info of the player sprite
-        /// </summary>
-        public virtual void DebugDraw(Matrix transform)
-        {
-            debugHitBox.Draw(transform);
         }
 
         public void MoveLeft(float value)
