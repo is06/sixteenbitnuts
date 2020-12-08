@@ -11,7 +11,7 @@ using SixteenBitNuts.Interfaces;
 
 namespace SixteenBitNuts
 {
-    public delegate void CollisionHandler(Collider collider, Entity entity, CollisionSide side);
+    public delegate void CollisionHandler(Collider collider, string colliderName, Entity entity, CollisionSide side);
 
     /// <summary>
     /// Class representing an in-game map
@@ -198,7 +198,7 @@ namespace SixteenBitNuts
                 // Player
                 Player?.Update(gameTime);
                 Player?.ComputePhysics();
-                Player?.UpdateHitBox();
+                Player?.UpdateHitBoxes();
 
                 #endregion
 
@@ -255,12 +255,12 @@ namespace SixteenBitNuts
                                 // Entity collision event
                                 if (element is Entity entity)
                                 {
-                                    OnColliderCollidesWithEntity?.Invoke(collider.Value, entity, side);
-
                                     if (element is MusicParamTrigger musicParamTrigger)
                                     {
                                         musicParamTrigger.Trigger();
                                     }
+
+                                    OnColliderCollidesWithEntity?.Invoke(collider.Value, collider.Key, entity, side);
                                 }
 
                                 if (collider.Value.IsPlayer && element.IsObstacle)
@@ -297,18 +297,16 @@ namespace SixteenBitNuts
                         }
                     }
 
-                    if (Player != null)
+
+                    if (Player is PlatformerPlayer fallingPlayer)
                     {
-                        if (Player is PlatformerPlayer fallingPlayer)
+                        // No ground under player's feet: falling
+                        if (!playerIsIntersectingWithObstacle && fallingPlayer.WasOnPlatform && !fallingPlayer.IsJumping)
                         {
-                            // No ground under player's feet: falling
-                            if (!playerIsIntersectingWithObstacle && fallingPlayer.WasOnPlatform && !fallingPlayer.IsJumping)
-                            {
-                                fallingPlayer.WasOnPlatform = false;
-                                fallingPlayer.IsFalling = true;
-                                fallingPlayer.IsTouchingTheGround = false;
-                            } 
-                        }
+                            fallingPlayer.WasOnPlatform = false;
+                            fallingPlayer.IsFalling = true;
+                            fallingPlayer.IsTouchingTheGround = false;
+                        } 
                     }
                 }
 
