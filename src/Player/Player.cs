@@ -50,7 +50,7 @@ namespace SixteenBitNuts
             position += velocity;
         }
 
-        public virtual void UpdateHitBox()
+        public virtual void UpdateHitBoxes()
         {
             
         }

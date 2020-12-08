@@ -204,9 +204,9 @@ namespace SixteenBitNuts
             base.ComputePhysics();
         }
 
-        public override void UpdateHitBox()
+        public override void UpdateHitBoxes()
         {
-            base.UpdateHitBox();
+            base.UpdateHitBoxes();
 
             HitBox = new HitBox(
                 new Vector2(position.X, IsDucking ? position.Y + DuckOffset : position.Y),
