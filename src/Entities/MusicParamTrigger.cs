@@ -33,7 +33,7 @@ namespace SixteenBitNuts
         {
             if (ParamName is string name && ParamValue is float value)
             {
-                map.Game.SetMusicParameter(name, value);
+                map.Game.AudioManager?.SetMusicParameter(name, value);
             }
         }
 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using SixteenBitNuts.Interfaces;
 using System;
 using System.Diagnostics;
 
@@ -22,7 +23,8 @@ namespace SixteenBitNuts
         public SpriteBatch? SpriteBatch { get; set; }
         public EffectService? EffectService { get; private set; }
         public TilesetService TilesetService { get; private set; }
-
+        public IAudioManager? AudioManager { get; protected set; }
+    
         #endregion
 
         #region Components
@@ -33,21 +35,6 @@ namespace SixteenBitNuts
         private Process process;
 
         protected Scene? currentScene;
-
-        #endregion
-
-        #region FMOD
-
-        public FMOD.Studio.System FmodSystem => fmodSystem;
-
-        private FMOD.Studio.System fmodSystem;
-
-        private FMOD.Studio.Bank masterBank;
-        private FMOD.Studio.Bank stringBank;
-        private FMOD.Studio.Bank musicBank;
-        private FMOD.Studio.Bank sfxBank;
-
-        private FMOD.Studio.EventInstance currentMusic;
 
         #endregion
 
@@ -75,46 +62,19 @@ namespace SixteenBitNuts
             InGameViewport = new Viewport(0, 0, (int)InternalSize.Width, (int)InternalSize.Height);
             SpriteBatch = new SpriteBatch(GraphicsDevice);
             EffectService = new EffectService(this);
+            AudioManager?.Initialize();
 
             renderSurface = new RenderTarget2D(GraphicsDevice, (int)InternalSize.Width, (int)InternalSize.Height);
             preMainDisplayEffectRenderTarget = new RenderTarget2D(GraphicsDevice, (int)InternalSize.Width, (int)InternalSize.Height);
-
-            #region FMOD Initialization
-            
-            FMOD.RESULT result;
-
-            // Initialize
-            result = FMOD.Studio.System.create(out fmodSystem);
-            if (result != FMOD.RESULT.OK)
-            {
-                Console.WriteLine(FMOD.Error.String(result));
-            }
-
-            result = fmodSystem.initialize(32, FMOD.Studio.INITFLAGS.NORMAL, FMOD.INITFLAGS.NORMAL, IntPtr.Zero);
-            if (result != FMOD.RESULT.OK)
-            {
-                Console.WriteLine(FMOD.Error.String(result));
-            }
-
-            #endregion
 
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
-            fmodSystem.loadBankFile("Content/Audio/Desktop/Master.bank", FMOD.Studio.LOAD_BANK_FLAGS.NORMAL, out masterBank);
-            fmodSystem.loadBankFile("Content/Audio/Desktop/Master.strings.bank", FMOD.Studio.LOAD_BANK_FLAGS.NORMAL, out stringBank);
-            fmodSystem.loadBankFile("Content/Audio/Desktop/Music.bank", FMOD.Studio.LOAD_BANK_FLAGS.NORMAL, out musicBank);
-            fmodSystem.loadBankFile("Content/Audio/Desktop/SFX.bank", FMOD.Studio.LOAD_BANK_FLAGS.NORMAL, out sfxBank);
-        }
+            base.LoadContent();
 
-        protected override void UnloadContent()
-        {
-            musicBank.unload();
-            stringBank.unload();
-            masterBank.unload();
-            sfxBank.unload();
+            AudioManager?.LoadContent();
         }
 
         protected override void Update(GameTime gameTime)
@@ -124,9 +84,9 @@ namespace SixteenBitNuts
 
             base.Update(gameTime);
 
-            fmodSystem.update();
-
             currentScene?.Update(gameTime);
+
+            AudioManager?.Update();
         }
 
         protected override void Draw(GameTime gameTime)
@@ -184,37 +144,11 @@ namespace SixteenBitNuts
 
         }
 
-        public void PlayMusic(string name)
+        protected override void UnloadContent()
         {
-            FMOD.RESULT result = fmodSystem.getEvent("event:/Music/" + name, out FMOD.Studio.EventDescription eventDescription);
-            if (result != FMOD.RESULT.OK)
-            {
-                Console.WriteLine(FMOD.Error.String(result) + " (event:/Music/" + name + ")");
-            }
-            eventDescription.createInstance(out currentMusic);
+            base.UnloadContent();
 
-            result = eventDescription.loadSampleData();
-            if (result == FMOD.RESULT.OK)
-            {
-                currentMusic.start();
-            }
-        }
-
-        public void SetMusicParameter(string name, float value)
-        {
-            currentMusic.setParameterByName(name, value);
-        }
-
-        public void PlaySound(string name)
-        {
-            FMOD.RESULT result = fmodSystem.getEvent("event:/SFX/" + name, out FMOD.Studio.EventDescription eventDescription);
-            if (result != FMOD.RESULT.OK)
-            {
-                Console.WriteLine(FMOD.Error.String(result) + " (event:/SFX/" + name + ")");
-            }
-
-            eventDescription.createInstance(out FMOD.Studio.EventInstance sound);
-            sound.start();
+            AudioManager?.UnloadContent();
         }
 
         protected override void Dispose(bool disposing)
@@ -222,8 +156,7 @@ namespace SixteenBitNuts
             SpriteBatch?.Dispose();
             renderSurface?.Dispose();
             graphics.Dispose();
-
-            fmodSystem.release();
+            AudioManager?.Dispose();
 
             base.Dispose(disposing);
         }
