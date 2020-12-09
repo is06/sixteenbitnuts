@@ -170,7 +170,7 @@ namespace SixteenBitNuts
             // Play the specified music if any
             if (MusicName is string musicName)
             {
-                Game.PlayMusic(musicName);
+                Game.AudioManager?.PlayMusic(musicName);
             }
         }        
 
