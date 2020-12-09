@@ -6,9 +6,13 @@
         <Version>0.2.0</Version>
         <Authors>Thomas Noury</Authors>
         <Company>is06</Company>
-        <Product>16-bit nuts</Product>
+        <Product>16-bit Nuts</Product>
+        <Title>16-bit Nuts game engine</Title>
         <AssemblyVersion>0.2.0</AssemblyVersion>
         <Description>A game engine to make 16-bit styled platformers.</Description>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <RepositoryUrl>https://github.com/is06/sixteenbitnuts</RepositoryUrl>
+        <PackageTags>video game;gamedev;game engine;monogame;pixel art</PackageTags>
         <LangVersion>8.0</LangVersion>
         <Nullable>enable</Nullable>
     </PropertyGroup>

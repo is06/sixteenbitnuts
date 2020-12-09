@@ -6,20 +6,6 @@ Game engine to build 16-bit styled platformers games.
 Getting started
 ---------------
 
-16-bit Nuts uses FMOD Studio API. Create a runtimes directory with the following structure:
-
-- runtimes
-  - linux-x64
-    - native
-  - osx
-    - native
-  - win-x64
-    - native
-  - win-x86
-    - native
-
-And place every fmod and fmodstudio dynamic libraries into every corresponding native directories.
-
 Create a `*.csproj` file:
 
 ```xml
@@ -32,33 +18,7 @@ Create a `*.csproj` file:
     <ItemGroup>
         <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.0.1641" />
         <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.0.1641" />
-        <Reference Include="SixteenBitNuts">
-            <HintPath>path/to/sixteenbitnuts/bin/$(Configuration)/netstandard2.0/SixteenBitNuts.dll</HintPath>
-        </Reference>
-        <None Include="runtimes/win-x86/native/fmod.dll" Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Include="runtimes/win-x86/native/fmodstudio.dll" Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Include="runtimes/win-x64/native/fmod.dll" Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Include="runtimes/win-x64/native/fmodstudio.dll" Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Include="runtimes/linux-x64/native/libfmod.so.11.8" Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Include="runtimes/linux-x64/native/libfmodstudio.so.11.8" Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Include="runtimes/osx/native/libfmod.dylib" Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'true'">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Include="runtimes/osx/native/libfmodstudio.dylib" Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'true'">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
+        <PackageReference Include="is06.SixteenBitNuts.Framework" Version="0.2.0" />
     </ItemGroup>
 </Project>
 ```
