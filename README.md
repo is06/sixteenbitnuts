@@ -66,6 +66,8 @@ Create a `*.csproj` file:
 Create a `MyGame.cs` file (the name can be different):
 
 ```csharp
+using SixteenBitNuts;
+
 namespace MyGame
 {
     class MyGame : Game
