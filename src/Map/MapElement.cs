@@ -12,8 +12,6 @@ namespace SixteenBitNuts
         public bool IsVisible { get; set; }
         public bool IsObstacle { get; set; }
         public bool IsPlatform { get; set; }
-        public bool IsCollectable { get; set; }
-        public bool IsDestroying { get; set; }
         public Vector2 Position { get; set; }
         public Size Size { get; set; }
         public HitBox HitBox
