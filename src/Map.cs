@@ -210,19 +210,27 @@ namespace SixteenBitNuts
                     // First collision detection pass (all section elements)
                     foreach (var element in CurrentMapSection.Elements)
                     {
-                        // If element has destroying flag: remove it from the list
-                        if (element is Entity entity && element.IsDestroying)
                         {
-                            CurrentMapSection.Entities.Remove(entity.Name);
+                            // If element has destroying flag: remove it from the list
+                            if (element is Entity entity && entity.IsDestroying)
+                            {
+                                CurrentMapSection.Entities.Remove(entity.Name);
+                            }
+                        }
+
+                        {
+                            // We take only elements that are at below a certain distance from the player
+                            if (Player != null && Vector2.Distance(Player.Position, element.Position) <= NEAR_ELEMENT_THRESHOLD)
+                            {
+                                if (element is Entity entity && entity.IsDestroying)
+                                {
+                                    continue;
+                                }
+                                nearElements.Add(element);
+                            }
                         }
 
                         element.DebugColor = Color.LimeGreen;
-                        
-                        // We take only elements that are at below a certain distance from the player
-                        if (Player != null && !element.IsDestroying && Vector2.Distance(Player.Position, element.Position) <= NEAR_ELEMENT_THRESHOLD)
-                        {
-                            nearElements.Add(element);
-                        }
                     }
 
                     // Second collision detection pass (near elements)

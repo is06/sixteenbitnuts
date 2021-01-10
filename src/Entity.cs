@@ -10,6 +10,8 @@ namespace SixteenBitNuts
     public abstract class Entity : MapElement, IEntity, ISerializable
     {
         public string Name { get; private set; }
+        public bool IsDestroying { get; private set; }
+        public bool IsCollectable { get; set; }
         public bool IsBehindThePlayer { get; set; }
         public bool IsVisibleInPreMainDisplay { get; set; }
         public virtual string MapTextDescription
@@ -30,6 +32,7 @@ namespace SixteenBitNuts
         public Entity(Map map, string name) : base(map)
         {
             Name = name;
+            IsDestroying = false;
             DebugColor = Color.Orange;
         }
 

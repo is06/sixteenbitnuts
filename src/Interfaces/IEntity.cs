@@ -4,7 +4,9 @@
     {
         string Name { get; }
         string MapTextDescription { get; }
-        bool IsBehindThePlayer { get; }
+        bool IsDestroying { get; }
+        bool IsCollectable { get; set; }
+        bool IsBehindThePlayer { get; set; }
         bool IsVisibleInPreMainDisplay { get; }
         void Destroy();
     }
