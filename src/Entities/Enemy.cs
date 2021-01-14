@@ -23,6 +23,7 @@ namespace SixteenBitNuts
         public Enemy(Map map, string name) : base(map, name)
         {
             subType = "default";
+            IsObstacle = false;
         }
 
         public override void GetObjectData(SerializationInfo info, StreamingContext context)

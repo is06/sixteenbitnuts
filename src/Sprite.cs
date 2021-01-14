@@ -152,11 +152,6 @@ namespace SixteenBitNuts
             }
         }
 
-        public void DebugDraw()
-        {
-            // TODO: The problem is the variety of sprite size in animations
-        }
-
         public void ResetCurrentAnimation()
         {
             CurrentAnimationFrame = 0f;
