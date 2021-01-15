@@ -27,7 +27,7 @@ namespace SixteenBitNuts
 
         public static float NormalizedBezier2(float a, float t)
         {
-            return MathUtil.Bezier2(0, a, 1, t);
+            return Calc.Bezier2(0, a, 1, t);
         }
 
         public static float NormalizedBezier3(float b, float c, float t)

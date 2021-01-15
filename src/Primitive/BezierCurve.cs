@@ -25,7 +25,7 @@ namespace SixteenBitNuts
 
             for (float x = Origin.X; x <= Destination.X; x += 1.0f)
             {
-                var y = MathUtil.Bezier2(Origin.Y, CurvePoint.Y, Destination.Y, x);
+                var y = Calc.Bezier2(Origin.Y, CurvePoint.Y, Destination.Y, x);
 
                 game.SpriteBatch?.Draw(pixel, new Vector2(x, y), Color.White);
             }
