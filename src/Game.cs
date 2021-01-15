@@ -29,8 +29,9 @@ namespace SixteenBitNuts
 
         #region Components
 
-        private RenderTarget2D? renderSurface;
+        private RenderTarget2D? inGameRenderSurface;
         private RenderTarget2D? preMainDisplayEffectRenderTarget;
+        private RenderTarget2D? outGameRenderSurface;
         private readonly GraphicsDeviceManager graphics;
         private Process process;
 
@@ -64,10 +65,13 @@ namespace SixteenBitNuts
             EffectService = new EffectService(this);
             AudioManager?.Initialize();
 
-            renderSurface = new RenderTarget2D(GraphicsDevice, (int)InternalSize.Width, (int)InternalSize.Height);
+            inGameRenderSurface = new RenderTarget2D(GraphicsDevice, (int)InternalSize.Width, (int)InternalSize.Height);
             preMainDisplayEffectRenderTarget = new RenderTarget2D(GraphicsDevice, (int)InternalSize.Width, (int)InternalSize.Height);
+            outGameRenderSurface = new RenderTarget2D(GraphicsDevice, (int)InternalSize.Width, (int)InternalSize.Height);
 
             base.Initialize();
+
+            currentScene?.Initialize();
         }
 
         protected override void LoadContent()
@@ -75,6 +79,8 @@ namespace SixteenBitNuts
             base.LoadContent();
 
             AudioManager?.LoadContent();
+
+            currentScene?.LoadContent();
         }
 
         protected override void Update(GameTime gameTime)
@@ -91,10 +97,12 @@ namespace SixteenBitNuts
 
         protected override void Draw(GameTime gameTime)
         {
+            base.Draw(gameTime);
+
             // Big pixel graphics rendering
             {
                 // Change the render target to surface
-                GraphicsDevice.SetRenderTarget(renderSurface);
+                GraphicsDevice.SetRenderTarget(inGameRenderSurface);
                 GraphicsDevice.Clear(Color.Black);
 
                 // Draws everything in the surface
@@ -107,36 +115,51 @@ namespace SixteenBitNuts
                 }
 
                 // Apply visual display effects
-                if (EffectService is EffectService service && renderSurface != null)
+                if (EffectService is EffectService service && inGameRenderSurface != null)
                 {
-                    renderSurface = service.ApplyEnabledDisplayEffects(renderSurface);
+                    inGameRenderSurface = service.ApplyEnabledDisplayEffects(inGameRenderSurface);
                 }
 
                 // Debug visual representation
                 currentScene?.DebugDraw();
 
-                // Back to the normal render method
-                GraphicsDevice.SetRenderTarget(null);
+                // Out-game draws
+                GraphicsDevice.SetRenderTarget(outGameRenderSurface);
+                GraphicsDevice.Clear(Color.FromNonPremultiplied(0, 0, 0, 0));
+                currentScene?.OutGameDraw();
 
                 // Render the surface to have the ingame screen
-                SpriteBatch?.Begin(SpriteSortMode.Immediate, BlendState.Opaque, SamplerState.PointClamp);
+                {
+                    // Back to main framebuffer
+                    GraphicsDevice.SetRenderTarget(null);
 
-                SpriteBatch?.Draw(
-                    texture: renderSurface,
-                    destinationRectangle: new Rectangle(0, 0, (int)WindowSize.Width, (int)WindowSize.Height),
-                    sourceRectangle: new Rectangle(0, 0, InGameViewport.Width, InGameViewport.Height),
-                    color: Color.White
-                );
-                SpriteBatch?.End();
+                    // In-game with main display effects
+                    SpriteBatch?.Begin(SpriteSortMode.Immediate, BlendState.Opaque, SamplerState.PointClamp);
+                    SpriteBatch?.Draw(
+                        texture: inGameRenderSurface,
+                        destinationRectangle: new Rectangle(0, 0, (int)WindowSize.Width, (int)WindowSize.Height),
+                        sourceRectangle: new Rectangle(0, 0, InGameViewport.Width, InGameViewport.Height),
+                        color: Color.White
+                    );
+                    SpriteBatch?.End();
+
+                    // Out-game display
+                    SpriteBatch?.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp);
+                    SpriteBatch?.Draw(
+                        texture: outGameRenderSurface,
+                        destinationRectangle: new Rectangle(0, 0, (int)WindowSize.Width, (int)WindowSize.Height),
+                        sourceRectangle: new Rectangle(0, 0, InGameViewport.Width, InGameViewport.Height),
+                        color: Color.White
+                    );
+                    SpriteBatch?.End();
+                }
             }
 
             // Hi-res graphics rendering
             {
-                // Render all UI elements in front of the render target texture
+                // Render all UI elements in front of the render target texture (can be an HD Hud as well...)
                 currentScene?.UIDraw();
             }
-
-            base.Draw(gameTime);
         }
 
         public virtual void LoadMap(string name)
@@ -154,7 +177,7 @@ namespace SixteenBitNuts
         protected override void Dispose(bool disposing)
         {
             SpriteBatch?.Dispose();
-            renderSurface?.Dispose();
+            inGameRenderSurface?.Dispose();
             graphics.Dispose();
             AudioManager?.Dispose();
 

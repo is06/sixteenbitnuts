@@ -1,8 +1,6 @@
-﻿using Microsoft.Xna.Framework;
-
-namespace SixteenBitNuts
+﻿namespace SixteenBitNuts
 {
-    public static class MathUtil
+    public static class Calc
     {
         public static float Bezier2(float a, float b, float c, float t)
         {

@@ -14,6 +14,16 @@ namespace SixteenBitNuts
             Game = game;
         }
 
+        public virtual void Initialize()
+        {
+
+        }
+
+        public virtual void LoadContent()
+        {
+
+        }
+
         public virtual void Update(GameTime gameTime)
         {
 
@@ -24,12 +34,17 @@ namespace SixteenBitNuts
 
         }
 
+        public virtual void DebugDraw()
+        {
+
+        }
+
         public virtual void PreMainDisplayEffectDraw()
         {
 
         }
 
-        public virtual void DebugDraw()
+        public virtual void OutGameDraw()
         {
 
         }
