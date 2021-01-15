@@ -144,7 +144,7 @@ namespace SixteenBitNuts
                     SpriteBatch?.End();
 
                     // Out-game display
-                    SpriteBatch?.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp);
+                    SpriteBatch?.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.PointClamp);
                     SpriteBatch?.Draw(
                         texture: outGameRenderSurface,
                         destinationRectangle: new Rectangle(0, 0, (int)WindowSize.Width, (int)WindowSize.Height),
