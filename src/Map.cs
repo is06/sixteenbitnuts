@@ -48,7 +48,7 @@ namespace SixteenBitNuts
         private int minLandscapeLayerIndex;
         private int maxLandscapeLayerIndex;
 
-        protected Hud hud;
+        
 
         #endregion
 
@@ -57,6 +57,7 @@ namespace SixteenBitNuts
         public string Name { get; set; }
         public string? MusicName { get; set; }
         public Landscape? Landscape { get; set; }
+        public Hud Hud { get; }
         public Dictionary<int, MapSection> Sections => sections;
         public MapSection CurrentMapSection => sections[currentSectionIndex];
         public Player? Player
@@ -162,7 +163,7 @@ namespace SixteenBitNuts
             mapEditor = new MapEditor(this);
             sectionEditor = new MapSectionEditor(this);
             colliders = new Dictionary<string, Collider>();
-            hud = new Hud(game);
+            Hud = new Hud(game);
 
             // Load map descriptor
             LoadFromFile("Content/Descriptors/Maps/" + name + ".map");
@@ -180,15 +181,11 @@ namespace SixteenBitNuts
         public override void Initialize()
         {
             base.Initialize();
-
-            hud.Initialize();
         }
 
         public override void LoadContent()
         {
             base.LoadContent();
-
-            hud.LoadContent();
         }
 
         /// <summary>
@@ -218,7 +215,7 @@ namespace SixteenBitNuts
                 Player?.UpdateHitBoxes();
 
                 // Hud
-                hud.Update(gameTime);
+                Hud.Update(gameTime);
 
                 #endregion
 
@@ -578,7 +575,7 @@ namespace SixteenBitNuts
         {
             base.OutGameDraw();
 
-            hud.Draw(Matrix.Identity);
+            Hud.Draw(Matrix.Identity);
         }
 
         /// <summary>

@@ -6,34 +6,30 @@ namespace SixteenBitNuts
     public class Hud
     {
         public Game Game { get; private set; }
+        public Dictionary<string, HudElement> Elements
+        {
+            get
+            {
+                return elements;
+            }
+        }
 
-        public Dictionary<string, HudElement> Elements;
+        private readonly Dictionary<string, HudElement> elements;
 
         public Hud(Game game)
         {
             Game = game;
-            Elements = new Dictionary<string, HudElement>();
+            elements = new Dictionary<string, HudElement>();
         }
 
-        public virtual void Initialize()
+        public void AddElement(string name, HudElement element)
         {
-            foreach (var element in Elements)
-            {
-                element.Value.Initialize();
-            }
-        }
-
-        public virtual void LoadContent()
-        {
-            foreach (var element in Elements)
-            {
-                element.Value.LoadContent();
-            }
+            elements.Add(name, element);
         }
 
         public virtual void Update(GameTime gameTime)
         {
-            foreach (var element in Elements)
+            foreach (var element in elements)
             {
                 element.Value.Update(gameTime);
             }
@@ -41,7 +37,7 @@ namespace SixteenBitNuts
 
         public virtual void Draw(Matrix transform)
         {
-            foreach (var element in Elements)
+            foreach (var element in elements)
             {
                 element.Value.Draw(transform);
             }
@@ -49,17 +45,9 @@ namespace SixteenBitNuts
 
         public virtual void DebugDraw(Matrix transform)
         {
-            foreach (var element in Elements)
+            foreach (var element in elements)
             {
                 element.Value.DebugDraw(transform);
-            }
-        }
-
-        public virtual void UnloadContent()
-        {
-            foreach (var element in Elements)
-            {
-                element.Value.UnloadContent();
             }
         }
     }

@@ -15,16 +15,6 @@ namespace SixteenBitNuts
             this.hud = hud;
         }
 
-        public virtual void Initialize()
-        {
-
-        }
-
-        public virtual void LoadContent()
-        {
-
-        }
-
         public virtual void Update(GameTime gameTime)
         {
             
@@ -38,11 +28,6 @@ namespace SixteenBitNuts
         public virtual void DebugDraw(Matrix transform)
         {
             
-        }
-
-        public virtual void UnloadContent()
-        {
-
         }
     }
 }

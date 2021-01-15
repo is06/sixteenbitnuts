@@ -3,37 +3,36 @@ using Microsoft.Xna.Framework;
 
 namespace SixteenBitNuts
 {
+    public struct ImageCounterConfig
+    {
+        public string DisabledSpriteAnimationName;
+        public string EnabledSpriteAnimationName;
+    }
+
     public class ImageCounter : Counter
     {
-        public string DisabledSpriteAnimationName { get; set; }
-        public string EnabledSpriteAnimationName { get; set; }
+        private readonly string disabledSpriteAnimationName;
+        private readonly string enabledSpriteAnimationName;
 
-        private readonly string spriteName;
         private readonly List<Sprite> sprites;
 
-        public ImageCounter(Hud hud, string spriteName) : base(hud)
+        public ImageCounter(Hud hud, CounterConfig config, ImageCounterConfig imageConfig, string spriteName) : base(hud, config)
         {
-            this.spriteName = spriteName;
             sprites = new List<Sprite>();
 
-            DisabledSpriteAnimationName = "";
-            EnabledSpriteAnimationName = "";
+            disabledSpriteAnimationName = imageConfig.DisabledSpriteAnimationName;
+            enabledSpriteAnimationName = imageConfig.EnabledSpriteAnimationName;
 
-            OnValueChanged += ImageCounter_OnValueChanged;
-        }
-
-        public override void LoadContent()
-        {
-            base.LoadContent();
-
-            for (var i = 0; i < MaxValue; i++)
+            for (var i = 0; i < config.MaxValue;  i++)
             {
                 var sprite = new Sprite(hud.Game, spriteName)
                 {
-                    AnimationName = DisabledSpriteAnimationName
+                    AnimationName = disabledSpriteAnimationName
                 };
                 sprites.Add(sprite);
             }
+
+            OnValueChanged += ImageCounter_OnValueChanged;
 
             ImageCounter_OnValueChanged(Value, 0);
         }
@@ -57,8 +56,8 @@ namespace SixteenBitNuts
                 for (var i = 0; i < MaxValue; i++)
                 {
                     sprites[i].AnimationName = i <= (value - 1)
-                        ? EnabledSpriteAnimationName
-                        : DisabledSpriteAnimationName;
+                        ? enabledSpriteAnimationName
+                        : disabledSpriteAnimationName;
                 }
             }
         }

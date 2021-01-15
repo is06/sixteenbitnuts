@@ -1,5 +1,12 @@
 ﻿namespace SixteenBitNuts
 {
+    public struct CounterConfig
+    {
+        public int CurrentValue;
+        public int MinValue;
+        public int MaxValue;
+    }
+
     public delegate void CounterValueChangedHandler(int value, int previousValue);
 
     abstract public class Counter : HudElement, ICounter
@@ -60,9 +67,11 @@
         public event CounterValueChangedHandler? OnMinValueChanged;
         public event CounterValueChangedHandler? OnMaxValueChanged;
 
-        public Counter(Hud hud) : base(hud)
+        public Counter(Hud hud, CounterConfig config) : base(hud)
         {
-
+            currentValue = config.CurrentValue;
+            minValue = config.MinValue;
+            maxValue = config.MaxValue;
         }
     }
 }
