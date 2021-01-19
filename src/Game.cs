@@ -24,6 +24,13 @@ namespace SixteenBitNuts
         public EffectService? EffectService { get; private set; }
         public TilesetService TilesetService { get; private set; }
         public IAudioManager? AudioManager { get; protected set; }
+        public Scene? CurrentScene
+        {
+            get
+            {
+                return currentScene;
+            }
+        }
     
         #endregion
 
@@ -34,6 +41,7 @@ namespace SixteenBitNuts
         private RenderTarget2D? outGameRenderSurface;
         private readonly GraphicsDeviceManager graphics;
         private Process process;
+        private double fps;
 
         protected Scene? currentScene;
 
@@ -59,6 +67,7 @@ namespace SixteenBitNuts
             Window.AllowUserResizing = false;
             Window.Title = WindowTitle;
             Content.RootDirectory = "Content";
+            IsMouseVisible = true;
             TargetElapsedTime = new TimeSpan((int)(1000f / FrameRate * 10000f));
             InGameViewport = new Viewport(0, 0, (int)InternalSize.Width, (int)InternalSize.Height);
             SpriteBatch = new SpriteBatch(GraphicsDevice);
@@ -86,11 +95,12 @@ namespace SixteenBitNuts
         protected override void Update(GameTime gameTime)
         {
             process = Process.GetCurrentProcess();
-            Window.Title = WindowTitle + " - " + (process.PrivateMemorySize64 / (1024f * 1024f)) + " MB";
 
             base.Update(gameTime);
 
             currentScene?.Update(gameTime);
+
+            fps = (1 / gameTime.ElapsedGameTime.TotalSeconds);
 
             AudioManager?.Update();
         }
@@ -158,13 +168,30 @@ namespace SixteenBitNuts
             // Hi-res graphics rendering
             {
                 // Render all UI elements in front of the render target texture (can be an HD Hud as well...)
-                currentScene?.UIDraw();
+                UIDraw(gameTime);
             }
+        }
+
+        public virtual void UIDraw(GameTime gameTime)
+        {
+            currentScene?.UIDraw();
         }
 
         public virtual void LoadMap(string name)
         {
 
+        }
+
+        public string GetRAM()
+        {
+            var value = Math.Round((process.PrivateMemorySize64 / (1024f * 1024f)), 2).ToString();
+            return value + " MB";
+        }
+
+        public string GetFPS()
+        {
+            var value = Math.Round(fps, 2).ToString();
+            return value + " FPS";
         }
 
         protected override void UnloadContent()

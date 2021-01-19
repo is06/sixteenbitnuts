@@ -154,7 +154,7 @@ namespace SixteenBitNuts
             }
 
             // In edit mode: draw the editor info for each entities
-            if (Map.IsInSectionEditMode)
+            if (Map.ShowSectionEditor)
             {
                 foreach (KeyValuePair<string, IEntity> pair in Entities)
                 {
