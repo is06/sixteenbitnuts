@@ -12,6 +12,13 @@ namespace SixteenBitNuts
 
     public abstract class PlatformerPlayer : Player
     {
+        public float Weight;
+        public float RunSpeed;
+        public float RunDamping;
+        public float JumpForce;
+        public float JumpHorizontalSpeed;
+        public float JumpDamping;
+
         public bool IsGravityEnabled { get; set; }
         public bool IsRunning { get; set; }
         public bool IsJumping { get; set; }
@@ -20,9 +27,6 @@ namespace SixteenBitNuts
         public bool IsTouchingTheGround { get; set; }
         public bool IsTouchingTheCeiling { get; set; }
         public bool WasOnPlatform { get; set; }
-        public float Weight { get; protected set; }
-        public float RunSpeed { get; protected set; }
-        public float JumpForce { get; protected set; }
         public float DuckOffset { get; protected set; }
         public bool OverrideAllControls { get; set; }
 

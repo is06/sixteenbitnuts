@@ -22,6 +22,10 @@ namespace SixteenBitNuts
         private const float TRANSITION_SPEED = 0.03f;
         private const float NEAR_ELEMENT_THRESHOLD = 100f;
 
+        public bool ShowMapEditor = false; // F1
+        public bool ShowSectionEditor = false; // F2
+        public bool ShowDebug = false; // F3
+
         #region Fields
 
         // Map
@@ -29,11 +33,8 @@ namespace SixteenBitNuts
         private int nextSectionIndex;
 
         // Edit and debug
-        private bool isInMapEditMode;
         private bool keyMapEditModePressed;
-        private bool isInSectionEditMode;
         private bool keySectionEditModePressed;
-        protected bool isInDebugViewMode;
         private bool keyDebugViewPressed;
 
         // Transitions
@@ -47,8 +48,6 @@ namespace SixteenBitNuts
         // Landscape
         private int minLandscapeLayerIndex;
         private int maxLandscapeLayerIndex;
-
-        
 
         #endregion
 
@@ -77,7 +76,6 @@ namespace SixteenBitNuts
         }
         public Camera Camera { get; private set; }
         public int EntityLastIndex { get; set; }
-        public bool IsInSectionEditMode => isInSectionEditMode;
         public Vector2 Gravity { get; protected set; }
         public override bool HasPreMainDisplayEffectDraws
         {
@@ -195,7 +193,7 @@ namespace SixteenBitNuts
         {
             base.Update(gameTime);
 
-            if (isInMapEditMode)
+            if (ShowMapEditor)
             {
                 mapEditor.Update(gameTime);
             }
@@ -222,7 +220,7 @@ namespace SixteenBitNuts
                 #region Collision detection
 
                 var nearElements = new List<IMapElement>();
-                if (!isInSectionEditMode)
+                if (!ShowSectionEditor)
                 {
                     // First collision detection pass (all section elements)
                     foreach (var element in CurrentMapSection.Elements)
@@ -257,7 +255,7 @@ namespace SixteenBitNuts
                     }
                 }
 
-                if (!isInSectionEditMode)
+                if (!ShowSectionEditor)
                 {
                     bool playerIsIntersectingWithObstacle = false;
 
@@ -342,7 +340,7 @@ namespace SixteenBitNuts
                 if (!keyDebugViewPressed && Keyboard.GetState().IsKeyDown(Keys.F3))
                 {
                     keyDebugViewPressed = true;
-                    isInDebugViewMode = !isInDebugViewMode;
+                    ShowDebug = !ShowDebug;
                 }
                 if (Keyboard.GetState().IsKeyUp(Keys.F3))
                 {
@@ -357,14 +355,14 @@ namespace SixteenBitNuts
                 {
                     keySectionEditModePressed = true;
 
-                    if (isInSectionEditMode)
+                    if (ShowSectionEditor)
                     {
-                        isInSectionEditMode = false;
+                        ShowSectionEditor = false;
                         if (Player != null) Player.IsControllable = true;
                     }
                     else
                     {
-                        isInSectionEditMode = true;
+                        ShowSectionEditor = true;
                         if (Player != null) Player.IsControllable = false;
                     }
                 }
@@ -373,14 +371,13 @@ namespace SixteenBitNuts
                     keySectionEditModePressed = false;
                 }
 
-                if (isInSectionEditMode)
+                if (ShowSectionEditor)
                 {
                     sectionEditor.Update();
 
                     if (Keyboard.GetState().IsKeyDown(Keys.F12))
                     {
-                        MapWriter.SaveToFile(MapFileMode.Text, this);
-                        MapWriter.SaveToFile(MapFileMode.Binary, this);
+                        SaveToDisk();
                     }
                 }
 
@@ -388,7 +385,7 @@ namespace SixteenBitNuts
 
                 #region Section Transition
 
-                if (!isInSectionEditMode && !Camera.IsMovingToNextSection)
+                if (!ShowSectionEditor && !Camera.IsMovingToNextSection)
                 {
                     if (Player != null)
                     {
@@ -488,7 +485,7 @@ namespace SixteenBitNuts
                 #endregion
             }
 
-            if (isInDebugViewMode)
+            if (ShowDebug)
             {
                 foreach (var collider in colliders)
                 {
@@ -501,7 +498,7 @@ namespace SixteenBitNuts
             if (!keyMapEditModePressed && Keyboard.GetState().IsKeyDown(Keys.F1))
             {
                 keyMapEditModePressed = true;
-                isInMapEditMode = !isInMapEditMode;
+                ShowMapEditor = !ShowMapEditor;
                 mapEditor.UpdateLayout();
             }
             if (Keyboard.GetState().IsKeyUp(Keys.F1))
@@ -517,7 +514,7 @@ namespace SixteenBitNuts
         /// </summary>
         public override void Draw()
         {
-            if (isInMapEditMode)
+            if (ShowMapEditor)
             {
                 mapEditor.Draw();
             }
@@ -563,7 +560,7 @@ namespace SixteenBitNuts
                 }
             }
 
-            if (!isInMapEditMode && isInSectionEditMode)
+            if (!ShowMapEditor && ShowSectionEditor)
             {
                 sectionEditor.Draw();
             }
@@ -583,7 +580,7 @@ namespace SixteenBitNuts
         /// </summary>
         public override void DebugDraw()
         {
-            if (!isInMapEditMode && isInDebugViewMode)
+            if (!ShowMapEditor && ShowDebug)
             {
                 foreach (var section in sections)
                 {
@@ -603,11 +600,11 @@ namespace SixteenBitNuts
         /// </summary>
         public override void UIDraw()
         {
-            if (!isInMapEditMode && isInSectionEditMode)
+            if (!ShowMapEditor && ShowSectionEditor)
             {
                 sectionEditor.UIDraw();
             }
-            if (isInMapEditMode)
+            if (ShowMapEditor)
             {
                 mapEditor.UIDraw();
             }
@@ -616,12 +613,18 @@ namespace SixteenBitNuts
         public void LoadSectionFromIndex(int index)
         {
             currentSectionIndex = index;
-            isInMapEditMode = false;
+            ShowMapEditor = false;
 
             if (Player != null && CurrentMapSection.DefaultSpawnPoint != null)
             {
                 Player.Position = CurrentMapSection.DefaultSpawnPoint.Position;
             }
+        }
+
+        public void SaveToDisk()
+        {
+            MapWriter.SaveToFile(MapFileMode.Text, this);
+            MapWriter.SaveToFile(MapFileMode.Binary, this);
         }
 
         /// <summary>
@@ -861,12 +864,12 @@ namespace SixteenBitNuts
 
         public override void EditCurrentSection()
         {
-            isInSectionEditMode = true;
+            ShowSectionEditor = true;
         }
 
         public override void EditLayout()
         {
-            isInMapEditMode = true;
+            ShowMapEditor = true;
         }
     }
 }
