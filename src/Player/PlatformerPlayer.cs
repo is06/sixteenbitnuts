@@ -12,12 +12,22 @@ namespace SixteenBitNuts
 
     public abstract class PlatformerPlayer : Player
     {
+        // Settings (read / write, even for authoring)
+
         public float Weight;
         public float RunSpeed;
-        public float RunDamping;
+        public float RunAcceleration;
+        public float RunDeceleration;
+        public float RunMaxAcceleration;
         public float JumpForce;
         public float JumpHorizontalSpeed;
         public float JumpDamping;
+
+        // Debug properties (read only, for authoring)
+
+        public float DebugRunHorizontalVelocityFactor { get { return runHorizontalVelocityFactor; } }
+
+        // Properties
 
         public bool IsGravityEnabled { get; set; }
         public bool IsRunning { get; set; }
@@ -30,14 +40,23 @@ namespace SixteenBitNuts
         public float DuckOffset { get; protected set; }
         public bool OverrideAllControls { get; set; }
 
+        // Events
+
         public event PlatformerPlayerActionHandler? OnPerformAction;
+
+        // Fields
+
+        protected float runHorizontalVelocityFactor;
 
         private bool jumpButtonPressed;
 
         public PlatformerPlayer(Map map) : base(map)
         {
             Weight = 1f;
-            RunSpeed = 1f;
+            RunSpeed = 5f;
+            RunAcceleration = 0.04f;
+            RunMaxAcceleration = 0.4f;
+            RunDeceleration = 0.1f;
             JumpForce = -6f;
             DuckOffset = 8f;
             IsFalling = true;
@@ -80,7 +99,7 @@ namespace SixteenBitNuts
                 if (IsControllable)
                 {
                     IsRunning = false;
-                    velocity.X = 0;
+                    Velocity.X = 0;
 
                     if (!IsDucking)
                     {
@@ -88,7 +107,7 @@ namespace SixteenBitNuts
                         if (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.LeftThumbstickLeft) ||
                             GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.DPadLeft))
                         {
-                            velocity.X = -RunSpeed;
+                            Velocity.X = -RunSpeed;
                             IsRunning = true;
                             Direction = Direction.Left;
                             if (sprite != null) sprite.Direction = Direction.Left;
@@ -97,7 +116,7 @@ namespace SixteenBitNuts
                         if (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.LeftThumbstickRight) ||
                             GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.DPadRight))
                         {
-                            velocity.X = RunSpeed;
+                            Velocity.X = RunSpeed;
                             IsRunning = true;
                             Direction = Direction.Right;
                             if (sprite != null) sprite.Direction = Direction.Right;
@@ -106,7 +125,7 @@ namespace SixteenBitNuts
                         // Keyboard
                         if (Keyboard.GetState().IsKeyDown(Keys.Left))
                         {
-                            velocity.X = -RunSpeed;
+                            Velocity.X = -RunSpeed;
                             IsRunning = true;
                             Direction = Direction.Left;
                             if (sprite != null) sprite.Direction = Direction.Left;
@@ -114,7 +133,7 @@ namespace SixteenBitNuts
 
                         if (Keyboard.GetState().IsKeyDown(Keys.Right))
                         {
-                            velocity.X = RunSpeed;
+                            Velocity.X = RunSpeed;
                             IsRunning = true;
                             Direction = Direction.Right;
                             if (sprite != null) sprite.Direction = Direction.Right;
@@ -131,26 +150,26 @@ namespace SixteenBitNuts
                     if (!IsDucking && IsTouchingTheGround && !jumpButtonPressed && Keyboard.GetState().IsKeyDown(Keys.C))
                     {
                         OnPerformAction?.Invoke(PlatformerPlayerActionType.Jump);
-                        velocity.Y = JumpForce;
+                        Velocity.Y = JumpForce;
                         IsTouchingTheGround = false;
                         jumpButtonPressed = true;
                     }
                     if (Keyboard.GetState().IsKeyUp(Keys.C))
                     {
                         // If the player is moving up
-                        if (velocity.Y < 0)
+                        if (Velocity.Y < 0)
                         {
-                            velocity.Y *= 0.5f;
+                            Velocity.Y *= 0.5f;
                         }
                         jumpButtonPressed = false;
                     }
 
-                    if (velocity.Y > 0)
+                    if (Velocity.Y > 0)
                     {
                         IsJumping = false;
                         IsFalling = true;
                     }
-                    else if (velocity.Y < 0)
+                    else if (Velocity.Y < 0)
                     {
                         IsJumping = true;
                         IsFalling = false;
@@ -193,15 +212,15 @@ namespace SixteenBitNuts
         {
             if (IsGravityEnabled)
             {
-                velocity += map.Gravity * Weight;
+                Velocity += map.Gravity * Weight;
 
                 if (IsTouchingTheGround)
-                    velocity.Y = 0;
+                    Velocity.Y = 0;
 
                 if (IsTouchingTheCeiling)
                 {
                     IsTouchingTheCeiling = false;
-                    velocity.Y *= -0.5f;
+                    Velocity.Y *= -0.5f;
                 }
             }
 

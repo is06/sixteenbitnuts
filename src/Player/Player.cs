@@ -8,9 +8,11 @@ namespace SixteenBitNuts
     /// </summary>
     public abstract class Player : Collider
     {
-        public bool IsControllable { get; set; }
-        public Direction Direction { get; set; }
-        
+        // Exposed fields
+        public bool IsControllable;
+
+        // Read only properties
+        public Direction Direction { get; protected set; }
         public Vector2 DrawingPosition
         {
             get
@@ -19,6 +21,7 @@ namespace SixteenBitNuts
             }
         }
         
+        // Private members
         protected Sprite? sprite;
 
         /// <summary>
@@ -28,10 +31,7 @@ namespace SixteenBitNuts
         /// <param name="position"></param>
         public Player(Map map) : base(map)
         {
-            // Fields
             Direction = Direction.Right;
-
-            // Properties
             IsControllable = true;
             IsPlayer = true;
         }
@@ -47,7 +47,7 @@ namespace SixteenBitNuts
 
         public virtual void ComputePhysics()
         {
-            position += velocity;
+            position += Velocity;
         }
 
         public virtual void UpdateHitBoxes()

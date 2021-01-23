@@ -7,7 +7,7 @@ using System.Globalization;
 
 namespace SixteenBitNuts
 {
-    public delegate void AnimationFinishedHandler(Sprite sender);
+    public delegate void AnimationFinishedHandler(Sprite sprite);
 
     public class Sprite
     {
