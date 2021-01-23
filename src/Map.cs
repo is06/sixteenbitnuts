@@ -286,7 +286,8 @@ namespace SixteenBitNuts
                                     OnColliderCollidesWithEntity?.Invoke(collider.Value, collider.Key, entity, side);
                                 }
 
-                                if (collider.Value.IsPlayer && element.IsObstacle)
+                                // Collision correction
+                                if (collider.Value is Player && element.IsObstacle)
                                 {
                                     playerIsIntersectingWithObstacle = true;
 
@@ -319,7 +320,6 @@ namespace SixteenBitNuts
                             }
                         }
                     }
-
 
                     if (Player is PlatformerPlayer fallingPlayer)
                     {

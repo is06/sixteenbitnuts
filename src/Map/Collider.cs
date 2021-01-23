@@ -4,10 +4,9 @@ namespace SixteenBitNuts
 {
     public abstract class Collider
     {
-        public bool IsPlayer { get; set; }
-        public Size Size { get; set; }
-        public HitBox HitBox { get; set; }
-        public HitBox PreviousFrameHitBox { get; set; }
+        // Exposed fields
+        public HitBox HitBox;
+        public Vector2 Velocity;
         public Vector2 Position
         {
             get
@@ -24,24 +23,21 @@ namespace SixteenBitNuts
                 };
             }
         }
-        public Vector2 Velocity
-        {
-            get
-            {
-                return velocity;
-            }
-            set
-            {
-                velocity = value;
-            }
-        }
 
+        // Read only properties
+        public bool IsPlayer { get; protected set; }
+        public Size Size { get; protected set; }
+        public HitBox PreviousFrameHitBox { get; protected set; }
+
+        // Private members
         protected Map map;
         protected Vector2 position;
-        protected Vector2 velocity;
-
         protected DebugHitBox debugHitBox;
 
+        /// <summary>
+        /// Collider constructor
+        /// </summary>
+        /// <param name="map"></param>
         public Collider(Map map)
         {
             this.map = map;

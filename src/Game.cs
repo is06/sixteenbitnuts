@@ -130,13 +130,13 @@ namespace SixteenBitNuts
                     inGameRenderSurface = service.ApplyEnabledDisplayEffects(inGameRenderSurface);
                 }
 
-                // Debug visual representation
-                currentScene?.DebugDraw();
-
                 // Out-game draws
                 GraphicsDevice.SetRenderTarget(outGameRenderSurface);
                 GraphicsDevice.Clear(Color.FromNonPremultiplied(0, 0, 0, 0));
                 currentScene?.OutGameDraw();
+
+                // Debug visual representation
+                currentScene?.DebugDraw();
 
                 // Render the surface to have the ingame screen
                 {
@@ -192,6 +192,12 @@ namespace SixteenBitNuts
         {
             var value = Math.Round(fps, 2).ToString();
             return value + " FPS";
+        }
+
+        public void ToggleFullScreen()
+        {
+            graphics.IsFullScreen = !graphics.IsFullScreen;
+            graphics.ApplyChanges();
         }
 
         protected override void UnloadContent()
