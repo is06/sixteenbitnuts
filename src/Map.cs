@@ -261,11 +261,13 @@ namespace SixteenBitNuts
 
                     foreach (var collider in colliders)
                     {
+                        if (!collider.Value.IsCollisionEnabled)
+                            continue;
+
                         foreach (var element in CollisionManager.GetResolutionElementsFromHitBox(collider.Value.HitBox, collider.Value.PreviousFrameHitBox, nearElements))
                         {
                             element.DebugColor = Color.Red;
 
-                            // Player collisions
                             if (collider.Value.HitBox.Intersects(element.HitBox))
                             {
                                 // Detect the collision side of the obstacle
@@ -286,7 +288,7 @@ namespace SixteenBitNuts
                                     OnColliderCollidesWithEntity?.Invoke(collider.Value, collider.Key, entity, side);
                                 }
 
-                                // Collision correction
+                                // Player-only collision correction
                                 if (collider.Value is Player && element.IsObstacle)
                                 {
                                     playerIsIntersectingWithObstacle = true;

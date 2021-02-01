@@ -69,4 +69,4 @@ namespace MyGame
 }
 ```
 
-Overriding the `Draw` method in Maps are not need at all because the engine already manages how to perform the display of every elements in the map.
+Overriding the `Draw` method in Maps is not needed at all because the engine already manages how to perform the display of every elements in the map.

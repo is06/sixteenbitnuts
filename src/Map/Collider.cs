@@ -5,6 +5,7 @@ namespace SixteenBitNuts
     public abstract class Collider
     {
         // Exposed fields
+        public bool IsCollisionEnabled;
         public HitBox HitBox;
         public Vector2 Velocity;
         public Vector2 Position
@@ -25,7 +26,6 @@ namespace SixteenBitNuts
         }
 
         // Read only properties
-        public bool IsPlayer { get; protected set; }
         public Size Size { get; protected set; }
         public HitBox PreviousFrameHitBox { get; protected set; }
 
@@ -41,6 +41,8 @@ namespace SixteenBitNuts
         public Collider(Map map)
         {
             this.map = map;
+
+            IsCollisionEnabled = true;
 
             // Hitboxes
             HitBox = new HitBox(position, Size);

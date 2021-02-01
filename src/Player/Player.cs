@@ -33,7 +33,6 @@ namespace SixteenBitNuts
         {
             Direction = Direction.Right;
             IsControllable = true;
-            IsPlayer = true;
         }
 
         /// <summary>

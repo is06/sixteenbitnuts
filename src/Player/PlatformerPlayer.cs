@@ -25,7 +25,7 @@ namespace SixteenBitNuts
 
         // Debug properties (read only, for authoring)
 
-        public float DebugRunHorizontalVelocityFactor { get { return runHorizontalVelocityFactor; } }
+        public float DebugRunHorizontalVelocityFactor { get { return horizontalVelocityFactor; } }
 
         // Properties
 
@@ -46,7 +46,7 @@ namespace SixteenBitNuts
 
         // Fields
 
-        protected float runHorizontalVelocityFactor;
+        protected float horizontalVelocityFactor;
 
         private bool jumpButtonPressed;
 
