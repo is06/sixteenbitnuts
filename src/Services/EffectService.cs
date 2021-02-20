@@ -28,7 +28,7 @@ namespace SixteenBitNuts
             return sourceTarget;
         }
 
-        public RenderTarget2D ApplyDisplayEffect(RenderTarget2D sourceTarget, MainDisplayEffect mainDisplayEffect)
+        private RenderTarget2D ApplyDisplayEffect(RenderTarget2D sourceTarget, MainDisplayEffect mainDisplayEffect)
         {
             if (mainDisplayEffect.IsEnabled)
             {

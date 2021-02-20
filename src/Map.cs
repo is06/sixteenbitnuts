@@ -278,14 +278,16 @@ namespace SixteenBitNuts
                                 );
 
                                 // Entity collision event
-                                if (element is Entity entity)
                                 {
-                                    if (element is MusicParamTrigger musicParamTrigger)
+                                    if (element is Entity entity)
                                     {
-                                        musicParamTrigger.Trigger();
-                                    }
+                                        if (element is MusicParamTrigger musicParamTrigger)
+                                        {
+                                            musicParamTrigger.Trigger();
+                                        }
 
-                                    OnColliderCollidesWithEntity?.Invoke(collider.Value, collider.Key, entity, side);
+                                        OnColliderCollidesWithEntity?.Invoke(collider.Value, collider.Key, entity, side);
+                                    }
                                 }
 
                                 // Player-only collision correction
@@ -296,26 +298,28 @@ namespace SixteenBitNuts
                                     // Correct position to prevent intersection and block player
                                     collider.Value.Position = CollisionManager.GetCorrectedPosition(collider.Value.HitBox, element.HitBox, side);
 
-                                    if (Player is PlatformerPlayer hittingPlayer)
                                     {
-                                        // Hit the ground
-                                        hittingPlayer.IsTouchingTheGround = false;
-                                        if (side == CollisionSide.Top)
+                                        if (Player is PlatformerPlayer player)
                                         {
-                                            hittingPlayer.IsTouchingTheGround = true;
-
-                                            if (hittingPlayer.IsFalling)
+                                            // Hit the ground
+                                            player.IsTouchingTheGround = false;
+                                            if (side == CollisionSide.Top)
                                             {
-                                                hittingPlayer.IsFalling = false;
-                                                hittingPlayer.WasOnPlatform = true;
-                                            }
-                                        }
+                                                player.IsTouchingTheGround = true;
 
-                                        // Hit the ceiling
-                                        hittingPlayer.IsTouchingTheCeiling = false;
-                                        if (side == CollisionSide.Bottom)
-                                        {
-                                            hittingPlayer.IsTouchingTheCeiling = true;
+                                                if (player.IsFalling)
+                                                {
+                                                    player.IsFalling = false;
+                                                    player.WasOnPlatform = true;
+                                                }
+                                            }
+
+                                            // Hit the ceiling
+                                            player.IsTouchingTheCeiling = false;
+                                            if (side == CollisionSide.Bottom)
+                                            {
+                                                player.IsTouchingTheCeiling = true;
+                                            }
                                         }
                                     }
                                 }
@@ -323,15 +327,17 @@ namespace SixteenBitNuts
                         }
                     }
 
-                    if (Player is PlatformerPlayer fallingPlayer)
                     {
-                        // No ground under player's feet: falling
-                        if (!playerIsIntersectingWithObstacle && fallingPlayer.WasOnPlatform && !fallingPlayer.IsJumping)
+                        if (Player is PlatformerPlayer player)
                         {
-                            fallingPlayer.WasOnPlatform = false;
-                            fallingPlayer.IsFalling = true;
-                            fallingPlayer.IsTouchingTheGround = false;
-                        } 
+                            // No ground under player's feet: falling
+                            if (!playerIsIntersectingWithObstacle && player.WasOnPlatform && !player.IsJumping)
+                            {
+                                player.WasOnPlatform = false;
+                                player.IsFalling = true;
+                                player.IsTouchingTheGround = false;
+                            }
+                        }
                     }
                 }
 
@@ -776,7 +782,7 @@ namespace SixteenBitNuts
                     case "ti":
                         // Tile
                         int elementId = int.Parse(components[1]);
-                        var position = new Vector2
+                        var position = new Vector2()
                         {
                             X = int.Parse(components[2]),
                             Y = int.Parse(components[3])

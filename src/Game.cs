@@ -74,7 +74,15 @@ namespace SixteenBitNuts
             EffectService = new EffectService(this);
             AudioManager?.Initialize();
 
-            inGameRenderSurface = new RenderTarget2D(GraphicsDevice, (int)InternalSize.Width, (int)InternalSize.Height);
+            // Render target texture of in game elements in 16-bit RGB format (65K colors)
+            inGameRenderSurface = new RenderTarget2D(
+                GraphicsDevice,
+                (int)InternalSize.Width,
+                (int)InternalSize.Height,
+                false,
+                SurfaceFormat.Color,
+                DepthFormat.Depth16
+            );
             preMainDisplayEffectRenderTarget = new RenderTarget2D(GraphicsDevice, (int)InternalSize.Width, (int)InternalSize.Height);
             outGameRenderSurface = new RenderTarget2D(GraphicsDevice, (int)InternalSize.Width, (int)InternalSize.Height);
 
