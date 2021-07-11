@@ -27,6 +27,7 @@ namespace SixteenBitNuts
         public bool IsAnimated { get; set; }
         public bool IsVisible { get; set; }
         public float CurrentAnimationFrame { get; private set; }
+        public int CurrentAnimationLoops { get; private set; }
         public string AnimationName
         {
             get
@@ -39,6 +40,7 @@ namespace SixteenBitNuts
                 {
                     currentAnimationName = value;
                     CurrentAnimationFrame = 0f;
+                    CurrentAnimationLoops = 0;
                     IsAnimated = true;
                 }
             }
@@ -71,6 +73,7 @@ namespace SixteenBitNuts
 
             // Properties
             CurrentAnimationFrame = 0f;
+            CurrentAnimationLoops = 0;
             IsVisible = true;
             Direction = Direction.Right;
 
@@ -87,7 +90,7 @@ namespace SixteenBitNuts
         {
             if (IsVisible)
             {
-                Point offset = new Point(
+                var sourceOffset = new Point(
                     CurrentAnimation.Directions[Direction].Offset.X + (int)(Math.Floor(CurrentAnimationFrame) * CurrentAnimation.Size.Width),
                     CurrentAnimation.Directions[Direction].Offset.Y
                 );
@@ -115,8 +118,8 @@ namespace SixteenBitNuts
                     texture: texture,
                     position: drawPosition - CurrentAnimation.HitBoxOffset.ToVector2(),
                     sourceRectangle: new Rectangle(
-                        offset.X,
-                        offset.Y,
+                        sourceOffset.X,
+                        sourceOffset.Y,
                         (int)CurrentAnimation.Size.Width,
                         (int)CurrentAnimation.Size.Height
                     ),
@@ -142,6 +145,7 @@ namespace SixteenBitNuts
                     if (CurrentAnimation.Looped)
                     {
                         CurrentAnimationFrame = 0;
+                        CurrentAnimationLoops++;
                     }
                     else
                     {
@@ -155,6 +159,7 @@ namespace SixteenBitNuts
         public void ResetCurrentAnimation()
         {
             CurrentAnimationFrame = 0f;
+            CurrentAnimationLoops = 0;
         }
 
         protected virtual void LoadFromFile(string fileName)
