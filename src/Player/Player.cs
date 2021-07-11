@@ -29,7 +29,7 @@ namespace SixteenBitNuts
         /// </summary>
         /// <param name="map"></param>
         /// <param name="position"></param>
-        public Player(Map map) : base(map)
+        public Player(Map map) : base(map, Color.Cyan)
         {
             Direction = Direction.Right;
             IsControllable = true;
@@ -44,6 +44,11 @@ namespace SixteenBitNuts
             PreviousFrameHitBox = HitBox;
         }
 
+        public virtual void PostCollisionUpdate()
+        {
+
+        }
+
         public virtual void ComputePhysics()
         {
             position += Velocity;
@@ -52,6 +57,11 @@ namespace SixteenBitNuts
         public virtual void UpdateHitBoxes()
         {
             
+        }
+
+        public virtual void UpdateSensors()
+        {
+
         }
 
         /// <summary>

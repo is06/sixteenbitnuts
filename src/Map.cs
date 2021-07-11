@@ -203,16 +203,16 @@ namespace SixteenBitNuts
             {
                 #region Components positioning
 
+                // Player
+                Player?.Update(gameTime);
+                Player?.ComputePhysics();
+                Player?.UpdateHitBoxes();
+
                 // Map Sections
                 foreach (var section in sections)
                 {
                     section.Value.Update(gameTime);
                 }
-
-                // Player
-                Player?.Update(gameTime);
-                Player?.ComputePhysics();
-                Player?.UpdateHitBoxes();
 
                 // Hud
                 Hud.Update(gameTime);
@@ -289,6 +289,10 @@ namespace SixteenBitNuts
                                         }
 
                                         OnColliderCollidesWithElement?.Invoke(collider.Value, collider.Key, entity, side);
+                                    }
+                                    if (element is Tile tile)
+                                    {
+                                        OnColliderCollidesWithElement?.Invoke(collider.Value, collider.Key, tile, side);
                                     }
                                 }
 
@@ -494,6 +498,9 @@ namespace SixteenBitNuts
                 }
 
                 #endregion
+
+                Player?.PostCollisionUpdate();
+                Player?.UpdateSensors();
             }
 
             if (ShowDebug)
@@ -591,19 +598,19 @@ namespace SixteenBitNuts
         /// </summary>
         public override void DebugDraw()
         {
+            base.DebugDraw();
+
             if (!ShowMapEditor && ShowDebug)
             {
-                foreach (var section in sections)
-                {
-                    section.Value.DebugDraw(Camera.Transform);
-                }
                 foreach (var collider in colliders)
                 {
                     collider.Value.DebugDraw(Camera.Transform);
                 }
+                foreach (var section in sections)
+                {
+                    section.Value.DebugDraw(Camera.Transform);
+                }
             }
-
-            base.DebugDraw();
         }
 
         /// <summary>
@@ -635,7 +642,7 @@ namespace SixteenBitNuts
         public void SaveToDisk()
         {
             MapWriter.SaveToFile(MapFileMode.Text, this);
-            MapWriter.SaveToFile(MapFileMode.Binary, this);
+            //MapWriter.SaveToFile(MapFileMode.Binary, this);
         }
 
         /// <summary>

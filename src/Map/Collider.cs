@@ -38,7 +38,7 @@ namespace SixteenBitNuts
         /// Collider constructor
         /// </summary>
         /// <param name="map"></param>
-        public Collider(Map map)
+        public Collider(Map map, Color debugHitBoxColor)
         {
             this.map = map;
 
@@ -49,7 +49,7 @@ namespace SixteenBitNuts
             PreviousFrameHitBox = new HitBox(position, Size);
 
             // Debug
-            debugHitBox = new DebugHitBox(map.Game, Color.Cyan);
+            debugHitBox = new DebugHitBox(map.Game, debugHitBoxColor);
         }
 
         public virtual void UpdateDebugHitBoxes()
