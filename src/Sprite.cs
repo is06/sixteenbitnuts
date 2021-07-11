@@ -114,9 +114,15 @@ namespace SixteenBitNuts
 
                 var drawPosition = new Vector2((float)Math.Round(position.X), (float)Math.Round(position.Y));
 
+                var drawPositionOffset = CurrentAnimation.HitBoxOffset.ToVector2();
+                if (CurrentAnimation.Directions[Direction].OverrideHitBoxOffset is Point overrideHitBoxOffset)
+                {
+                    drawPositionOffset = overrideHitBoxOffset.ToVector2();
+                }
+
                 game.SpriteBatch?.Draw(
                     texture: texture,
-                    position: drawPosition - CurrentAnimation.HitBoxOffset.ToVector2(),
+                    position: drawPosition - drawPositionOffset,
                     sourceRectangle: new Rectangle(
                         sourceOffset.X,
                         sourceOffset.Y,
@@ -215,7 +221,7 @@ namespace SixteenBitNuts
         {
             Direction direction = (Direction)int.Parse(components[1]);
 
-            animations[animationName].Directions[direction] = new SpriteDirection
+            var spriteDirection = new SpriteDirection
             {
                 Offset = new Point(
                     int.Parse(components[2]),
@@ -224,6 +230,19 @@ namespace SixteenBitNuts
                 FlippedHorizontally = int.Parse(components[4]) == 1,
                 FlippedVertically = int.Parse(components[5]) == 1
             };
+            try
+            {
+                spriteDirection.OverrideHitBoxOffset = new Point(
+                    int.Parse(components[6]),
+                    int.Parse(components[7])
+                );
+            }
+            catch (IndexOutOfRangeException)
+            {
+
+            }
+
+            animations[animationName].Directions[direction] = spriteDirection;
         }
     }
 
@@ -232,6 +251,7 @@ namespace SixteenBitNuts
         public Point Offset;
         public bool FlippedHorizontally;
         public bool FlippedVertically;
+        public Point? OverrideHitBoxOffset;
     }
 
     public struct SpriteAnimation
