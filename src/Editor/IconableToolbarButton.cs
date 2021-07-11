@@ -1,11 +1,14 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using SixteenBitNuts.Interfaces;
 
 namespace SixteenBitNuts.Editor
 {
     public abstract class IconableToolbarButton : ToolbarButton
     {
         protected Texture2D? iconTexture;
+
+        public IToolbarIconable? LinkedMapElement;
 
         public IconableToolbarButton(Toolbar toolbar) : base(toolbar)
         {
@@ -18,26 +21,22 @@ namespace SixteenBitNuts.Editor
 
             if (iconTexture != null)
             {
-                Vector2 position = new Vector2(Position.X + 6, Position.Y + 6);
-
                 Toolbar.Editor.Map.Game.SpriteBatch?.Begin(samplerState: SamplerState.PointClamp);
 
-                float textureRatio = Size.Ratio(iconTexture.Width, iconTexture.Height);
-                Vector2 origin = Vector2.Zero;
-
-                if (textureRatio > 1.0f)
+                var textureOffset = new Point(0, 0);
+                if (LinkedMapElement is IMapElement element)
                 {
-                    origin.Y -= iconTexture.Height / 2f;
+                    textureOffset = ((IToolbarIconable)element).ToolbarTextureOffset;
                 }
 
                 Toolbar.Editor.Map.Game.SpriteBatch?.Draw(
                     texture: iconTexture,
-                    position: position,
-                    sourceRectangle: new Rectangle(0, 0, iconTexture.Width, iconTexture.Height),
+                    position: new Vector2(Position.X + 6, Position.Y + 6),
+                    sourceRectangle: new Rectangle(textureOffset.X, textureOffset.Y, 16, 16),
                     color: Color.White,
                     rotation: 0f,
-                    origin: origin,
-                    scale: new Vector2((3f / (iconTexture.Width / 16f * 3f) * 3f), (3f / (iconTexture.Height / 16f * 3f)) * 3f / textureRatio),
+                    origin: Vector2.Zero,
+                    scale: 3f,
                     effects: SpriteEffects.None,
                     layerDepth: 0f
                 );
