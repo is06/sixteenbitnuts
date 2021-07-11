@@ -9,7 +9,9 @@ namespace SixteenBitNuts
     [Serializable]
     public abstract class Entity : MapElement, IEntity, ISerializable
     {
-        public string Name { get; private set; }
+        public string Name { get; set; }
+        public string? Tag { get; set; }
+        public bool IsGenerated { get; set; }
         public bool IsDestroying { get; private set; }
         public bool IsCollectable { get; set; }
         public bool IsBehindThePlayer { get; set; }

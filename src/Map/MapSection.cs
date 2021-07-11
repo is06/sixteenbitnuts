@@ -60,6 +60,22 @@ namespace SixteenBitNuts
             }
         }
 
+        public Dictionary<string, IEntity> NotGeneratedEntities
+        {
+            get
+            {
+                var result = new Dictionary<string, IEntity>();
+                foreach (var entity in Entities)
+                {
+                    if (!entity.Value.IsGenerated)
+                    {
+                        result.Add(entity.Key, entity.Value);
+                    }
+                }
+                return result;
+            }
+        }
+
         public ISpawnPoint? DefaultSpawnPoint
         {
             get
@@ -273,7 +289,7 @@ namespace SixteenBitNuts
             info.AddValue("defaultSpawnPoint", DefaultSpawnPoint != null ? DefaultSpawnPoint.Name : "");
             info.AddValue("back_tiles", BackgroundTiles);
             info.AddValue("front_tiles", ForegroundTiles);
-            info.AddValue("entities", Entities);
+            info.AddValue("entities", NotGeneratedEntities);
         }
 
         private void SetTransitionPoints(Rectangle bounds)

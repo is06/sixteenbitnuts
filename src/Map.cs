@@ -11,7 +11,7 @@ using SixteenBitNuts.Interfaces;
 
 namespace SixteenBitNuts
 {
-    public delegate void CollisionHandler(Collider collider, string colliderName, Entity entity, CollisionSide side);
+    public delegate void CollisionHandler(Collider collider, string colliderName, IMapElement element, CollisionSide side);
 
     /// <summary>
     /// Class representing an in-game map
@@ -128,6 +128,7 @@ namespace SixteenBitNuts
         protected readonly Dictionary<int, MapSection> sections;
         protected Dictionary<string, Collider> colliders;
         protected MapSectionEditor sectionEditor;
+        protected EntityGenerator generator;
 
         private readonly MapEditor mapEditor;
         private readonly TransitionGuide transitionGuide;
@@ -136,7 +137,7 @@ namespace SixteenBitNuts
 
         #region Event handlers
 
-        public event CollisionHandler? OnColliderCollidesWithEntity;
+        public event CollisionHandler? OnColliderCollidesWithElement;
 
         #endregion
 
@@ -161,6 +162,7 @@ namespace SixteenBitNuts
             mapEditor = new MapEditor(this);
             sectionEditor = new MapSectionEditor(this);
             colliders = new Dictionary<string, Collider>();
+            generator = new EntityGenerator(this);
             Hud = new Hud(game);
 
             // Load map descriptor
@@ -286,7 +288,7 @@ namespace SixteenBitNuts
                                             musicParamTrigger.Trigger();
                                         }
 
-                                        OnColliderCollidesWithEntity?.Invoke(collider.Value, collider.Key, entity, side);
+                                        OnColliderCollidesWithElement?.Invoke(collider.Value, collider.Key, entity, side);
                                     }
                                 }
 
@@ -306,6 +308,7 @@ namespace SixteenBitNuts
                                             if (side == CollisionSide.Top)
                                             {
                                                 player.IsTouchingTheGround = true;
+                                                OnColliderCollidesWithElement?.Invoke(player, collider.Key, element, side);
 
                                                 if (player.IsFalling)
                                                 {
@@ -654,6 +657,20 @@ namespace SixteenBitNuts
             sections[sectionIndex].Entities.Add(entity.Name, entity);
         }
 
+        public Dictionary<string, IEntity> GetEntitiesFromTag(string tag)
+        {
+            var result = new Dictionary<string, IEntity>();
+
+            foreach (var entity in CurrentMapSection.Entities)
+            {
+                if (entity.Value.Tag == tag)
+                {
+                    result.Add(entity.Key, entity.Value);
+                }
+            }
+
+            return result;
+        }
 
         /// <summary>
         /// Return the index of the next section for the transition
