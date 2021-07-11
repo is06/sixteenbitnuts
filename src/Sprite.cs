@@ -149,6 +149,7 @@ namespace SixteenBitNuts
                     }
                     else
                     {
+                        CurrentAnimationFrame--;
                         OnAnimationFinished?.Invoke(this);
                         IsAnimated = false;
                     }
