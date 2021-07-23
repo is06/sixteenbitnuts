@@ -33,15 +33,7 @@ namespace SixteenBitNuts
         {
             Direction = Direction.Right;
             IsControllable = true;
-        }
-
-        /// <summary>
-        /// Performs player calculations
-        /// </summary>
-        public virtual void Update(GameTime _)
-        {
-            // Memorize the previous frame hit box
-            PreviousFrameHitBox = HitBox;
+            IsGravityEnabled = true;
         }
 
         public virtual void PostCollisionUpdate()

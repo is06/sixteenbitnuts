@@ -28,8 +28,6 @@ namespace SixteenBitNuts
         public float DebugRunHorizontalVelocityFactor { get { return horizontalVelocityFactor; } }
 
         // Properties
-
-        public bool IsGravityEnabled { get; set; }
         public bool IsRunning { get; set; }
         public bool IsJumping { get; set; }
         public bool IsDucking { get; set; }

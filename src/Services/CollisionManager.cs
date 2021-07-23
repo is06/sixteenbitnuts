@@ -19,6 +19,25 @@ namespace SixteenBitNuts
         Bottom = 8,
     }
 
+    public static class CollisionSideMethods
+    {
+        public static Direction ToDirection(this CollisionSide side)
+        {
+            return side switch
+            {
+                CollisionSide.Top => Direction.Top,
+                CollisionSide.Top | CollisionSide.Left => Direction.TopLeft,
+                CollisionSide.Top | CollisionSide.Right => Direction.TopRight,
+                CollisionSide.Bottom => Direction.Bottom,
+                CollisionSide.Bottom | CollisionSide.Left => Direction.BottomLeft,
+                CollisionSide.Bottom | CollisionSide.Right => Direction.BottomRight,
+                CollisionSide.Left => Direction.Left,
+                CollisionSide.Right => Direction.Right,
+                _ => Direction.None,
+            };
+        }
+    }
+
     /// <summary>
     /// Helper class to offer some functions to perform collision detection
     /// Based on work by HopefulToad, Thanks to him/her
@@ -33,9 +52,13 @@ namespace SixteenBitNuts
         /// <param name="stopped">The static object hitbox</param>
         /// <param name="movingVelocity">The velocity vector</param>
         /// <returns>CollisionSide value</returns>
-        public static CollisionSide GetCollisionSide(HitBox moving, HitBox stopped, Vector2 movingVelocity)
+        public static CollisionSide GetCollisionSideForResolution(HitBox moving, HitBox stopped, Vector2 movingVelocity)
         {
-            double velocityRatio = movingVelocity.Y / movingVelocity.X;
+            double velocityRatio = 0.0;
+            if (movingVelocity != Vector2.Zero)
+            {
+                velocityRatio = movingVelocity.Y / movingVelocity.X;
+            }
 
             CollisionSide side = CollisionSide.None;
 
@@ -95,6 +118,11 @@ namespace SixteenBitNuts
                 return CollisionSide.None;
             }
 
+            if (velocityRatio == 0.0)
+            {
+                return side;
+            }
+
             return GetCollisionSideFromVectorComparison(side, velocityRatio, cornerVectorRise / cornerVectorRun);
         }
 
@@ -133,6 +161,31 @@ namespace SixteenBitNuts
             return CollisionSide.None;
         }
 
+        public static CollisionSide GetCollisionSideBetweenStopped(HitBox one, HitBox two)
+        {
+            var side = CollisionSide.None;
+
+            if (one.Left <= two.Right && one.Right > two.Right)
+            {
+                side |= CollisionSide.Right;
+            }
+            else if (one.Right >= two.Left && one.Left < two.Left)
+            {
+                side |= CollisionSide.Left;
+            }
+
+            if (one.Bottom >= two.Top && one.Top < two.Top)
+            {
+                side |= CollisionSide.Top;
+            }
+            else if (one.Top <= two.Bottom && one.Bottom > two.Bottom)
+            {
+                side |= CollisionSide.Bottom;
+            }
+
+            return side;
+        }
+
         /// <summary>
         /// Return the corrected location to prevent from intersecting
         /// </summary>
@@ -161,26 +214,31 @@ namespace SixteenBitNuts
             return correctedPosition;
         }
 
-        public static List<IMapElement> GetResolutionElementsFromHitBox(HitBox nextFrameHitBox, HitBox currentHitBox, List<IMapElement> elements)
+        public static List<IMapElement> GetSelectedElementsForDetection(HitBox nextFrameHitBox, HitBox currentHitBox, List<IMapElement> elements)
         {
             var result = new List<IMapElement>();
 
-            // We take only elements that intersect the AABB
-            var intersectingElements = new List<IMapElement>();
             foreach (var element in elements)
             {
                 if (element.HitBox.Intersects(nextFrameHitBox))
                 {
-                    intersectingElements.Add(element);
+                    result.Add(element);
                 }
             }
+
+            return result;
+        }
+
+        public static List<IMapElement> GetSelectedElementsForDetectionWithGravity(HitBox nextFrameHitBox, HitBox currentHitBox, List<IMapElement> elements)
+        {
+            var result = new List<IMapElement>();
 
             var leftElements = new List<IMapElement>();
             var rightElements = new List<IMapElement>();
             var topElements = new List<IMapElement>();
             var bottomElements = new List<IMapElement>();
 
-            foreach (var element in intersectingElements)
+            foreach (var element in GetSelectedElementsForDetection(nextFrameHitBox, currentHitBox, elements))
             {
                 if (currentHitBox.Bottom <= element.HitBox.Top)
                 {

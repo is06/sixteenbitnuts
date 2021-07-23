@@ -6,6 +6,7 @@ namespace SixteenBitNuts
     {
         // Exposed fields
         public bool IsCollisionEnabled;
+        public bool IsGravityEnabled;
         public HitBox HitBox;
         public Vector2 Velocity;
         public Vector2 Position
@@ -50,6 +51,12 @@ namespace SixteenBitNuts
 
             // Debug
             debugHitBox = new DebugHitBox(map.Game, debugHitBoxColor);
+        }
+
+        public virtual void Update(GameTime _)
+        {
+            // Memorize the previous frame hit box
+            PreviousFrameHitBox = HitBox;
         }
 
         public virtual void UpdateDebugHitBoxes()

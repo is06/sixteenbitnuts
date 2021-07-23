@@ -203,8 +203,13 @@ namespace SixteenBitNuts
             {
                 #region Components positioning
 
+                // Colliders
+                foreach (var collider in colliders)
+                {
+                    collider.Value.Update(gameTime);
+                }
+
                 // Player
-                Player?.Update(gameTime);
                 Player?.ComputePhysics();
                 Player?.UpdateHitBoxes();
 
@@ -266,34 +271,43 @@ namespace SixteenBitNuts
                         if (!collider.Value.IsCollisionEnabled)
                             continue;
 
-                        foreach (var element in CollisionManager.GetResolutionElementsFromHitBox(collider.Value.HitBox, collider.Value.PreviousFrameHitBox, nearElements))
+                        var selectedElementsForCollision = collider.Value.IsGravityEnabled
+                            ? CollisionManager.GetSelectedElementsForDetectionWithGravity(
+                                collider.Value.HitBox,
+                                collider.Value.PreviousFrameHitBox,
+                                nearElements
+                            )
+                            : CollisionManager.GetSelectedElementsForDetection(
+                                collider.Value.HitBox,
+                                collider.Value.PreviousFrameHitBox,
+                                nearElements
+                            );
+
+                        foreach (var element in selectedElementsForCollision)
                         {
                             element.DebugColor = Color.Red;
 
                             if (collider.Value.HitBox.Intersects(element.HitBox))
                             {
                                 // Detect the collision side of the obstacle
-                                CollisionSide side = CollisionManager.GetCollisionSide(
-                                    moving: collider.Value.PreviousFrameHitBox,
-                                    stopped: element.HitBox,
-                                    movingVelocity: collider.Value.Velocity
-                                );
+                                var side = collider.Value.IsGravityEnabled
+                                    ? CollisionManager.GetCollisionSideForResolution(
+                                        moving: collider.Value.PreviousFrameHitBox,
+                                        stopped: element.HitBox,
+                                        movingVelocity: collider.Value.Velocity
+                                    )
+                                    : CollisionManager.GetCollisionSideBetweenStopped(
+                                        collider.Value.HitBox,
+                                        element.HitBox
+                                    );
 
                                 // Entity collision event
                                 {
-                                    if (element is Entity entity)
+                                    if (element is MusicParamTrigger musicParamTrigger)
                                     {
-                                        if (element is MusicParamTrigger musicParamTrigger)
-                                        {
-                                            musicParamTrigger.Trigger();
-                                        }
-
-                                        OnColliderCollidesWithElement?.Invoke(collider.Value, collider.Key, entity, side);
+                                        musicParamTrigger.Trigger();
                                     }
-                                    if (element is Tile tile)
-                                    {
-                                        OnColliderCollidesWithElement?.Invoke(collider.Value, collider.Key, tile, side);
-                                    }
+                                    OnColliderCollidesWithElement?.Invoke(collider.Value, collider.Key, element, side);
                                 }
 
                                 // Player-only collision correction
