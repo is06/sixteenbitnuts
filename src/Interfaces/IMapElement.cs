@@ -8,9 +8,9 @@ namespace SixteenBitNuts.Interfaces
         bool IsVisible { get; set; }
         bool IsObstacle { get; set; }
         bool IsPlatform { get; set; }
+        HitBox HitBox { get; set; }
         Vector2 Position { get; set; }
         Size Size { get; set; }
-        HitBox HitBox { get; }
 
         void Update(GameTime gameTime);
         void Draw(Matrix transform);

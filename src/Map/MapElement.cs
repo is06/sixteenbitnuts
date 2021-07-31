@@ -12,15 +12,29 @@ namespace SixteenBitNuts
         public bool IsVisible { get; set; }
         public bool IsObstacle { get; set; }
         public bool IsPlatform { get; set; }
-        public Vector2 Position { get; set; }
-        public Size Size { get; set; }
-        public HitBox HitBox
+        public Vector2 Position
         {
             get
             {
-                return new HitBox(Position, Size);
+                return HitBox.Position;
+            }
+            set
+            {
+                HitBox = new HitBox(value, Size);
             }
         }
+        public Size Size
+        {
+            get
+            {
+                return HitBox.Size;
+            }
+            set
+            {
+                HitBox = new HitBox(Position, value);
+            }
+        }
+        public HitBox HitBox { get; set; }
 
         #endregion
 
@@ -31,15 +45,30 @@ namespace SixteenBitNuts
 
         #endregion
 
-        public MapElement(Map map)
+        public MapElement(Map map, HitBox? hitBox = null)
         {
             this.map = map;
+            
+            IsVisible = true;
+
+            if (hitBox is HitBox hb)
+            {
+                HitBox = hb;
+            }
+            else
+            {
+                HitBox = new HitBox()
+                {
+                    Position = new Vector2(0, 0),
+                    Size = new Size(16, 16),
+                };
+            }
+
             debugHitBox = new Box(
                 map.Game,
                 new Rectangle(Position.ToPoint(), Size.ToPoint()),
                 DebugColor
             );
-            IsVisible = true;
         }
 
         public virtual void Update(GameTime gameTime)

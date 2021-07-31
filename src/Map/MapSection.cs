@@ -27,6 +27,7 @@ namespace SixteenBitNuts
         public List<ITile> BackgroundTiles { get; set; }
         public List<ITile> ForegroundTiles { get; set; }
         public Dictionary<string, IEntity> Entities { get; set; }
+        public List<BigTile> BigTiles { get; set; }
         public string MapTextDescription
         {
             get
@@ -50,6 +51,10 @@ namespace SixteenBitNuts
                 foreach (var tile in ForegroundTiles)
                 {
                     elements.Add(tile);
+                }
+                foreach (var bigTile in BigTiles)
+                {
+                    elements.Add(bigTile);
                 }
                 foreach (var entity in Entities)
                 {
@@ -106,6 +111,7 @@ namespace SixteenBitNuts
             TilesetSections = new List<TilesetSection>();
             BackgroundTiles = new List<ITile>();
             ForegroundTiles = new List<ITile>();
+            BigTiles = new List<BigTile>();
             Entities = new Dictionary<string, IEntity>();
 
             SetTransitionPoints(bounds);
@@ -169,6 +175,12 @@ namespace SixteenBitNuts
                 tile.Draw(transform);
             }
 
+            // Third: draw every big tiles
+            foreach (BigTile tile in BigTiles)
+            {
+                tile.Draw(transform);
+            }
+
             // In edit mode: draw the editor info for each entities
             if (Map.ShowSectionEditor)
             {
@@ -191,6 +203,10 @@ namespace SixteenBitNuts
             foreach (Tile tile in ForegroundTiles)
             {
                 tile.DebugDraw(transform);
+            }
+            foreach (BigTile bigTile in BigTiles)
+            {
+                bigTile.DebugDraw(transform);
             }
             foreach (KeyValuePair<string, IEntity> pair in Entities)
             {

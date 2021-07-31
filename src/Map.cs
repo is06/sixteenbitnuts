@@ -242,7 +242,7 @@ namespace SixteenBitNuts
 
                         {
                             // We take only elements that are at below a certain distance from the player
-                            if (Player != null && Vector2.Distance(Player.Position, element.Position) <= NEAR_ELEMENT_THRESHOLD)
+                            if (Player != null && Vector2.Distance(Player.Position, element.HitBox.Position) <= NEAR_ELEMENT_THRESHOLD)
                             {
                                 if (element is Entity entity && entity.IsDestroying)
                                 {
@@ -649,7 +649,7 @@ namespace SixteenBitNuts
 
             if (Player != null && CurrentMapSection.DefaultSpawnPoint != null)
             {
-                Player.Position = CurrentMapSection.DefaultSpawnPoint.Position;
+                Player.Position = CurrentMapSection.DefaultSpawnPoint.HitBox.Position;
             }
         }
 
@@ -819,38 +819,73 @@ namespace SixteenBitNuts
                         break;
                     case "ti":
                         // Tile
-                        int elementId = int.Parse(components[1]);
-                        var position = new Vector2()
                         {
-                            X = int.Parse(components[2]),
-                            Y = int.Parse(components[3])
-                        };
-                        if (tileset?.GetSizeFromId(elementId) is Size size && tileset?.GetTypeFromId(elementId) is TileType type)
-                        {
-                            var tileToAdd = new Tile(this, tileset, elementId, position, size, type);
-
-                            if (tileset != null)
+                            int elementId = int.Parse(components[1]);
+                            var position = new Vector2()
                             {
-                                foreach (var tilesetGroup in tileset.Groups)
+                                X = int.Parse(components[2]),
+                                Y = int.Parse(components[3])
+                            };
+                            if (tileset?.GetSizeFromId(elementId) is Size size && tileset?.GetTypeFromId(elementId) is TileType type)
+                            {
+                                var tileToAdd = new Tile(this, tileset, elementId, position, size, type);
+
+                                if (tileset != null)
                                 {
-                                    if (tilesetGroup.Value.Definitions != null)
+                                    foreach (var tilesetGroup in tileset.Groups)
                                     {
-                                        foreach (var definition in tilesetGroup.Value.Definitions)
+                                        if (tilesetGroup.Value.Definitions != null)
                                         {
-                                            if (definition.Value.TileIndex == elementId)
+                                            foreach (var definition in tilesetGroup.Value.Definitions)
                                             {
-                                                tileToAdd.GroupName = tilesetGroup.Value.Name;
-                                                break;
+                                                if (definition.Value.TileIndex == elementId)
+                                                {
+                                                    tileToAdd.GroupName = tilesetGroup.Value.Name;
+                                                    break;
+                                                }
                                             }
                                         }
                                     }
                                 }
-                            }
 
-                            if (tileset?.GetLayerFromId(elementId) == TileLayer.Background)
-                                sections[sectionIndex].BackgroundTiles.Add(tileToAdd);
-                            else
-                                sections[sectionIndex].ForegroundTiles.Add(tileToAdd);
+                                if (tileset?.GetLayerFromId(elementId) == TileLayer.Background)
+                                    sections[sectionIndex].BackgroundTiles.Add(tileToAdd);
+                                else
+                                    sections[sectionIndex].ForegroundTiles.Add(tileToAdd);
+                            }
+                        }
+                        break;
+                    case "bt":
+                        // Big tile
+                        {
+                            var textureName = components[1];
+                            var position = new Vector2()
+                            {
+                                X = int.Parse(components[2]),
+                                Y = int.Parse(components[3]),
+                            };
+                            var hitBoxSize = new Size(int.Parse(components[4]), int.Parse(components[5]));
+                            var hitBoxOffset = new Vector2()
+                            {
+                                X = int.Parse(components[6]),
+                                Y = int.Parse(components[7]),
+                            };
+                            var hitBox = new HitBox()
+                            {
+                                Position = position + hitBoxOffset,
+                                Size = hitBoxSize,
+                            };
+                            var bigTile = new BigTile(this, textureName, hitBox)
+                            {
+                                DebugColor = Color.Red
+                            };
+                            switch (int.Parse(components[8]))
+                            {
+                                case 1: bigTile.IsObstacle = true; break;
+                                case 2: bigTile.IsPlatform = true; break;
+                                default: break;
+                            }
+                            sections[sectionIndex].BigTiles.Add(bigTile);
                         }
                         break;
                 }
@@ -865,17 +900,16 @@ namespace SixteenBitNuts
                 case "SpawnPoint":
                     sections[sectionIndex].Entities[name] = new SpawnPoint(this, name)
                     {
-                        Position = position
+                        HitBox = new HitBox(position, new Size(16, 16))
                     };
                     break;
                 case "MusicParamTrigger":
                     sections[sectionIndex].Entities[name] = new MusicParamTrigger(this, name)
                     {
-                        Position = position,
-                        Size = new Size(
+                        HitBox = new HitBox(position, new Size(
                             int.Parse(extraData[5]),
                             int.Parse(extraData[6])
-                        ),
+                        )),
                         ParamName = extraData[7],
                         ParamValue = float.Parse(extraData[8], CultureInfo.InvariantCulture)
                     };
@@ -883,11 +917,10 @@ namespace SixteenBitNuts
                 case "Teleport":
                     sections[sectionIndex].Entities[name] = new Teleport(this, name)
                     {
-                        Position = position,
-                        Size = new Size(
+                        HitBox = new HitBox(position, new Size(
                             int.Parse(extraData[5]),
                             int.Parse(extraData[6])
-                        ),
+                        )),
                         DestinationPoint = new Vector2(
                             int.Parse(extraData[7]),
                             int.Parse(extraData[8])
