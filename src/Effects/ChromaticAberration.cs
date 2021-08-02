@@ -8,7 +8,7 @@ namespace SixteenBitNuts.Effects
 
         public ChromaticAberration(Game game) : base(game)
         {
-            Effect = game.Content.Load<Effect>("EngineGraphics/Effects/chroma");
+            Shader = game.Content.Load<Effect>("EngineGraphics/Effects/chroma");
             Offset = 1f;
         }
 
@@ -16,7 +16,7 @@ namespace SixteenBitNuts.Effects
         {
             base.Update();
 
-            Effect?.Parameters["offset"].SetValue(Offset * 0.002f);
+            Shader?.Parameters["offset"].SetValue(Offset * 0.002f);
         }
     }
 }

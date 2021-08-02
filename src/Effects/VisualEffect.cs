@@ -4,7 +4,7 @@ namespace SixteenBitNuts.Effects
 {
     public class VisualEffect
     {
-        public Effect? Effect { get; set; }
+        public Effect? Shader { get; set; }
 
         public VisualEffect()
         {

@@ -10,15 +10,15 @@ namespace SixteenBitNuts.Effects
 
         public Outline(Game game) : base()
         {
-            Effect = game.Content.Load<Effect>("EngineGraphics/Effects/outline");
+            Shader = game.Content.Load<Effect>("EngineGraphics/Effects/outline");
         }
 
         public override void Update()
         {
             base.Update();
 
-            Effect?.Parameters["OutlineColor"]?.SetValue(Color.ToVector4());
-            Effect?.Parameters["Thickness"]?.SetValue(Thickness);
+            Shader?.Parameters["OutlineColor"]?.SetValue(Color.ToVector4());
+            Shader?.Parameters["Thickness"]?.SetValue(Thickness);
         }
     }
 }

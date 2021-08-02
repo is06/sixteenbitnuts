@@ -8,7 +8,7 @@ namespace SixteenBitNuts.Effects
 
         public Glow(Game game) : base(game)
         {
-            Effect = game.Content.Load<Effect>("EngineGraphics/Effects/glow");
+            Shader = game.Content.Load<Effect>("EngineGraphics/Effects/glow");
             Amount = 1f;
             BlendState = BlendState.Additive;
         }
@@ -17,7 +17,7 @@ namespace SixteenBitNuts.Effects
         {
             base.Update();
 
-            Effect?.Parameters["amount"].SetValue(Amount * 0.003f);
+            Shader?.Parameters["amount"].SetValue(Amount * 0.003f);
         }
     }
 }
