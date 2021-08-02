@@ -99,7 +99,7 @@ namespace SixteenBitNuts
                 if (CurrentAnimation.Directions[Direction].FlippedHorizontally) flipEffects |= SpriteEffects.FlipHorizontally;
                 if (CurrentAnimation.Directions[Direction].FlippedVertically) flipEffects |= SpriteEffects.FlipVertically;
 
-                Effect?.Effect?.Parameters["TextureSize"]?.SetValue(texture.Bounds.Size.ToVector2());
+                Effect?.Shader?.Parameters["TextureSize"]?.SetValue(texture.Bounds.Size.ToVector2());
                 Effect?.Update();
 
                 game.SpriteBatch?.Begin(
@@ -108,7 +108,7 @@ namespace SixteenBitNuts
                     SamplerState.PointClamp,
                     null,
                     null,
-                    Effect?.Effect,
+                    Effect?.Shader,
                     transform
                 );
 

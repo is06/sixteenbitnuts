@@ -36,7 +36,7 @@ namespace SixteenBitNuts
 
                 game.GraphicsDevice.SetRenderTarget(mainDisplayEffect.RenderTarget);
 
-                game.SpriteBatch?.Begin(effect: mainDisplayEffect.Effect, blendState: mainDisplayEffect.BlendState);
+                game.SpriteBatch?.Begin(effect: mainDisplayEffect.Shader, blendState: mainDisplayEffect.BlendState);
 
                 game.SpriteBatch?.Draw(
                     texture: sourceTarget,
