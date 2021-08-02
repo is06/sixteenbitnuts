@@ -8,6 +8,12 @@ namespace SixteenBitNuts
     {
         protected string subType;
 
+        public Enemy(Map map, string name) : base(map, name)
+        {
+            subType = "default";
+            IsObstacle = false;
+        }
+
         public override string MapTextDescription
         {
             get
@@ -18,12 +24,6 @@ namespace SixteenBitNuts
                         " " + Position.Y +
                         " " + subType;
             }
-        }
-
-        public Enemy(Map map, string name) : base(map, name)
-        {
-            subType = "default";
-            IsObstacle = false;
         }
 
         public override void GetObjectData(SerializationInfo info, StreamingContext context)

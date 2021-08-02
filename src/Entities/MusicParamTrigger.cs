@@ -14,6 +14,14 @@ namespace SixteenBitNuts
             
         }
 
+        public void Trigger()
+        {
+            if (ParamName is string name && ParamValue is float value)
+            {
+                map.Game.AudioManager?.SetMusicParameter(name, value);
+            }
+        }
+
         public override string MapTextDescription
         {
             get
@@ -26,14 +34,6 @@ namespace SixteenBitNuts
                        " " + Size.Height +
                        " " + ParamName +
                        " " + ParamValue;
-            }
-        }
-
-        public void Trigger()
-        {
-            if (ParamName is string name && ParamValue is float value)
-            {
-                map.Game.AudioManager?.SetMusicParameter(name, value);
             }
         }
 

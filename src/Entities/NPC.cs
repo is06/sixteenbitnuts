@@ -8,21 +8,21 @@ namespace SixteenBitNuts
     {
         protected string subType;
 
+        public NPC(Map map, string name) : base(map, name)
+        {
+            subType = "default";
+        }
+
         public override string MapTextDescription
         {
             get
             {
-                return "en NPC" +
+                return "en " + GetType().Name +
                         " " + Name +
                         " " + Position.X +
                         " " + Position.Y +
                         " " + subType;
             }
-        }
-
-        public NPC(Map map, string name) : base(map, name)
-        {
-            subType = "default";
         }
 
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
