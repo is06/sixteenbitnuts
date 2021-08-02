@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace SixteenBitNuts.Editor
 {
@@ -27,13 +28,16 @@ namespace SixteenBitNuts.Editor
                     }
                 }
 
+                tileset.Game.SpriteBatch?.Begin(transformMatrix: Matrix.Identity, samplerState: SamplerState.PointClamp);
+
                 tileset.Draw(
                     Position + new Vector2(6, 6),
                     tileset.GetSizeFromId(Id).ToVector2(),
                     tileset.GetOffsetFromId(Id),
-                    new Vector2(3, 3),
-                    Matrix.Identity
+                    new Vector2(3, 3)
                 );
+
+                tileset.Game.SpriteBatch?.End();
             }
         }
     }

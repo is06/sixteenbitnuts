@@ -41,10 +41,8 @@ namespace SixteenBitNuts
             LoadFromFile("Content/Descriptors/Tilesets/" + name + ".tileset");
         }
 
-        public void Draw(Vector2 position, Vector2 size, Vector2 offset, Vector2 scale, Matrix transform)
+        public void Draw(Vector2 position, Vector2 size, Vector2 offset, Vector2 scale)
         {
-            Game.SpriteBatch?.Begin(transformMatrix: transform, samplerState: SamplerState.PointClamp);
-
             Game.SpriteBatch?.Draw(
                 texture: texture,
                 position: new Vector2((float)Math.Round(position.X), (float)Math.Round(position.Y)),
@@ -56,8 +54,6 @@ namespace SixteenBitNuts
                 effects: SpriteEffects.None,
                 layerDepth: 0
             );
-
-            Game.SpriteBatch?.End();
         }
 
         public void DebugDraw(Point position, Point size, Color color, Matrix transform)

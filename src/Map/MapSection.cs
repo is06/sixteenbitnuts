@@ -147,10 +147,12 @@ namespace SixteenBitNuts
             // Second: draw every tiles
             // There is only one sprite batch for tiles, so only one shader possible
             // for all tiles
+            Map.Game.SpriteBatch?.Begin(transformMatrix: transform, samplerState: SamplerState.PointClamp);
             foreach (Tile tile in BackgroundTiles)
             {
                 tile.Draw(transform);
             }
+            Map.Game.SpriteBatch?.End();
         }
 
         /// <summary>
@@ -167,19 +169,19 @@ namespace SixteenBitNuts
                 }
             }
 
-            // Second: draw every tiles
+            // Second: draw every tiles and big tiles
             // There is only one sprite batch for tiles, so only one shader possible
             // for all tiles
+            Map.Game.SpriteBatch?.Begin(transformMatrix: transform, samplerState: SamplerState.PointClamp);
             foreach (Tile tile in ForegroundTiles)
             {
                 tile.Draw(transform);
             }
-
-            // Third: draw every big tiles
             foreach (BigTile tile in BigTiles)
             {
                 tile.Draw(transform);
             }
+            Map.Game.SpriteBatch?.End();
 
             // In edit mode: draw the editor info for each entities
             if (Map.ShowSectionEditor)
