@@ -214,7 +214,7 @@ namespace SixteenBitNuts
             return correctedPosition;
         }
 
-        public static List<IMapElement> GetSelectedElementsForDetection(HitBox nextFrameHitBox, HitBox currentHitBox, List<IMapElement> elements)
+        public static List<IMapElement> GetSelectedElementsForDetection(HitBox nextFrameHitBox, List<IMapElement> elements)
         {
             var result = new List<IMapElement>();
 
@@ -238,7 +238,7 @@ namespace SixteenBitNuts
             var topElements = new List<IMapElement>();
             var bottomElements = new List<IMapElement>();
 
-            foreach (var element in GetSelectedElementsForDetection(nextFrameHitBox, currentHitBox, elements))
+            foreach (var element in GetSelectedElementsForDetection(nextFrameHitBox, elements))
             {
                 if (currentHitBox.Bottom <= element.HitBox.Top)
                 {

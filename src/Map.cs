@@ -130,6 +130,7 @@ namespace SixteenBitNuts
         protected MapSectionEditor sectionEditor;
         protected EntityGenerator generator;
 
+        private readonly MapWriter mapWriter;
         private readonly MapEditor mapEditor;
         private readonly TransitionGuide transitionGuide;
 
@@ -157,6 +158,7 @@ namespace SixteenBitNuts
             );
 
             // Components
+            mapWriter = new MapWriter(this);
             sections = new Dictionary<int, MapSection>();
             transitionGuide = new TransitionGuide();
             mapEditor = new MapEditor(this);
@@ -279,7 +281,6 @@ namespace SixteenBitNuts
                             )
                             : CollisionManager.GetSelectedElementsForDetection(
                                 collider.Value.HitBox,
-                                collider.Value.PreviousFrameHitBox,
                                 nearElements
                             );
 
@@ -655,8 +656,7 @@ namespace SixteenBitNuts
 
         public void SaveToDisk()
         {
-            MapWriter.SaveToFile(MapFileMode.Text, this);
-            //MapWriter.SaveToFile(MapFileMode.Binary, this);
+            mapWriter.SaveToFile(MapFileMode.Text);
         }
 
         /// <summary>
@@ -725,19 +725,11 @@ namespace SixteenBitNuts
         {
             string[] lines;
 
-            try
-            {
-                lines = File.ReadAllLines(fileName);
-            }
-            catch (DirectoryNotFoundException)
-            {
-                throw new GameException("Unable to find the map file " + fileName);
-            }
+            try { lines = File.ReadAllLines(fileName); }
+            catch (DirectoryNotFoundException) { throw new GameException("Unable to find the map file " + fileName); }
 
             if (lines.Length == 0)
-            {
                 throw new GameException("Map file '" + Name + ".map' is empty");
-            }
 
             int sectionIndex = -1;
             Tileset? tileset = null;
@@ -752,146 +744,173 @@ namespace SixteenBitNuts
                         // Music
                         MusicName = components[1];
                         break;
-                    case "bg":
-                        // Background
+                    case "ls":
+                        // Landscape
                         Landscape = new Landscape(this, components[1]);
                         break;
-                    case "ly":
-                        // Background layer
-                        var layerIndex = int.Parse(components[1]);
-                        if (layerIndex > maxLandscapeLayerIndex) maxLandscapeLayerIndex = layerIndex;
-                        if (layerIndex < minLandscapeLayerIndex) minLandscapeLayerIndex = layerIndex;
-                        if (layerIndex == 0)
-                        {
-                            throw new GameException("Unable to use an index 0 for a landscape layer because it is reserved for main entities and tiles.");
-                        }
-                        Landscape?.Layers.Add(layerIndex, new LandscapeLayer()
-                        {
-                            Name = components[2],
-                            Index = layerIndex,
-                            Texture = Game.Content.Load<Texture2D>("Graphics/Landscapes/" + Landscape.Name + "/" + components[2]),
-                            TransformOffset = new Vector2(int.Parse(components[3]), int.Parse(components[4])),
-                        });
+                    case "ly": // Landscape layer
+                        LoadLandscapeLayerFromComponents(components);
                         break;
                     case "se":
                         // Begin section
                         sectionIndex++;
-                        try
-                        {
-                            var bounds = new Rectangle(
-                                int.Parse(components[1]),
-                                int.Parse(components[2]),
-                                int.Parse(components[3]),
-                                int.Parse(components[4])
-                            );
-                            sections[sectionIndex] = new MapSection(
-                                this,
-                                bounds,
-                                components[5]
-                            );
-                            mapEditor.MapSectionContainers.Add(
-                                sectionIndex,
-                                new MapSectionContainer(this, mapEditor, sectionIndex, bounds)
-                            );
-                        }
-                        catch (IndexOutOfRangeException e)
-                        {
-                            throw new GameException("Missing a component of section descriptor line (" + e.Message + ")");
-                        }
+                        LoadSectionBeginFromComponents(sectionIndex, components);
                         break;
-                    case "en":
-                        // Entities
-                        LoadEntity(
-                            type: components[1],
-                            sectionIndex: sectionIndex,
-                            name: components[2],
-                            position: new Vector2(
-                                int.Parse(components[3]),
-                                int.Parse(components[4])
-                            ),
-                            extraData: components
-                        );
+                    case "en": // Entities
+                        LoadEntityFromComponents(sectionIndex, components);
                         break;
-                    case "ts":
-                        // Tileset marker (every following ti marker are in the tileset section)
+                    case "ts": // Tileset marker (every following ti marker are in the tileset section)
                         tileset = Game.TilesetService.Get(components[1]);
                         sections[sectionIndex].TilesetSections.Add(new TilesetSection() { Tileset = tileset });
                         break;
-                    case "ti":
-                        // Tile
-                        {
-                            int elementId = int.Parse(components[1]);
-                            var position = new Vector2()
-                            {
-                                X = int.Parse(components[2]),
-                                Y = int.Parse(components[3])
-                            };
-                            if (tileset?.GetSizeFromId(elementId) is Size size && tileset?.GetTypeFromId(elementId) is TileType type)
-                            {
-                                var tileToAdd = new Tile(this, tileset, elementId, position, size, type);
-
-                                if (tileset != null)
-                                {
-                                    foreach (var tilesetGroup in tileset.Groups)
-                                    {
-                                        if (tilesetGroup.Value.Definitions != null)
-                                        {
-                                            foreach (var definition in tilesetGroup.Value.Definitions)
-                                            {
-                                                if (definition.Value.TileIndex == elementId)
-                                                {
-                                                    tileToAdd.GroupName = tilesetGroup.Value.Name;
-                                                    break;
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-
-                                if (tileset?.GetLayerFromId(elementId) == TileLayer.Background)
-                                    sections[sectionIndex].BackgroundTiles.Add(tileToAdd);
-                                else
-                                    sections[sectionIndex].ForegroundTiles.Add(tileToAdd);
-                            }
-                        }
+                    case "ti": // Tile
+                        if (tileset != null) LoadTileFromComponents(tileset, sectionIndex, components);
                         break;
-                    case "bt":
-                        // Big tile
-                        {
-                            var textureName = components[1];
-                            var position = new Vector2()
-                            {
-                                X = int.Parse(components[2]),
-                                Y = int.Parse(components[3]),
-                            };
-                            var hitBoxSize = new Size(int.Parse(components[4]), int.Parse(components[5]));
-                            var hitBoxOffset = new Vector2()
-                            {
-                                X = int.Parse(components[6]),
-                                Y = int.Parse(components[7]),
-                            };
-                            var hitBox = new HitBox()
-                            {
-                                Position = position + hitBoxOffset,
-                                Size = hitBoxSize,
-                            };
-                            var bigTile = new BigTile(this, textureName, hitBox)
-                            {
-                                DebugColor = Color.Red
-                            };
-                            switch (int.Parse(components[8]))
-                            {
-                                case 1: bigTile.IsObstacle = true; break;
-                                case 2: bigTile.IsPlatform = true; break;
-                                default: break;
-                            }
-                            sections[sectionIndex].BigTiles.Add(bigTile);
-                        }
+                    case "bt": // Big tile
+                        LoadBigTileFromComponens(sectionIndex, components);
                         break;
                 }
             }
         }
 
+        private void LoadLandscapeLayerFromComponents(string[] components)
+        {
+            var layerIndex = int.Parse(components[1]);
+            if (layerIndex > maxLandscapeLayerIndex) maxLandscapeLayerIndex = layerIndex;
+            if (layerIndex < minLandscapeLayerIndex) minLandscapeLayerIndex = layerIndex;
+            if (layerIndex == 0)
+            {
+                throw new GameException("Unable to use an index 0 for a landscape layer because it is reserved for main entities and tiles.");
+            }
+            Landscape?.Layers.Add(layerIndex, new LandscapeLayer()
+            {
+                Name = components[2],
+                Index = layerIndex,
+                Texture = Game.Content.Load<Texture2D>("Graphics/Landscapes/" + Landscape.Name + "/" + components[2]),
+                TransformOffset = new Vector2(int.Parse(components[3]), int.Parse(components[4])),
+            });
+        }
+
+        private void LoadSectionBeginFromComponents(int sectionIndex, string[] components)
+        {
+            try
+            {
+                var bounds = new Rectangle(
+                    int.Parse(components[1]),
+                    int.Parse(components[2]),
+                    int.Parse(components[3]),
+                    int.Parse(components[4])
+                );
+                sections[sectionIndex] = new MapSection(
+                    this,
+                    bounds,
+                    components[5]
+                );
+                mapEditor.MapSectionContainers.Add(
+                    sectionIndex,
+                    new MapSectionContainer(this, mapEditor, sectionIndex, bounds)
+                );
+            }
+            catch (IndexOutOfRangeException e)
+            {
+                throw new GameException("Missing a component of section descriptor line (" + e.Message + ")");
+            }
+        }
+
+        private void LoadTileFromComponents(Tileset tileset, int sectionIndex, string[] components)
+        {
+            int elementId = int.Parse(components[1]);
+            var position = new Vector2()
+            {
+                X = int.Parse(components[2]),
+                Y = int.Parse(components[3])
+            };
+            if (tileset.GetSizeFromId(elementId) is Size size && tileset.GetTypeFromId(elementId) is TileType type)
+            {
+                var tileToAdd = new Tile(this, tileset, elementId, position, size, type);
+
+                if (tileset != null)
+                {
+                    foreach (var tilesetGroup in tileset.Groups)
+                    {
+                        if (tilesetGroup.Value.Definitions != null)
+                        {
+                            foreach (var definition in tilesetGroup.Value.Definitions)
+                            {
+                                if (definition.Value.TileIndex == elementId)
+                                {
+                                    tileToAdd.GroupName = tilesetGroup.Value.Name;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (tileset?.GetLayerFromId(elementId) == TileLayer.Background)
+                    sections[sectionIndex].BackgroundTiles.Add(tileToAdd);
+                else
+                    sections[sectionIndex].ForegroundTiles.Add(tileToAdd);
+            }
+        }
+
+        private void LoadBigTileFromComponens(int sectionIndex, string[] components)
+        {
+            var textureName = components[1];
+            var position = new Vector2()
+            {
+                X = int.Parse(components[2]),
+                Y = int.Parse(components[3]),
+            };
+            var hitBoxSize = new Size(int.Parse(components[4]), int.Parse(components[5]));
+            var hitBoxOffset = new Vector2()
+            {
+                X = int.Parse(components[6]),
+                Y = int.Parse(components[7]),
+            };
+            var hitBox = new HitBox()
+            {
+                Position = position + hitBoxOffset,
+                Size = hitBoxSize,
+            };
+            var bigTile = new BigTile(this, textureName, hitBox)
+            {
+                DebugColor = Color.Red
+            };
+            switch (int.Parse(components[8]))
+            {
+                case 1: bigTile.IsObstacle = true; break;
+                case 2: bigTile.IsPlatform = true; break;
+                default: break;
+            }
+            sections[sectionIndex].BigTiles.Add(bigTile);
+        }
+
+        private void LoadEntityFromComponents(int sectionIndex, string[] components)
+        {
+            string name;
+            float x;
+            float y;
+
+            try { name = components[2]; }
+            catch (IndexOutOfRangeException) { throw new MapDescriptorException("You must provide a name to your entity"); }
+
+            try { x = int.Parse(components[3]); }
+            catch (IndexOutOfRangeException) { throw new MapDescriptorException("You must provide an X coordinate to your entity"); }
+            catch (FormatException) { throw new MapDescriptorException("The X coordinate must be a number."); }
+
+            try { y = int.Parse(components[4]); }
+            catch (IndexOutOfRangeException) { throw new MapDescriptorException("You must provide a Y coordinate to your entity"); }
+            catch (FormatException) { throw new MapDescriptorException("The Y coordinate must be a number."); }
+
+            LoadEntity(
+                type: components[1],
+                sectionIndex: sectionIndex,
+                name: name,
+                position: new Vector2(x, y),
+                extraData: components
+            );
+        }
         
         protected virtual void LoadEntity(string type, int sectionIndex, string name, Vector2 position, string[] extraData)
         {

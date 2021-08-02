@@ -11,25 +11,32 @@ namespace SixteenBitNuts
         Json
     }
 
-    static class MapWriter
+    sealed class MapWriter
     {
-        public static void SaveToFile(MapFileMode mode, Map map)
+        private readonly Map map;
+
+        public MapWriter(Map map)
+        {
+            this.map = map;
+        }
+
+        public void SaveToFile(MapFileMode mode)
         {
             switch (mode)
             {
                 case MapFileMode.Binary:
-                    SaveInBinaryMode(map);
+                    SaveInBinaryMode();
                     break;
                 case MapFileMode.Text:
-                    SaveInTextMode(map);
+                    SaveInTextMode();
                     break;
                 case MapFileMode.Json:
-                    SaveInJsonMode(map);
+                    SaveInJsonMode();
                     break;
             }
         }
 
-        private static void SaveInBinaryMode(Map map)
+        private void SaveInBinaryMode()
         {
             var stream = new MemoryStream();
             var formatter = new BinaryFormatter();
@@ -40,7 +47,7 @@ namespace SixteenBitNuts
             File.WriteAllBytes(filePath, stream.ToArray());
         }
 
-        private static void SaveInTextMode(Map map)
+        private void SaveInTextMode()
         {
             var contents = new List<string>
             {
@@ -80,7 +87,7 @@ namespace SixteenBitNuts
             File.AppendAllLines(filePath, contents);
         }
 
-        private static void SaveInJsonMode(Map _)
+        private void SaveInJsonMode()
         {
             
         }

@@ -18,7 +18,6 @@ namespace SixteenBitNuts.Editor
 
         private readonly Cursor cursor;
         private readonly Texture2D gridTexture;
-        private readonly Box frame;
         private bool hasErasedAnEntity;
         private IEntity? selectedEntity;
         private Box? selectedEntityBox;
@@ -28,13 +27,9 @@ namespace SixteenBitNuts.Editor
         public MapSectionEditor(Map map)
         {
             Map = map;
-            if (GridSize == 0)
-            {
-                GridSize = DEFAULT_GRID_SIZE;
-            }
+            if (GridSize == 0) GridSize = DEFAULT_GRID_SIZE;
             cursor = new Cursor(map, map.Camera) { Type = CursorType.Arrow };
             gridTexture = map.Game.Content.Load<Texture2D>("EngineGraphics/Editor/grid");
-            frame = new Box(map.Game, new Rectangle(0, 0, (int)map.Game.WindowSize.Width, (int)map.Game.WindowSize.Height), Color.Green);
         }
 
         public void InitializeToolbar()
@@ -46,7 +41,6 @@ namespace SixteenBitNuts.Editor
         {
             toolbar?.Update();
             cursor.Update();
-            frame.Update();
             selectedEntityBox?.Update();
 
             #region Draw tile/entity
@@ -248,7 +242,6 @@ namespace SixteenBitNuts.Editor
         {
             toolbar?.Draw();
             cursor.Draw();
-            frame.Draw(Matrix.Identity);
         }
 
         protected virtual void AddEntity(string entityType, Vector2 position)

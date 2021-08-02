@@ -4,7 +4,7 @@ namespace SixteenBitNuts
 {
     class GameException : Exception
     {
-        public GameException(string message): base(message)
+        public GameException(string message) : base(message)
         {
 
         }

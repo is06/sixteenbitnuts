@@ -11,6 +11,8 @@ namespace SixteenBitNuts
     /// </summary>
     public abstract class Game : Microsoft.Xna.Framework.Game
     {
+        private const float mapSectionEditModeScale = 0.875f;
+
         #region Properties
 
         public string? WindowTitle { get; protected set; }
@@ -19,6 +21,24 @@ namespace SixteenBitNuts
         public int FrameRate { get; protected set; }
         public bool FullScreen { get; protected set; }
         public Viewport InGameViewport { get; private set; }
+        public Viewport SectionEditorViewPort
+        {
+            get
+            {
+                var isInMapSectionEditMode = currentScene is Map map && map.ShowSectionEditor;
+                var sectionEditModeWidth = WindowSize.Width * mapSectionEditModeScale;
+                var sectionEditModeHeight = WindowSize.Height * mapSectionEditModeScale;
+                var sectionEditModeOffsetX = (WindowSize.Width - sectionEditModeWidth) / 2;
+                var sectionEditModeOffsetY = WindowSize.Height - sectionEditModeHeight;
+
+                return new Viewport(
+                    x: isInMapSectionEditMode ? (int)sectionEditModeOffsetX : 0,
+                    y: isInMapSectionEditMode ? (int)sectionEditModeOffsetY : 0,
+                    width: isInMapSectionEditMode ? (int)sectionEditModeWidth : (int)WindowSize.Width,
+                    height: isInMapSectionEditMode ? (int)sectionEditModeHeight : (int)WindowSize.Height
+                );
+            }
+        }
         public float ScreenScale => WindowSize.Width / InternalSize.Width;
         public SpriteBatch? SpriteBatch { get; set; }
         public EffectService? EffectService { get; private set; }
@@ -155,7 +175,7 @@ namespace SixteenBitNuts
                     SpriteBatch?.Begin(SpriteSortMode.Immediate, BlendState.Opaque, SamplerState.PointClamp);
                     SpriteBatch?.Draw(
                         texture: inGameRenderSurface,
-                        destinationRectangle: new Rectangle(0, 0, (int)WindowSize.Width, (int)WindowSize.Height),
+                        destinationRectangle: SectionEditorViewPort.Bounds,
                         sourceRectangle: new Rectangle(0, 0, InGameViewport.Width, InGameViewport.Height),
                         color: Color.White
                     );
@@ -165,7 +185,7 @@ namespace SixteenBitNuts
                     SpriteBatch?.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.PointClamp);
                     SpriteBatch?.Draw(
                         texture: outGameRenderSurface,
-                        destinationRectangle: new Rectangle(0, 0, (int)WindowSize.Width, (int)WindowSize.Height),
+                        destinationRectangle: SectionEditorViewPort.Bounds,
                         sourceRectangle: new Rectangle(0, 0, InGameViewport.Width, InGameViewport.Height),
                         color: Color.White
                     );

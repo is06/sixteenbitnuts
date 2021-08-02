@@ -37,10 +37,21 @@ namespace SixteenBitNuts.Editor
         {
             get
             {
-                return camera.CornerPosition + Position.ToVector2() * new Vector2(
-                    (float)map.Game.InGameViewport.Width / map.Game.GraphicsDevice.Viewport.Width,
-                    (float)map.Game.InGameViewport.Height / map.Game.GraphicsDevice.Viewport.Height
+                var position = Position.ToVector2();
+
+                position -= new Vector2(
+                    map.Game.SectionEditorViewPort.X,
+                    map.Game.SectionEditorViewPort.Y
                 );
+
+                position *= new Vector2(
+                    (float)map.Game.InGameViewport.Width / map.Game.SectionEditorViewPort.Width,
+                    (float)map.Game.InGameViewport.Height / map.Game.SectionEditorViewPort.Height
+                );
+
+                position += camera.CornerPosition;
+
+                return position;
             }
         }
 

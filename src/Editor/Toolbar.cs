@@ -6,7 +6,7 @@ namespace SixteenBitNuts.Editor
     public class Toolbar
     {
         private const int TOOLBAR_SELECTION_TOOL_ID = 900;
-        private const int TOOLBAR_POSITION_Y = 16;
+        private const int TOOLBAR_POSITION_Y = 32;
 
         public MapSectionEditor Editor { get; private set; }
         public List<ToolbarButton> Buttons { get; }
