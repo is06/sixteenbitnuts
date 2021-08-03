@@ -15,10 +15,7 @@ namespace SixteenBitNuts
 
         #region Fields
 
-        private string? textureName;
         private string currentAnimationName;
-
-        public Effects.SpriteEffect? Effect { get; set; }
 
         #endregion
 
@@ -26,6 +23,7 @@ namespace SixteenBitNuts
 
         public bool IsAnimated { get; set; }
         public bool IsVisible { get; set; }
+        public Effects.SpriteEffect? Effect { get; set; }
         public float CurrentAnimationFrame { get; private set; }
         public int CurrentAnimationLoops { get; private set; }
         public string AnimationName
@@ -78,12 +76,8 @@ namespace SixteenBitNuts
             Direction = Direction.Right;
 
             // Components
-            animations = new Dictionary<string, SpriteAnimation>();
-
-            // Loading sprite descriptor and texture
-            LoadFromFile("Content/Descriptors/Sprites/" + name + ".sprite");
-
-            texture = game.Content.Load<Texture2D>("Graphics/Sprites/" + textureName);
+            animations = game.DescriptorLoader.LoadSpriteAnimations(name);
+            texture = game.Content.Load<Texture2D>("Graphics/Sprites/" + name);
         }
 
         public void Draw(Vector2 position, float layer, Matrix transform)
@@ -167,82 +161,6 @@ namespace SixteenBitNuts
         {
             CurrentAnimationFrame = 0f;
             CurrentAnimationLoops = 0;
-        }
-
-        protected virtual void LoadFromFile(string fileName)
-        {
-            string animationName = "";
-            string[] lines;
-
-            try
-            {
-                lines = File.ReadAllLines(fileName);
-            }
-            catch (DirectoryNotFoundException)
-            {
-                throw new GameException("Unable to find sprite descriptor file " + fileName);
-            }
-
-            foreach (string line in lines)
-            {
-                string[] components = line.Split(' ');
-
-                switch (components[0])
-                {
-                    case "tx": LoadTexture(components); break;
-                    case "an": animationName = LoadAnimation(components); break;
-                    case "di": LoadAnimationDirection(animationName, components); break;
-                }
-            }
-        }
-
-        private void LoadTexture(string[] components)
-        {
-            textureName = components[1];
-        }
-
-        private string LoadAnimation(string[] components)
-        {
-            var animationName = components[1];
-            animations[animationName] = new SpriteAnimation()
-            {
-                Name = components[1],
-                Size = new Size(int.Parse(components[2]), int.Parse(components[3])),
-                HitBoxOffset = new Point(int.Parse(components[4]), int.Parse(components[5])),
-                Length = int.Parse(components[6]),
-                Speed = float.Parse(components[7], CultureInfo.InvariantCulture),
-                Looped = int.Parse(components[8]) == 1,
-                Directions = new Dictionary<Direction, SpriteDirection>()
-            };
-            return animationName;
-        }
-
-        private void LoadAnimationDirection(string animationName, string[] components)
-        {
-            Direction direction = (Direction)int.Parse(components[1]);
-
-            var spriteDirection = new SpriteDirection
-            {
-                Offset = new Point(
-                    int.Parse(components[2]),
-                    int.Parse(components[3])
-                ),
-                FlippedHorizontally = int.Parse(components[4]) == 1,
-                FlippedVertically = int.Parse(components[5]) == 1
-            };
-            try
-            {
-                spriteDirection.OverrideHitBoxOffset = new Point(
-                    int.Parse(components[6]),
-                    int.Parse(components[7])
-                );
-            }
-            catch (IndexOutOfRangeException)
-            {
-
-            }
-
-            animations[animationName].Directions[direction] = spriteDirection;
         }
     }
 

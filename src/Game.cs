@@ -41,6 +41,7 @@ namespace SixteenBitNuts
         }
         public float ScreenScale => WindowSize.Width / InternalSize.Width;
         public SpriteBatch? SpriteBatch { get; set; }
+        public DescriptorLoader DescriptorLoader { get; private set; }
         public EffectService? EffectService { get; private set; }
         public TilesetService TilesetService { get; private set; }
         public IAudioManager? AudioManager { get; protected set; }
@@ -73,6 +74,7 @@ namespace SixteenBitNuts
             process = Process.GetCurrentProcess();
             
             TilesetService = new TilesetService(this);
+            DescriptorLoader = new DescriptorLoader();
         }
 
         protected override void Initialize()
