@@ -268,23 +268,29 @@ namespace SixteenBitNuts.Editor
 
         private void DrawSelectedTile(Vector2 drawerPosition)
         {
-            if (toolbar != null
-                && toolbar.SelectedTileset?.GetSizeFromId(toolbar.SelectedTileId) is Size size
-                && toolbar.SelectedTileset?.GetTypeFromId(toolbar.SelectedTileId) is TileType type)
+            if (toolbar != null)
             {
-                var tileToAdd = new Tile(Map, toolbar.SelectedTileset, toolbar.SelectedTileId, drawerPosition, size, type)
+                var sizePoint = toolbar.SelectedTileset?.GetTileBoundFromId(toolbar.SelectedTileId).Size;
+                if (sizePoint is Point point)
                 {
-                    GroupName = toolbar.SelectedGroupName
-                };
+                    var size = new Size(point.X, point.Y);
+                    if (toolbar.SelectedTileset?.GetTypeFromId(toolbar.SelectedTileId) is TileType type)
+                    {
+                        var tileToAdd = new Tile(Map, toolbar.SelectedTileset, toolbar.SelectedTileId, drawerPosition, size, type)
+                        {
+                            GroupName = toolbar.SelectedGroupName
+                        };
 
-                // Draw the tile
-                if (toolbar.SelectedTileset.GetLayerFromId(toolbar.SelectedTileId) == TileLayer.Background)
-                    Map.CurrentMapSection.BackgroundTiles.Add(tileToAdd);
-                else
-                    Map.CurrentMapSection.ForegroundTiles.Add(tileToAdd);
+                        // Draw the tile
+                        if (toolbar.SelectedTileset.GetLayerFromId(toolbar.SelectedTileId) == TileLayer.Background)
+                            Map.CurrentMapSection.BackgroundTiles.Add(tileToAdd);
+                        else
+                            Map.CurrentMapSection.ForegroundTiles.Add(tileToAdd);
 
-                // Update the id of every tiles of the same group
-                UpdateTilesTypes();
+                        // Update the id of every tiles of the same group
+                        UpdateTilesTypes();
+                    }
+                }
             }
         }
 

@@ -32,8 +32,7 @@ namespace SixteenBitNuts.Editor
 
                 tileset.Draw(
                     Position + new Vector2(6, 6),
-                    tileset.GetSizeFromId(Id).ToVector2(),
-                    tileset.GetOffsetFromId(Id),
+                    tileset.GetTileBoundFromId(Id),
                     new Vector2(3, 3)
                 );
 

@@ -105,9 +105,7 @@ namespace SixteenBitNuts
             this.defaultSpawnPointName = defaultSpawnPointName;
             transitionCornerTexture = Map.Game.Content.Load<Texture2D>("EngineGraphics/Editor/transition_corner");
 
-            // Properties
             Bounds = bounds;
-
             TilesetSections = new List<TilesetSection>();
             BackgroundTiles = new List<ITile>();
             ForegroundTiles = new List<ITile>();
@@ -230,6 +228,27 @@ namespace SixteenBitNuts
 
                 Map.Game.SpriteBatch?.End();
             }
+        }
+
+        public SpawnPoint? GetNearestSpawnPointFrom(Player player)
+        {
+            SpawnPoint? nearest = null;
+            float min = 100000000f;
+
+            foreach (var entity in Entities)
+            {
+                if (entity.Value is SpawnPoint spawnPoint)
+                {
+                    float distance = Vector2.Distance(player.Position, spawnPoint.Position);
+                    if (distance < min)
+                    {
+                        min = distance;
+                        nearest = spawnPoint;
+                    }
+                }
+            }
+
+            return nearest;
         }
 
         public Vector2? GetNearestTransitionPointFrom(Vector2 position)

@@ -36,7 +36,7 @@ namespace SixteenBitNuts
 
         public override void Draw(Matrix _)
         {
-            tileset.Draw(Position, Size.ToVector2(), tileset.GetOffsetFromId(Id), Vector2.One);
+            tileset.Draw(Position, tileset.GetTileBoundFromId(Id), Vector2.One);
         }
 
         public override void DebugDraw(Matrix transform)

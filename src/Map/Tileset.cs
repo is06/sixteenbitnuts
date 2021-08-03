@@ -41,12 +41,12 @@ namespace SixteenBitNuts
             LoadFromFile("Content/Descriptors/Tilesets/" + name + ".tileset");
         }
 
-        public void Draw(Vector2 position, Vector2 size, Vector2 offset, Vector2 scale)
+        public void Draw(Vector2 position, Rectangle bounds, Vector2 scale)
         {
             Game.SpriteBatch?.Draw(
                 texture: texture,
                 position: new Vector2((float)Math.Round(position.X), (float)Math.Round(position.Y)),
-                sourceRectangle: new Rectangle((int)offset.X, (int)offset.Y, (int)size.X, (int)size.Y),
+                sourceRectangle: bounds,
                 color: Color.White,
                 rotation: 0f,
                 origin: new Vector2(0, 0),
@@ -64,27 +64,15 @@ namespace SixteenBitNuts
             debugHitBox.Draw(transform);
         }
 
-        public Vector2 GetOffsetFromId(int id)
+        public Rectangle GetTileBoundFromId(int id)
         {
             try
             {
-                return elements[id].Offset;
+                return elements[id].Bounds;
             }
             catch (KeyNotFoundException)
             {
-                throw new GameException("Offset for tile " + id + " was not found in tileset '" + Name + ".tileset'. The file may be empty.");
-            }   
-        }
-
-        public Size GetSizeFromId(int id)
-        {
-            try
-            {
-                return elements[id].Size;
-            }
-            catch (KeyNotFoundException)
-            {
-                throw new GameException("Size for tile " + id + " was not found in tileset '" + Name + ".tileset'. The file may be empty.");
+                throw new GameException("Bounds for tile " + id + " was not found in tileset '" + Name + ".tileset'. The file may be empty.");
             }
         }
 
@@ -141,8 +129,12 @@ namespace SixteenBitNuts
                 if (components[0] == "ti")
                 {
                     TileElement element;
-                    element.Size = new Size(int.Parse(components[1]), int.Parse(components[2]));
-                    element.Offset = new Vector2(int.Parse(components[3]), int.Parse(components[4]));
+                    element.Bounds = new Rectangle(
+                        int.Parse(components[3]),
+                        int.Parse(components[4]),
+                        int.Parse(components[1]),
+                        int.Parse(components[2])
+                    );
                     element.Type = (TileType)int.Parse(components[5]);
                     element.Layer = (TileLayer)int.Parse(components[6]);
 

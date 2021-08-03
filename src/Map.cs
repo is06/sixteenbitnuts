@@ -717,6 +717,14 @@ namespace SixteenBitNuts
             return -1;
         }
 
+        private void CreateMap()
+        {
+            var section = new MapSection(this, new Rectangle(0, 0, 480, 240), "spawn01");
+            section.Entities.Add("spawn01", new SpawnPoint(this, "spawn01"));
+            sections.Add(0, section);
+            SaveToDisk();
+        }
+
         /// <summary>
         /// Load map data from a file and parse it
         /// </summary>
@@ -729,7 +737,9 @@ namespace SixteenBitNuts
             catch (DirectoryNotFoundException) { throw new GameException("Unable to find the map file " + fileName); }
 
             if (lines.Length == 0)
-                throw new GameException("Map file '" + Name + ".map' is empty");
+            {
+                CreateMap();
+            }
 
             int sectionIndex = -1;
             Tileset? tileset = null;
@@ -825,7 +835,9 @@ namespace SixteenBitNuts
                 X = int.Parse(components[2]),
                 Y = int.Parse(components[3])
             };
-            if (tileset.GetSizeFromId(elementId) is Size size && tileset.GetTypeFromId(elementId) is TileType type)
+            var sizePoint = tileset.GetTileBoundFromId(elementId).Size;
+            var size = new Size(sizePoint.X, sizePoint.Y);
+            if (tileset.GetTypeFromId(elementId) is TileType type)
             {
                 var tileToAdd = new Tile(this, tileset, elementId, position, size, type);
 
