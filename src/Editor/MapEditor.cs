@@ -91,11 +91,7 @@ namespace SixteenBitNuts.Editor
 
                 int nextSectionIndex = Map.Sections.Count;
                 MapSectionContainers.Add(nextSectionIndex, new MapSectionContainer(Map, this, nextSectionIndex, bounds));
-
-                var defaultSpawnPoint = new SpawnPoint(Map, "spawn01");
-                var mapSection = new MapSection(Map, bounds, defaultSpawnPoint.Name);
-                mapSection.Entities.Add(defaultSpawnPoint.Name, defaultSpawnPoint);
-                Map.Sections.Add(nextSectionIndex, mapSection);
+                Map.Sections.Add(nextSectionIndex, new MapSection(Map, bounds));
             }
             if (Keyboard.GetState().IsKeyUp(Keys.Add))
             {

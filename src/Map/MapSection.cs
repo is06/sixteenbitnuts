@@ -15,8 +15,6 @@ namespace SixteenBitNuts
     public class MapSection : ISerializable
     {
         private Vector2[]? transitionPoints;
-        private readonly string? defaultSpawnPointName;
-
         private readonly Texture2D transitionCornerTexture;
 
         #region Properties
@@ -35,8 +33,7 @@ namespace SixteenBitNuts
                 return "se " + Bounds.X +
                        " " + Bounds.Y +
                        " " + Bounds.Width +
-                       " " + Bounds.Height +
-                       " " + (DefaultSpawnPoint != null ? DefaultSpawnPoint.Name : "");
+                       " " + Bounds.Height;
             }
         }
 
@@ -81,28 +78,14 @@ namespace SixteenBitNuts
             }
         }
 
-        public ISpawnPoint? DefaultSpawnPoint
-        {
-            get
-            {
-                if (defaultSpawnPointName is string name)
-                {
-                    return (ISpawnPoint)Entities[name];
-                }
-
-                return null;
-            }
-        }
-
         #endregion
 
         /// <summary>
         /// Constructor
         /// </summary>
-        public MapSection(Map map, Rectangle bounds, string defaultSpawnPointName)
+        public MapSection(Map map, Rectangle bounds)
         {
             Map = map;
-            this.defaultSpawnPointName = defaultSpawnPointName;
             transitionCornerTexture = Map.Game.Content.Load<Texture2D>("EngineGraphics/Editor/transition_corner");
 
             Bounds = bounds;
@@ -113,6 +96,7 @@ namespace SixteenBitNuts
             Entities = new Dictionary<string, IEntity>();
 
             SetTransitionPoints(bounds);
+            map.InitPlayerPosition();
         }
 
 
@@ -323,7 +307,6 @@ namespace SixteenBitNuts
             info.AddValue("bounds.Y", Bounds.Y);
             info.AddValue("bounds.Width", Bounds.Width);
             info.AddValue("bounds.Height", Bounds.Height);
-            info.AddValue("defaultSpawnPoint", DefaultSpawnPoint != null ? DefaultSpawnPoint.Name : "");
             info.AddValue("back_tiles", BackgroundTiles);
             info.AddValue("front_tiles", ForegroundTiles);
             info.AddValue("entities", NotGeneratedEntities);
