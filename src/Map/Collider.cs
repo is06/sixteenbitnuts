@@ -2,12 +2,17 @@
 
 namespace SixteenBitNuts
 {
+    /// <summary>
+    /// Colliders are a way to detect collisions between them and elements
+    /// of a map. They are collision enabled by default, IsCollisionEnabled field
+    /// can be set to false to disable collision detection if needed.
+    /// </summary>
     public abstract class Collider
     {
         // Exposed fields
         public bool IsCollisionEnabled;
         public bool IsGravityEnabled;
-        public HitBox HitBox;
+        public HitBox HitBox { get; set; }
         public Vector2 Velocity;
         public Vector2 Position
         {

@@ -6,16 +6,18 @@ namespace SixteenBitNuts
 {
     public enum ControllerCommand
     {
-        Button1,
-        Button2,
-        Button3,
-        Button4,
-        ButtonL,
-        ButtonR,
-        ButtonL3,
-        ButtonR3,
+        ButtonDown,
+        ButtonRight,
+        ButtonLeft,
+        ButtonUp,
         ButtonStart,
         ButtonBack,
+        ShoulderL,
+        ShoulderR,
+        TriggerL,
+        TriggerR,
+        ClickL,
+        ClickR,
     }
     public struct ControllerKeyboardMapping
     {
@@ -44,12 +46,12 @@ namespace SixteenBitNuts
             {
                 GameplayButtons = new Dictionary<ControllerCommand, Keys>()
                 {
-                    [ControllerCommand.Button1] = Keys.C,
-                    [ControllerCommand.Button2] = Keys.V,
-                    [ControllerCommand.Button3] = Keys.X,
-                    [ControllerCommand.Button4] = Keys.D,
-                    [ControllerCommand.ButtonL] = Keys.S,
-                    [ControllerCommand.ButtonR] = Keys.F,
+                    [ControllerCommand.ButtonDown] = Keys.C,
+                    [ControllerCommand.ButtonRight] = Keys.V,
+                    [ControllerCommand.ButtonLeft] = Keys.X,
+                    [ControllerCommand.ButtonUp] = Keys.D,
+                    [ControllerCommand.ShoulderL] = Keys.S,
+                    [ControllerCommand.ShoulderR] = Keys.F,
                     [ControllerCommand.ButtonStart] = Keys.Enter,
                     [ControllerCommand.ButtonBack] = Keys.Escape,
                 },
@@ -65,12 +67,12 @@ namespace SixteenBitNuts
             {
                 GameplayButtons = new Dictionary<ControllerCommand, Buttons>()
                 {
-                    [ControllerCommand.Button1] = Buttons.A,
-                    [ControllerCommand.Button2] = Buttons.B,
-                    [ControllerCommand.Button3] = Buttons.X,
-                    [ControllerCommand.Button4] = Buttons.Y,
-                    [ControllerCommand.ButtonL] = Buttons.LeftTrigger,
-                    [ControllerCommand.ButtonR] = Buttons.RightTrigger,
+                    [ControllerCommand.ButtonDown] = Buttons.A,
+                    [ControllerCommand.ButtonRight] = Buttons.B,
+                    [ControllerCommand.ButtonLeft] = Buttons.X,
+                    [ControllerCommand.ButtonUp] = Buttons.Y,
+                    [ControllerCommand.ShoulderL] = Buttons.LeftShoulder,
+                    [ControllerCommand.ShoulderR] = Buttons.RightShoulder,
                     [ControllerCommand.ButtonStart] = Buttons.Start,
                     [ControllerCommand.ButtonBack] = Buttons.Back,
                 },

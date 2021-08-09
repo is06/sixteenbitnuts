@@ -205,7 +205,7 @@ namespace SixteenBitNuts
             {
                 #region Components positioning
 
-                // Colliders
+                // Colliders (including player)
                 foreach (var collider in colliders)
                 {
                     collider.Value.Update(gameTime);
@@ -234,24 +234,16 @@ namespace SixteenBitNuts
                     // First collision detection pass (all section elements)
                     foreach (var element in CurrentMapSection.Elements)
                     {
+                        // If element has destroying flag: remove it from the list
+                        if (element is Entity entity && entity.IsDestroying)
                         {
-                            // If element has destroying flag: remove it from the list
-                            if (element is Entity entity && entity.IsDestroying)
-                            {
-                                CurrentMapSection.Entities.Remove(entity.Name);
-                            }
+                            CurrentMapSection.Entities.Remove(entity.Name);
+                            continue;
                         }
-
+                        // We take only elements that are at below a certain distance from the player
+                        if (Player != null && Vector2.Distance(Player.Position, element.HitBox.Position) < NEAR_ELEMENT_THRESHOLD)
                         {
-                            // We take only elements that are at below a certain distance from the player
-                            if (Player != null && Vector2.Distance(Player.Position, element.HitBox.Position) <= NEAR_ELEMENT_THRESHOLD)
-                            {
-                                if (element is Entity entity && entity.IsDestroying)
-                                {
-                                    continue;
-                                }
-                                nearElements.Add(element);
-                            }
+                            nearElements.Add(element);
                         }
 
                         element.DebugColor = Color.LimeGreen;
@@ -303,12 +295,12 @@ namespace SixteenBitNuts
                                     );
 
                                 // Entity collision event
+                                OnColliderCollidesWithElement?.Invoke(collider.Value, collider.Key, element, side);
+
+                                // Music param triggers event
+                                if (element is MusicParamTrigger musicParamTrigger)
                                 {
-                                    if (element is MusicParamTrigger musicParamTrigger)
-                                    {
-                                        musicParamTrigger.Trigger();
-                                    }
-                                    OnColliderCollidesWithElement?.Invoke(collider.Value, collider.Key, element, side);
+                                    musicParamTrigger.Trigger();
                                 }
 
                                 // Player-only collision correction

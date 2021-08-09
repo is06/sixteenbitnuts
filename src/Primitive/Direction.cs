@@ -42,5 +42,15 @@
                 _ => direction,
             };
         }
+
+        public static sbyte HorizontalSign(this Direction direction)
+        {
+            return direction switch
+            {
+                Direction.Right => 1,
+                Direction.Left => -1,
+                _ => 0,
+            };
+        }
     }
 }
