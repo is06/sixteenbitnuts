@@ -40,5 +40,10 @@ namespace SixteenBitNuts
         {
             return width / height;
         }
+
+        public static Size operator *(Size size, int factor)
+        {
+            return new Size(size.Width * factor, size.Height * factor);
+        }
     }
 }
