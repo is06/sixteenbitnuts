@@ -58,7 +58,14 @@ namespace SixteenBitNuts
         public Landscape? Landscape { get; set; }
         public Hud Hud { get; }
         public Dictionary<int, MapSection> Sections => sections;
-        public MapSection CurrentMapSection => sections[currentSectionIndex];
+        public MapSection CurrentMapSection
+        {
+            get
+            {
+                try { return sections[currentSectionIndex]; }
+                catch (KeyNotFoundException) { throw new GameException("The map should have at least one section"); }
+            }
+        }
         public Player? Player
         {
             get
@@ -147,7 +154,7 @@ namespace SixteenBitNuts
         /// </summary>
         /// <param name="game">The reference to the game object</param>
         /// <param name="name">The name identifier of the map (used to load data from file)</param>
-        public Map(Game game, string name) : base(game)
+        public Map(Game game, string name, bool loadFromFile = true) : base(game)
         {
             Name = name;
 
@@ -168,7 +175,10 @@ namespace SixteenBitNuts
             Hud = new Hud(game);
 
             // Load map descriptor
-            LoadFromFile("Content/Descriptors/Maps/" + name + ".map");
+            if (loadFromFile)
+            {
+                LoadFromFile("Content/Descriptors/Maps/" + name + ".map");
+            }
 
             // Initialization of the toolbar only after loading a map
             sectionEditor.InitializeToolbar();
