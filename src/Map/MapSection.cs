@@ -1,6 +1,4 @@
-﻿using System;
-using System.Runtime.Serialization;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using SixteenBitNuts.Interfaces;
@@ -11,8 +9,7 @@ namespace SixteenBitNuts
     /// Representation of a map section
     /// Contains the tileset and tile list
     /// </summary>
-    [Serializable]
-    public class MapSection : ISerializable
+    public class MapSection
     {
         private Vector2[]? transitionPoints;
         private readonly Texture2D transitionCornerTexture;
@@ -299,17 +296,6 @@ namespace SixteenBitNuts
                     entity.Value.Position.Y + positionOffset.Y
                 );
             }
-        }
-
-        public void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            info.AddValue("bounds.X", Bounds.X);
-            info.AddValue("bounds.Y", Bounds.Y);
-            info.AddValue("bounds.Width", Bounds.Width);
-            info.AddValue("bounds.Height", Bounds.Height);
-            info.AddValue("back_tiles", BackgroundTiles);
-            info.AddValue("front_tiles", ForegroundTiles);
-            info.AddValue("entities", NotGeneratedEntities);
         }
 
         private void SetTransitionPoints(Rectangle bounds)
