@@ -44,15 +44,17 @@ namespace SixteenBitNuts
         /// Collider constructor
         /// </summary>
         /// <param name="map"></param>
-        public Collider(Map map, Color debugHitBoxColor)
+        public Collider(Map map, Size hitBoxSize, Color debugHitBoxColor)
         {
             this.map = map;
 
             IsCollisionEnabled = true;
 
             // Hitboxes
-            HitBox = new HitBox(position, Size);
-            PreviousFrameHitBox = new HitBox(position, Size);
+            var initPosition = Vector2.Zero;
+            Size = hitBoxSize;
+            HitBox = new HitBox(initPosition, hitBoxSize);
+            PreviousFrameHitBox = new HitBox(initPosition, hitBoxSize);
 
             // Debug
             debugHitBox = new DebugHitBox(map.Game, debugHitBoxColor);

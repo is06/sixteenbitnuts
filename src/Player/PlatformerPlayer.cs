@@ -48,7 +48,7 @@ namespace SixteenBitNuts
 
         private bool jumpButtonPressed;
 
-        public PlatformerPlayer(Map map) : base(map)
+        public PlatformerPlayer(Map map, Size hitBoxSize) : base(map, hitBoxSize)
         {
             Weight = 1f;
             RunSpeed = 5f;

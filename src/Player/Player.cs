@@ -29,9 +29,9 @@ namespace SixteenBitNuts
         /// </summary>
         /// <param name="map"></param>
         /// <param name="position"></param>
-        public Player(Map map) : base(map, Color.Cyan)
+        public Player(Map map, Size hitBoxSize, Direction direction = Direction.Right) : base(map, hitBoxSize, Color.Cyan)
         {
-            Direction = Direction.Right;
+            Direction = direction;
             IsControllable = true;
             IsGravityEnabled = true;
         }
