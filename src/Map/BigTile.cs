@@ -1,9 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using SixteenBitNuts.Interfaces;
 
 namespace SixteenBitNuts
 {
-    public class BigTile : MapElement
+    public class BigTile : MapElement, IBigTile
     {
         private readonly Texture2D texture;
 
@@ -24,5 +25,13 @@ namespace SixteenBitNuts
 
             map.Game.SpriteBatch?.End();
         }
+
+        public string MapTextDescription =>
+            "bt " +
+            texture.Name + " " +
+            Position.X + " " + Position.Y + " " +
+            HitBox.Width + " " + HitBox.Height + " " +
+            (HitBox.Position.X - Position.X) + " " + (HitBox.Position.Y - Position.Y) + " " +
+            (IsObstacle ? "1" : (IsPlatform ? "2" : "0"));
     }
 }

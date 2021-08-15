@@ -212,8 +212,11 @@ namespace SixteenBitNuts
                 }
 
                 // Player
-                Player?.ComputePhysics();
-                Player?.UpdateHitBoxes();
+                if (!ShowSectionEditor)
+                {
+                    Player?.ComputePhysics();
+                    Player?.UpdateHitBoxes();
+                }
 
                 // Map Sections
                 foreach (var section in sections)
@@ -640,9 +643,17 @@ namespace SixteenBitNuts
             currentSectionIndex = index;
             ShowMapEditor = false;
 
-            if (Player != null && CurrentMapSection.DefaultSpawnPoint != null)
+            InitPlayerPosition();
+        }
+
+        public void InitPlayerPosition()
+        {
+            if (Player is Player player)
             {
-                Player.Position = CurrentMapSection.DefaultSpawnPoint.HitBox.Position;
+                var nearestSpawnPoint = CurrentMapSection.GetNearestSpawnPointFrom(player);
+                player.Position = (nearestSpawnPoint is SpawnPoint spawnPoint)
+                    ? spawnPoint.Position
+                    : CurrentMapSection.Bounds.Location.ToVector2();
             }
         }
 
@@ -709,14 +720,6 @@ namespace SixteenBitNuts
             return -1;
         }
 
-        private void CreateMap()
-        {
-            var section = new MapSection(this, new Rectangle(0, 0, 480, 240), "spawn01");
-            section.Entities.Add("spawn01", new SpawnPoint(this, "spawn01"));
-            sections.Add(0, section);
-            SaveToDisk();
-        }
-
         /// <summary>
         /// Load map data from a file and parse it
         /// </summary>
@@ -775,6 +778,14 @@ namespace SixteenBitNuts
             }
         }
 
+        private void CreateMap()
+        {
+            var section = new MapSection(this, new Rectangle(0, 0, 480, 270));
+            section.TilesetSections.Add(new TilesetSection(Game.TilesetService.Get("labo")));
+            sections.Add(0, section);
+            SaveToDisk();
+        }
+
         private void LoadLandscapeLayerFromComponents(string[] components)
         {
             var layerIndex = int.Parse(components[1]);
@@ -803,11 +814,7 @@ namespace SixteenBitNuts
                     int.Parse(components[3]),
                     int.Parse(components[4])
                 );
-                sections[sectionIndex] = new MapSection(
-                    this,
-                    bounds,
-                    components[5]
-                );
+                sections[sectionIndex] = new MapSection(this, bounds);
                 mapEditor.MapSectionContainers.Add(
                     sectionIndex,
                     new MapSectionContainer(this, mapEditor, sectionIndex, bounds)

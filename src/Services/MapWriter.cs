@@ -75,10 +75,18 @@ namespace SixteenBitNuts
                     {
                         contents.Add(tile.MapTextDescription);
                     }
-                    foreach (var entity in section.Value.Entities)
+                    foreach (var bigTile in section.Value.BigTiles)
                     {
-                        contents.Add(entity.Value.MapTextDescription);
+                        contents.Add(bigTile.MapTextDescription);
                     }
+                    foreach (var tile in section.Value.BackgroundTiles)
+                    {
+                        contents.Add(tile.MapTextDescription);
+                    }
+                }
+                foreach (var entity in section.Value.Entities)
+                {
+                    contents.Add(entity.Value.MapTextDescription);
                 }
             }
 
