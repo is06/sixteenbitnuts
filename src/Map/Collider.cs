@@ -32,7 +32,13 @@ namespace SixteenBitNuts
         }
 
         // Read only properties
-        public Size Size { get; protected set; }
+        public Size Size
+        {
+            get
+            {
+                return new Size(HitBox.Size.Width, HitBox.Size.Height);
+            }
+        }
         public HitBox PreviousFrameHitBox { get; protected set; }
 
         // Private members
@@ -52,7 +58,6 @@ namespace SixteenBitNuts
 
             // Hitboxes
             var initPosition = Vector2.Zero;
-            Size = hitBoxSize;
             HitBox = new HitBox(initPosition, hitBoxSize);
             PreviousFrameHitBox = new HitBox(initPosition, hitBoxSize);
 
