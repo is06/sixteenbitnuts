@@ -1,10 +1,8 @@
-16-bit Nuts
-===========
+# 16-bit Nuts
 
 Game engine to build 16-bit styled platformers games.
 
-Getting started
----------------
+## Getting started
 
 Create a `*.csproj` file:
 
@@ -17,7 +15,6 @@ Create a `*.csproj` file:
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.0.1641" />
-        <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.0.1641" />
         <PackageReference Include="is06.SixteenBitNuts.Framework" Version="0.2.0" />
     </ItemGroup>
 </Project>
@@ -56,17 +53,18 @@ namespace MyGame
         static void Main()
         {
             var game = new MyGame();
-            game.Run();  
+            game.Run();
         }
     }
 }
 ```
 
-Build
------
+## Build
 
 ```bash
 dotnet run
 ```
 
-A warning related to 'MonoGameContentReference' can be raised but it's temporary. You can fix this by creating a content reference (see documentation about assets).
+## All documentation pages
+
+[16-bit nuts documentation](doc/)
