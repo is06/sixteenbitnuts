@@ -1,10 +1,8 @@
-Scenes and maps
-===============
+# Scenes and maps
 
 A game in this engine is made of scenes. You can create a scene for your levels, for the title screen, menus...
 
-Simple scene
-------------
+## Simple scene
 
 Let's create a very simple scene that does nothing (for now):
 
@@ -44,12 +42,11 @@ namespace MyGame
 }
 ```
 
-Maps
-----
+## Maps
 
 Maps are a type of scene provided by the engine. Maps contains a collection of **sections** and a **player**.
 
-It is recommended to create a custom class of type `Map` to handle events in it more easily (like collisions):
+It is recommended to create a custom class of type `Map` to handle events in it more easily (like what happens on collisions):
 
 ```csharp
 using Microsoft.Xna.Framework;

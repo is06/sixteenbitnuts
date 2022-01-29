@@ -4,10 +4,11 @@ Because 16-bit Nuts is (for now) only made for creating platformers, we will use
 
 ## Basic topics
 
-- [Getting started](../README.md)
+- [Setup](setup.md)
 - [Scenes and Maps](scenes_and_maps.md)
 - [Draw an image](image.md)
 
 ## Reference
 
-- [Descriptor files](descriptor_files.md) (for sprites, tilesets, maps...)
+- [Classes](reference/classes.md)
+- [Descriptor files](reference/descriptor_files.md) (for sprites, tilesets, maps...)

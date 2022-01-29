@@ -76,7 +76,8 @@ namespace SixteenBitNuts
 
             TileSize = 16;
             FrameRate = 60;
-            InternalSize = new Size(640, 360);
+            WindowSize = new Size(1280, 720);
+            InternalSize = WindowSize;
             TilesetService = new TilesetService(this);
             DescriptorLoader = new DescriptorLoader();
         }
