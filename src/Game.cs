@@ -20,6 +20,7 @@ namespace SixteenBitNuts
         public Size InternalSize { get; protected set; }
         public int FrameRate { get; protected set; }
         public bool FullScreen { get; protected set; }
+        public int TileSize { get; protected set; }
         public Viewport InGameViewport { get; private set; }
         public Viewport SectionEditorViewPort
         {
@@ -72,7 +73,10 @@ namespace SixteenBitNuts
         {
             graphics = new GraphicsDeviceManager(this);
             process = Process.GetCurrentProcess();
-            
+
+            TileSize = 16;
+            FrameRate = 60;
+            InternalSize = new Size(640, 360);
             TilesetService = new TilesetService(this);
             DescriptorLoader = new DescriptorLoader();
         }
@@ -209,7 +213,10 @@ namespace SixteenBitNuts
 
         public virtual void LoadMap(string name)
         {
-
+            currentScene?.Dispose();
+            currentScene = new Map(this, name);
+            currentScene.Initialize();
+            currentScene.LoadContent();
         }
 
         public string GetRAM()
