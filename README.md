@@ -15,7 +15,7 @@ Create a `*.csproj` file:
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.0.1641" />
-        <PackageReference Include="is06.SixteenBitNuts.Framework" Version="0.2.0" />
+        <PackageReference Include="is06.SixteenBitNuts.Framework" Version="0.3.1" />
     </ItemGroup>
 </Project>
 ```
@@ -32,9 +32,6 @@ namespace MyGame
         public MyGame()
         {
             WindowTitle = "MyGame";
-            WindowSize = new Size(640, 480);
-            InternalSize = new Size(320, 240);
-            FrameRate = 60;
         }
     }
 }
