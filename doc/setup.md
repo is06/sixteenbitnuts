@@ -109,3 +109,7 @@ We just need to run this command in a terminal to build and run the game:
 ```shell
 dotnet run
 ```
+
+---
+
+[Next: Scenes](scenes.md)
