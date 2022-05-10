@@ -12,13 +12,17 @@
         <Description>A game engine to make 16-bit styled platformers.</Description>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <RepositoryUrl>https://github.com/is06/sixteenbitnuts</RepositoryUrl>
-        <PackageTags>video game;gamedev;game engine;monogame;pixel art</PackageTags>
+        <PackageTags>videogame;gamedev;gameengine;monogame;pixelart</PackageTags>
         <LangVersion>8.0</LangVersion>
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.0.1641" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="src\gamelogic\" />
     </ItemGroup>
 
 </Project>
