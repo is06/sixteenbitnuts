@@ -2,11 +2,11 @@
 {
     public abstract class Scene
     {
-        private readonly Game game;
+        public Game Game { get; private set; }
 
         public Scene(Game game)
         {
-            this.game = game;
+            Game = game;
         }
 
         public virtual void Initialize()

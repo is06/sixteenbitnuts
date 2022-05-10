@@ -1,25 +1,58 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 
 namespace SixteenBitNuts
 {
     public class Game : Microsoft.Xna.Framework.Game
     {
+        public string WindowTitle { get; protected set; }
+        public Point WindowSize { get; protected set; }
+        public ushort FrameRate { get; protected set; }
+        public bool IsFullScreen { get; protected set; }
+        public Point InternalSize { get; protected set; }
+        
+        public SpriteLoader SpriteLoader { get; private set; }
         public SpriteBatch? SpriteBatch { get; private set; }
         public Scene? CurrentScene { get; private set; }
 
         private readonly GraphicsDeviceManager graphics;
 
+        private RenderTarget2D? inGameRenderSurface;
+
         public Game() : base()
         {
             graphics = new GraphicsDeviceManager(this);
+            SpriteLoader = new SpriteLoader();
+
+            FrameRate = 60;
+            WindowTitle = "Untitled game";
         }
 
         protected override void Initialize()
         {
-            base.Initialize();
+            SetWindowGraphics(WindowSize.X, WindowSize.Y, IsFullScreen);
+            
+            Window.AllowUserResizing = false;
+            Window.Title = WindowTitle;
+            
+            Content.RootDirectory = "Content";
+            
+            TargetElapsedTime = new TimeSpan((int)(1000f / FrameRate * 10000f));
 
             SpriteBatch = new SpriteBatch(GraphicsDevice);
+
+            inGameRenderSurface = new RenderTarget2D(
+                GraphicsDevice,
+                InternalSize.X,
+                InternalSize.Y,
+                false,
+                SurfaceFormat.Color,
+                DepthFormat.Depth24
+            );
+
+
+            base.Initialize();
         }
 
         protected override void LoadContent()
@@ -29,7 +62,10 @@ namespace SixteenBitNuts
 
         protected void LoadScene(Scene scene)
         {
+            CurrentScene?.UnloadContent();
             CurrentScene = scene;
+            CurrentScene?.Initialize();
+            CurrentScene?.LoadContent();
         }
 
         protected override void Update(GameTime gameTime)
@@ -43,7 +79,39 @@ namespace SixteenBitNuts
         {
             base.Draw(gameTime);
 
+            // Change the render target to in game surface
+            GraphicsDevice.SetRenderTarget(inGameRenderSurface);
+            GraphicsDevice.Clear(Color.Black);
+
+            // Draws every in game in the surface
             CurrentScene?.Draw();
+
+            // Back to main framebuffer
+            GraphicsDevice.SetRenderTarget(null);
+
+            // In-game with main display effects
+            SpriteBatch?.Begin(SpriteSortMode.Immediate, BlendState.Opaque, SamplerState.PointClamp);
+            SpriteBatch?.Draw(
+                texture: inGameRenderSurface,
+                destinationRectangle: new Rectangle(Point.Zero, WindowSize),
+                sourceRectangle: new Rectangle(Point.Zero, InternalSize),
+                color: Color.White
+            );
+            SpriteBatch?.End();
+        }
+
+        private void SetWindowGraphics(int width, int height, bool isFullScreen = false)
+        {
+            graphics.PreferredBackBufferWidth = width;
+            graphics.PreferredBackBufferHeight = height;
+            graphics.IsFullScreen = isFullScreen;
+            graphics.ApplyChanges();
+        }
+
+        public void ToggleFullScreen()
+        {
+            graphics.IsFullScreen = !graphics.IsFullScreen;
+            graphics.ApplyChanges();
         }
 
         protected override void UnloadContent()
