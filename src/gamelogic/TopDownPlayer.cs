@@ -24,25 +24,31 @@ namespace SixteenBitNuts
         {
             base.Update();
 
-            HandleMoves();
+            UpdateDirection();
+            UpdateVelocity();
+            PerformMove();
         }
 
-        private void HandleMoves()
+        /// <summary>
+        /// Updates the current direction according to the virtual stick value
+        /// </summary>
+        private void UpdateDirection()
         {
-            // update direction of the player
             Direction = DirectionHelper.FromVirtualStickValue(virtualStick.Value);
+        }
 
+        /// <summary>
+        /// Updates the velocity according to the current direction
+        /// </summary>
+        private void UpdateVelocity()
+        {
             var radians = Direction.GetRadians();
             if (radians != -1)
             {
                 // compute move with the direction
                 double x = Math.Cos(radians);
                 double y = -Math.Sin(radians);
-                Vector2 move = new Vector2((float)x, (float)y);
-
-                // actually move the player actor
-                MoveX(move.X);
-                MoveY(move.Y);
+                Velocity = new Vector2((float)x, (float)y) * RunSpeed;
             }
         }
     }
