@@ -12,6 +12,7 @@ namespace SixteenBitNuts
         public bool IsFullScreen { get; protected set; }
         public Point InternalSize { get; protected set; }
         
+        public InputInterface InputInterface { get; protected set; }
         public SpriteLoader SpriteLoader { get; private set; }
         public SpriteBatch? SpriteBatch { get; private set; }
         public Scene? CurrentScene { get; private set; }
@@ -22,11 +23,13 @@ namespace SixteenBitNuts
 
         public Game() : base()
         {
-            graphics = new GraphicsDeviceManager(this);
+            InputInterface = new InputInterface();
             SpriteLoader = new SpriteLoader();
-
             FrameRate = 60;
+            WindowSize = new Point(1280, 720);
             WindowTitle = "Untitled game";
+
+            graphics = new GraphicsDeviceManager(this);
         }
 
         protected override void Initialize()
