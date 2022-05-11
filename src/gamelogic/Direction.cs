@@ -1,4 +1,7 @@
-﻿namespace SixteenBitNuts
+﻿using Microsoft.Xna.Framework;
+using System;
+
+namespace SixteenBitNuts
 {
     public enum Direction : int
     {
@@ -13,7 +16,7 @@
         BottomRight = 7
     }
 
-    public static class DirectionMethods
+    public static class DirectionHelper
     {
         public static Direction Opposite(this Direction direction)
         {
@@ -51,6 +54,71 @@
                 Direction.Left => -1,
                 _ => 0,
             };
+        }
+
+        public static double GetRadians(this Direction direction)
+        {
+            return direction switch
+            {
+                Direction.Left => Math.PI,
+                Direction.Right => 0,
+                Direction.TopRight => Math.PI / 4,
+                Direction.Top => Math.PI / 2,
+                Direction.TopLeft => 3 * Math.PI / 4,
+                Direction.BottomLeft => 5 * Math.PI / 4,
+                Direction.Bottom => 3 * Math.PI / 2,
+                Direction.BottomRight => 7 * Math.PI / 4,
+                _ => -1,
+            };
+        }
+
+        public static Direction FromVirtualStickValue(Point value)
+        {
+            if (value.X == 1)
+            {
+                if (value.Y == 1)
+                {
+                    return Direction.BottomRight;
+                }
+                else if (value.Y == -1)
+                {
+                    return Direction.TopRight;
+                }
+                else
+                {
+                    return Direction.Right;
+                }
+            }
+            else if (value.X == -1)
+            {
+                if (value.Y == 1)
+                {
+                    return Direction.BottomLeft;
+                }
+                else if (value.Y == -1)
+                {
+                    return Direction.TopLeft;
+                }
+                else
+                {
+                    return Direction.Left;
+                }
+            }
+            else
+            {
+                if (value.Y == 1)
+                {
+                    return Direction.Bottom;
+                }
+                else if (value.Y == -1)
+                {
+                    return Direction.Top;
+                }
+                else
+                {
+                    return Direction.None;
+                }
+            }
         }
     }
 }
