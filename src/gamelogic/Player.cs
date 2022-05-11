@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Input;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 
 namespace SixteenBitNuts
 {
@@ -11,6 +12,7 @@ namespace SixteenBitNuts
         public float RunSpeed;
 
         // Properties
+        public Vector2 Velocity { get; set; }
         public Direction Direction { get; set; }
         
         // Internal fields
@@ -36,7 +38,20 @@ namespace SixteenBitNuts
         {
             base.Update();
 
+            Velocity = Vector2.Zero;
+
             virtualStick.Update();
+        }
+
+        /// <summary>
+        /// Performs the movement of the player according to its velocity
+        /// Should be called after every player updates regarding velocity computation
+        /// (in order to use the newly computed velocity directly after, not in the next frame)
+        /// </summary>
+        protected void PerformMove()
+        {
+            MoveX(Velocity.X);
+            MoveY(Velocity.Y);
         }
     }
 }

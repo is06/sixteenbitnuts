@@ -1,6 +1,6 @@
 ﻿namespace SixteenBitNuts
 {
-    class Calc
+    public class Calc
     {
         public static sbyte Sign(int value)
         {
