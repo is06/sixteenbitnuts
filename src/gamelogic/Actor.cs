@@ -45,7 +45,11 @@ namespace SixteenBitNuts
 
         public virtual void Update()
         {
-            sprite?.Update();
+            if (sprite is Sprite spr)
+            {
+                spr.Position = Position;
+                spr.Update();
+            }
         }
 
         public virtual void Draw(Matrix transform)
