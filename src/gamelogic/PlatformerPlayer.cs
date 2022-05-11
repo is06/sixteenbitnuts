@@ -6,5 +6,15 @@
         {
 
         }
+
+        protected override void UpdateDirection()
+        {
+            
+        }
+
+        protected override void UpdateVelocity()
+        {
+            
+        }
     }
 }
