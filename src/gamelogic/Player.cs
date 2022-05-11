@@ -39,9 +39,23 @@ namespace SixteenBitNuts
             base.Update();
 
             Velocity = Vector2.Zero;
-
+            
             virtualStick.Update();
+
+            UpdateDirection();
+            UpdateVelocity();
+            PerformMove();
         }
+
+        /// <summary>
+        /// Override this function to define how the direction is updated
+        /// </summary>
+        protected abstract void UpdateDirection();
+
+        /// <summary>
+        /// Override this function to defined how the velocity is updated
+        /// </summary>
+        protected abstract void UpdateVelocity();
 
         /// <summary>
         /// Performs the movement of the player according to its velocity

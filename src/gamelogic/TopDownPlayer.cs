@@ -18,21 +18,9 @@ namespace SixteenBitNuts
         }
 
         /// <summary>
-        /// Updates all data for this player
-        /// </summary>
-        public override void Update()
-        {
-            base.Update();
-
-            UpdateDirection();
-            UpdateVelocity();
-            PerformMove();
-        }
-
-        /// <summary>
         /// Updates the current direction according to the virtual stick value
         /// </summary>
-        private void UpdateDirection()
+        protected override void UpdateDirection()
         {
             Direction = DirectionHelper.FromVirtualStickValue(virtualStick.Value);
         }
@@ -40,7 +28,7 @@ namespace SixteenBitNuts
         /// <summary>
         /// Updates the velocity according to the current direction
         /// </summary>
-        private void UpdateVelocity()
+        protected override void UpdateVelocity()
         {
             var radians = Direction.GetRadians();
             if (radians != -1)
