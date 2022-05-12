@@ -30,7 +30,7 @@ namespace SixteenBitNuts
         public Actor(Map map, Point hitBoxSize)
         {
             this.map = map;
-            collider = new Collider(hitBoxSize);
+            collider = new Collider(map.Game, hitBoxSize);
         }
 
         public virtual void Initialize()
@@ -45,6 +45,8 @@ namespace SixteenBitNuts
 
         public virtual void Update()
         {
+            collider.Update();
+
             if (sprite is Sprite spr)
             {
                 spr.Position = Position;
@@ -55,6 +57,11 @@ namespace SixteenBitNuts
         public virtual void Draw(Matrix transform)
         {
             sprite?.Draw(transform);
+        }
+
+        public virtual void DebugDraw()
+        {
+            collider.DebugDraw();
         }
 
         /// <summary>
@@ -74,7 +81,7 @@ namespace SixteenBitNuts
 
                 while (move != 0)
                 {
-                    if (!IsOverlappingWith(map.Solids, Position + new Point(xStep, 0)))
+                    if (!IsOverlappingWith(map.Solids, new Point(xStep, 0)))
                     {
                         collider.Bounds.X += xStep;
                         move -= xStep;
@@ -105,7 +112,7 @@ namespace SixteenBitNuts
 
                 while (move != 0)
                 {
-                    if (!IsOverlappingWith(map.Solids, Position + new Point(0, yStep)))
+                    if (!IsOverlappingWith(map.Solids, new Point(0, yStep)))
                     {
                         collider.Bounds.Y += yStep;
                         move -= yStep;
@@ -129,7 +136,7 @@ namespace SixteenBitNuts
         {
             foreach (var solid in solids)
             {
-                if (IsOverlappingRectToRect(solid.Bounds, collider.Bounds, offset))
+                if (IsOverlappingRectToRect(collider.Bounds, solid.Bounds, offset))
                 {
                     return true;
                 }
@@ -144,11 +151,11 @@ namespace SixteenBitNuts
         /// <param name="two">The second rectangle</param>
         /// <param name="offset">An offset to apply to the overlapping test</param>
         /// <returns>True if rectangles are overlapping with the offset provided</returns>
-        private bool IsOverlappingRectToRect(Rectangle one, Rectangle two, Point offset)
+        private bool IsOverlappingRectToRect(Rectangle moving, Rectangle still, Point offset)
         {
-            Rectangle offsetOneBounds = new Rectangle(one.Location + offset, one.Size);
+            Rectangle offsetOneBounds = new Rectangle(moving.Location + offset, moving.Size);
 
-            return offsetOneBounds.Intersects(two);
+            return offsetOneBounds.Intersects(still);
         }
     }
 }

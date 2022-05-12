@@ -90,8 +90,9 @@ namespace SixteenBitNuts
             GraphicsDevice.SetRenderTarget(inGameRenderSurface);
             GraphicsDevice.Clear(Color.Black);
 
-            // Draws every in game in the surface
+            // Draws everything in game in the surface
             CurrentScene?.Draw();
+            CurrentScene?.DebugDraw();
 
             // Back to main framebuffer
             GraphicsDevice.SetRenderTarget(null);

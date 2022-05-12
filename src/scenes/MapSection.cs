@@ -8,7 +8,7 @@ namespace SixteenBitNuts
         public Rectangle Bounds { get; private set; }
         public List<Tile> Tiles { get; private set; }
 
-        private Map map;
+        private readonly Map map;
 
         public MapSection(Map map, Rectangle bounds)
         {
@@ -17,16 +17,12 @@ namespace SixteenBitNuts
             Tiles = new List<Tile>();
         }
 
-        public void Draw(Matrix transform)
+        public void Draw()
         {
-            map.Game.SpriteBatch?.Begin();
-
             foreach (var tile in Tiles)
             {
                 map.Tileset?.DrawTile(tile.Index, tile.Position);
             }
-
-            map.Game.SpriteBatch?.End();
         }
     }
 }

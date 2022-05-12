@@ -4,11 +4,26 @@ namespace SixteenBitNuts
 {
     public class Solid
     {
-        public Rectangle Bounds;
+        public Rectangle Bounds { get; set; }
 
-        public Solid()
+        private readonly DebugBox debugBox;
+
+        public Solid(Game game, Rectangle bounds)
         {
+            Bounds = bounds;
 
+            debugBox = new DebugBox(game, Bounds, Color.Red);
+        }
+
+        public void Update()
+        {
+            debugBox.Bounds = Bounds;
+            debugBox.Update();
+        }
+
+        public void DebugDraw()
+        {
+            debugBox.Draw();
         }
     }
 }
