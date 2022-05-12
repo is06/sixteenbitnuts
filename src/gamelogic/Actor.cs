@@ -27,10 +27,10 @@ namespace SixteenBitNuts
         private float xRemainder;
         private float yRemainder;
 
-        public Actor(Map map)
+        public Actor(Map map, Point hitBoxSize)
         {
             this.map = map;
-            collider = new Collider();
+            collider = new Collider(hitBoxSize);
         }
 
         public virtual void Initialize()

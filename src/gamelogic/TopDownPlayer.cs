@@ -12,7 +12,7 @@ namespace SixteenBitNuts
         /// Creates the player in the given map
         /// </summary>
         /// <param name="map">Map in which the player will be created</param>
-        public TopDownPlayer(Map map) : base(map)
+        public TopDownPlayer(Map map, Point hitBoxSize) : base(map, hitBoxSize)
         {
 
         }
