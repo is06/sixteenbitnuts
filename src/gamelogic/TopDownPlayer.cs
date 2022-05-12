@@ -30,7 +30,7 @@ namespace SixteenBitNuts
         /// </summary>
         protected override void UpdateVelocity()
         {
-            var radians = Direction.GetRadians();
+            double radians = Direction.GetRadians();
             if (radians != -1)
             {
                 // compute move with the direction
