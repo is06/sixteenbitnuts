@@ -64,8 +64,11 @@ namespace SixteenBitNuts
         /// </summary>
         protected void PerformMove()
         {
-            MoveX(Velocity.X);
-            MoveY(Velocity.Y);
+            if (Velocity != Vector2.Zero)
+            {
+                MoveX(Velocity.X);
+                MoveY(Velocity.Y);
+            }
         }
     }
 }

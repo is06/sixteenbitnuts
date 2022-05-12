@@ -29,6 +29,11 @@
             
         }
 
+        public virtual void DebugDraw()
+        {
+
+        }
+
         public virtual void UnloadContent()
         {
             

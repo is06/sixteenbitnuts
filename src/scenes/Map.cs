@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 
 namespace SixteenBitNuts
@@ -8,8 +9,7 @@ namespace SixteenBitNuts
         public Tileset? Tileset { get; set; }
         public Dictionary<int, MapSection> Sections { get; private set; }
         public List<Solid> Solids { get; private set; }
-
-        protected Player? player;
+        public Player? Player { get; protected set; }
 
         private readonly string name;
         private readonly bool loadFromDefinitionFile;
@@ -31,7 +31,7 @@ namespace SixteenBitNuts
                 Game.MapLoader.LoadMapData(this, name);
             }
 
-            player?.Initialize();
+            Player?.Initialize();
         }
 
         public override void LoadContent()
@@ -39,26 +39,59 @@ namespace SixteenBitNuts
             base.LoadContent();
 
             Tileset?.LoadContent();
-            player?.LoadContent();
+            Player?.LoadContent();
         }
 
         public override void Update()
         {
             base.Update();
 
-            player?.Update();
+            Player?.Update();
+
+            foreach (var solid in Solids)
+            {
+                solid.Update();
+            }
         }
 
         public override void Draw()
         {
             base.Draw();
 
-            foreach (var section in Sections)
+            if (Game.SpriteBatch is SpriteBatch batch)
             {
-                section.Value.Draw(Matrix.Identity);
+                // TODO: get the matrix from camera
+                batch.Begin(transformMatrix: Matrix.Identity);
+
+                foreach (var section in Sections)
+                {
+                    section.Value.Draw();
+                }
+
+                batch.End();
             }
 
-            player?.Draw(Matrix.Identity);
+            Player?.Draw(Matrix.Identity);
+        }
+
+        public override void DebugDraw()
+        {
+            base.DebugDraw();
+
+            if (Game.SpriteBatch is SpriteBatch batch)
+            {
+                // TODO: get the matrix from camera
+                batch.Begin(transformMatrix: Matrix.Identity);
+
+                Player?.DebugDraw();
+
+                foreach (var solid in Solids)
+                {
+                    solid.DebugDraw();
+                }
+
+                batch.End();
+            }
         }
     }
 }

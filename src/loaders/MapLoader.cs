@@ -70,10 +70,7 @@ namespace SixteenBitNuts
             var fragmentOrNull = map.Tileset?.GetTilesetFragmentFromIndex(fragmentIndex);
             if (fragmentOrNull is TilesetFragment fragment)
             {
-                map.Solids.Add(new Solid
-                {
-                    Bounds = new Rectangle(position, fragment.Size)
-                });
+                map.Solids.Add(new Solid(map.Game, new Rectangle(position, fragment.Size)));
                 section.Tiles.Add(new Tile
                 {
                     Index = fragmentIndex,
