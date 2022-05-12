@@ -22,7 +22,7 @@ namespace SixteenBitNuts
         /// Creates a player for the given map
         /// </summary>
         /// <param name="map">Map in which the player will be created</param>
-        public Player(Map map) : base(map)
+        public Player(Map map, Point hitBoxSize) : base(map, hitBoxSize)
         {
             RunSpeed = 1;
 

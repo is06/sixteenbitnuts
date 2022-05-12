@@ -6,9 +6,9 @@ namespace SixteenBitNuts
     {
         public Rectangle Bounds;
 
-        public Collider()
+        public Collider(Point size)
         {
-
+            Bounds = new Rectangle(Point.Zero, size);
         }
     }
 }

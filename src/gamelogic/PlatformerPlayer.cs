@@ -1,8 +1,10 @@
-﻿namespace SixteenBitNuts
+﻿using Microsoft.Xna.Framework;
+
+namespace SixteenBitNuts
 {
     public class PlatformerPlayer : Player
     {
-        public PlatformerPlayer(Map map) : base(map)
+        public PlatformerPlayer(Map map, Point hitBoxSize) : base(map, hitBoxSize)
         {
 
         }
