@@ -57,11 +57,6 @@ namespace SixteenBitNuts
             sprite?.Draw(transform);
         }
 
-        public virtual void UnloadContent()
-        {
-            sprite?.UnloadContent();
-        }
-
         /// <summary>
         /// Moves the actor along the X axis. Will stop the actor if a solid is on the way
         /// </summary>

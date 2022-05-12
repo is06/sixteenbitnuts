@@ -133,10 +133,5 @@ namespace SixteenBitNuts
                 batch.End();
             }
         }
-
-        public void UnloadContent()
-        {
-            texture?.Dispose();
-        }
     }
 }

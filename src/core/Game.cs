@@ -13,6 +13,8 @@ namespace SixteenBitNuts
         public Point InternalSize { get; protected set; }
         
         public InputInterface InputInterface { get; protected set; }
+        public MapLoader MapLoader { get; private set; }
+        public TilesetLoader TilesetLoader { get; private set; }
         public SpriteLoader SpriteLoader { get; private set; }
         public SpriteBatch? SpriteBatch { get; private set; }
         public Scene? CurrentScene { get; private set; }
@@ -24,6 +26,8 @@ namespace SixteenBitNuts
         public Game() : base()
         {
             InputInterface = new InputInterface();
+            MapLoader = new MapLoader();
+            TilesetLoader = new TilesetLoader();
             SpriteLoader = new SpriteLoader();
             FrameRate = 60;
             WindowSize = new Point(1280, 720);
