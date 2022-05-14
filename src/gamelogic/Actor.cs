@@ -6,7 +6,7 @@ namespace SixteenBitNuts
 {
     public class Actor
     {
-        public delegate void CollisionHandler();
+        public delegate void CollisionHandler(Solid solid);
 
         public Point Position
         {
@@ -22,8 +22,8 @@ namespace SixteenBitNuts
 
         protected Sprite? sprite;
         protected readonly Map map;
+        protected readonly Collider collider;
 
-        private readonly Collider collider;
         private float xRemainder;
         private float yRemainder;
 
@@ -68,7 +68,6 @@ namespace SixteenBitNuts
         /// Moves the actor along the X axis. Will stop the actor if a solid is on the way
         /// </summary>
         /// <param name="value">Number of pixels to move the actor</param>
-        /// <param name="onCollide">Called when a collision with a solid occurs</param>
         public void MoveX(float value, CollisionHandler? onCollide = null)
         {
             xRemainder += value;
@@ -81,15 +80,17 @@ namespace SixteenBitNuts
 
                 while (move != 0)
                 {
-                    if (!IsOverlappingWith(map.Solids, new Point(xStep, 0)))
+                    var solidOrNull = GetOverlappingSolid(map.Solids, new Point(xStep, 0));
+
+                    if (solidOrNull is Solid solid)
                     {
-                        collider.Bounds.X += xStep;
-                        move -= xStep;
+                        onCollide?.Invoke(solid);
+                        break;
                     }
                     else
                     {
-                        onCollide?.Invoke();
-                        break;
+                        collider.Bounds.X += xStep;
+                        move -= xStep;
                     }
                 }
             }
@@ -99,7 +100,6 @@ namespace SixteenBitNuts
         /// Moves the actor along the Y axis. Will stop the actor if a solid is on the way
         /// </summary>
         /// <param name="value">Number of pixels to move the actor</param>
-        /// <param name="onCollide">Called when a collision with a solid occurs</param>
         public void MoveY(float value, CollisionHandler? onCollide = null)
         {
             yRemainder += value;
@@ -112,15 +112,17 @@ namespace SixteenBitNuts
 
                 while (move != 0)
                 {
-                    if (!IsOverlappingWith(map.Solids, new Point(0, yStep)))
+                    var solidOrNull = GetOverlappingSolid(map.Solids, new Point(0, yStep));
+
+                    if (solidOrNull is Solid solid)
                     {
-                        collider.Bounds.Y += yStep;
-                        move -= yStep;
+                        onCollide?.Invoke(solid);
+                        break;
                     }
                     else
                     {
-                        onCollide?.Invoke();
-                        break;
+                        collider.Bounds.Y += yStep;
+                        move -= yStep;
                     }
                 }
             }
@@ -132,16 +134,16 @@ namespace SixteenBitNuts
         /// <param name="solids">List of solids to test</param>
         /// <param name="offset">An offset to apply to the overlapping test</param>
         /// <returns>True if the collider is overlapping any solid</returns>
-        private bool IsOverlappingWith(List<Solid> solids, Point offset)
+        private Solid? GetOverlappingSolid(List<Solid> solids, Point offset)
         {
             foreach (var solid in solids)
             {
                 if (IsOverlappingRectToRect(collider.Bounds, solid.Bounds, offset))
                 {
-                    return true;
+                    return solid;
                 }
             }
-            return false;
+            return null;
         }
 
         /// <summary>

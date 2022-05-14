@@ -2,7 +2,7 @@
 
 namespace SixteenBitNuts
 {
-    class Collider
+    public class Collider
     {
         public Rectangle Bounds;
 

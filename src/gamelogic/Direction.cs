@@ -72,7 +72,20 @@ namespace SixteenBitNuts
             };
         }
 
-        public static Direction FromVirtualStickValue(Point value)
+        public static Direction FromNormalizedHorizontal(int value)
+        {
+            if (value == 1)
+            {
+                return Direction.Right;
+            }
+            else if (value == -1)
+            {
+                return Direction.Left;
+            }
+            return Direction.None;
+        }
+
+        public static Direction FromNormalizedVector(Vector2 value)
         {
             if (value.X == 1)
             {
