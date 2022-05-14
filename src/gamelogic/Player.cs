@@ -1,22 +1,27 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
 
 namespace SixteenBitNuts
 {
+    public delegate void CollisionSideHandler(CollisionSide side);
+
     /// <summary>
     /// Represents all kind of player in games
     /// </summary>
     public abstract class Player : Actor
     {
+        public event CollisionSideHandler? OnCollideVertically;
+        public event CollisionSideHandler? OnCollideHorizontally;
+
         // Public fields (for authoring edit)
         public float RunSpeed;
+        public Vector2 Velocity;
 
         // Properties
-        public Vector2 Velocity { get; set; }
+        public bool IsControllable { get; set; }
         public Direction Direction { get; set; }
         
         // Internal fields
-        protected VirtualStick virtualStick;
+        protected VirtualStick? run;
 
         /// <summary>
         /// Creates a player for the given map
@@ -25,10 +30,7 @@ namespace SixteenBitNuts
         public Player(Map map, Point hitBoxSize) : base(map, hitBoxSize)
         {
             RunSpeed = 1;
-
-            virtualStick = new VirtualStick(map.Game)
-                .AddKeys(Keys.Left, Keys.Right, Keys.Up, Keys.Down)
-                .AddKeys(Keys.Q, Keys.D, Keys.Z, Keys.S);
+            IsControllable = true;
         }
 
         /// <summary>
@@ -37,14 +39,13 @@ namespace SixteenBitNuts
         public override void Update()
         {
             base.Update();
-
-            Velocity = Vector2.Zero;
             
-            virtualStick.Update();
+            run?.Update();
 
             UpdateDirection();
             UpdateVelocity();
-            PerformMove();
+            BeforeApplyMove();
+            ApplyMove();
         }
 
         /// <summary>
@@ -58,16 +59,44 @@ namespace SixteenBitNuts
         protected abstract void UpdateVelocity();
 
         /// <summary>
+        /// Override this function to make other computations before applying the final move
+        /// </summary>
+        protected virtual void BeforeApplyMove()
+        {
+
+        }
+
+        /// <summary>
         /// Performs the movement of the player according to its velocity
         /// Should be called after every player updates regarding velocity computation
         /// (in order to use the newly computed velocity directly after, not in the next frame)
         /// </summary>
-        protected void PerformMove()
+        protected void ApplyMove()
         {
             if (Velocity != Vector2.Zero)
             {
-                MoveX(Velocity.X);
-                MoveY(Velocity.Y);
+                MoveX(Velocity.X, (Solid solid) =>
+                {
+                    if (Velocity.X > 0)
+                    {
+                        OnCollideHorizontally?.Invoke(CollisionSide.Left);
+                    }
+                    else if (Velocity.X < 0)
+                    {
+                        OnCollideHorizontally?.Invoke(CollisionSide.Right);
+                    }
+                });
+                MoveY(Velocity.Y, (Solid solid) =>
+                {
+                    if (Velocity.Y > 0)
+                    {
+                        OnCollideVertically?.Invoke(CollisionSide.Top);
+                    }
+                    else if (Velocity.Y < 0)
+                    {
+                        OnCollideVertically?.Invoke(CollisionSide.Bottom);
+                    }
+                });
             }
         }
     }

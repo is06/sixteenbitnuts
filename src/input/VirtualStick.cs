@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using System;
 using System.Collections.Generic;
 
 namespace SixteenBitNuts
@@ -23,7 +24,7 @@ namespace SixteenBitNuts
             public Buttons Down;
         }
 
-        public Point Value;
+        public Vector2 Value;
 
         private readonly Game game;
         private readonly List<KeyMapping> keyMappings = new List<KeyMapping>();
@@ -63,22 +64,30 @@ namespace SixteenBitNuts
 
         public VirtualStick AddAxes()
         {
-            return this;
+            throw new NotImplementedException();
         }
 
         public void Update()
         {
-            Value = Point.Zero;
+            Value = Vector2.Zero;
 
             foreach (var mapping in keyMappings)
             {
-                Value.X |= game.InputInterface.Keyboard.GetAxis(mapping.Left, mapping.Right);
-                Value.Y |= game.InputInterface.Keyboard.GetAxis(mapping.Up, mapping.Down);
+                Value.X = Value.X == 0
+                    ? game.InputInterface.Keyboard.GetAxis(mapping.Left, mapping.Right)
+                    : Value.Y;
+                Value.Y = Value.Y == 0
+                    ? game.InputInterface.Keyboard.GetAxis(mapping.Up, mapping.Down)
+                    : Value.Y;
             }
             foreach (var mapping in buttonMappings)
             {
-                Value.X |= game.InputInterface.Buttons.GetAxis(mapping.PlayerIndex, mapping.Left, mapping.Right);
-                Value.Y |= game.InputInterface.Buttons.GetAxis(mapping.PlayerIndex, mapping.Up, mapping.Down);
+                Value.X = Value.X == 0
+                    ? game.InputInterface.Buttons.GetAxis(mapping.PlayerIndex, mapping.Left, mapping.Right)
+                    : Value.X;
+                Value.Y = Value.Y == 0
+                    ? game.InputInterface.Buttons.GetAxis(mapping.PlayerIndex, mapping.Up, mapping.Down)
+                    : Value.Y;
             }
         }
     }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using System;
 
 namespace SixteenBitNuts
@@ -14,7 +15,9 @@ namespace SixteenBitNuts
         /// <param name="map">Map in which the player will be created</param>
         public TopDownPlayer(Map map, Point hitBoxSize) : base(map, hitBoxSize)
         {
-
+            run = new VirtualStick(map.Game)
+                .AddKeys(Keys.Left, Keys.Right, Keys.Up, Keys.Down)
+                .AddKeys(Keys.Q, Keys.D, Keys.Z, Keys.S);
         }
 
         /// <summary>
@@ -22,7 +25,10 @@ namespace SixteenBitNuts
         /// </summary>
         protected override void UpdateDirection()
         {
-            Direction = DirectionHelper.FromVirtualStickValue(virtualStick.Value);
+            if (run is VirtualStick stick)
+            {
+                Direction = DirectionHelper.FromNormalizedVector(stick.Value);
+            }
         }
 
         /// <summary>
