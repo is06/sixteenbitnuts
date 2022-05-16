@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
-using System.Collections.Generic;
 
 namespace SixteenBitNuts
 {
@@ -80,7 +79,7 @@ namespace SixteenBitNuts
 
                 while (move != 0)
                 {
-                    var solidOrNull = GetOverlappingSolid(map.Solids, new Point(xStep, 0));
+                    var solidOrNull = collider.GetOverlappingSolid(map.Solids, new Point(xStep, 0));
 
                     if (solidOrNull is Solid solid)
                     {
@@ -112,7 +111,7 @@ namespace SixteenBitNuts
 
                 while (move != 0)
                 {
-                    var solidOrNull = GetOverlappingSolid(map.Solids, new Point(0, yStep));
+                    var solidOrNull = collider.GetOverlappingSolid(map.Solids, new Point(0, yStep));
 
                     if (solidOrNull is Solid solid)
                     {
@@ -126,38 +125,6 @@ namespace SixteenBitNuts
                     }
                 }
             }
-        }
-
-        /// <summary>
-        /// Determines if the current actor collider is overlapping any solid from the map
-        /// </summary>
-        /// <param name="solids">List of solids to test</param>
-        /// <param name="offset">An offset to apply to the overlapping test</param>
-        /// <returns>True if the collider is overlapping any solid</returns>
-        private Solid? GetOverlappingSolid(List<Solid> solids, Point offset)
-        {
-            foreach (var solid in solids)
-            {
-                if (IsOverlappingRectToRect(collider.Bounds, solid.Bounds, offset))
-                {
-                    return solid;
-                }
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// Determines if two rectangles are overlapping
-        /// </summary>
-        /// <param name="one">The first rectangle</param>
-        /// <param name="two">The second rectangle</param>
-        /// <param name="offset">An offset to apply to the overlapping test</param>
-        /// <returns>True if rectangles are overlapping with the offset provided</returns>
-        private bool IsOverlappingRectToRect(Rectangle moving, Rectangle still, Point offset)
-        {
-            Rectangle offsetOneBounds = new Rectangle(moving.Location + offset, moving.Size);
-
-            return offsetOneBounds.Intersects(still);
         }
     }
 }

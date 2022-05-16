@@ -2,15 +2,18 @@
 
 namespace SixteenBitNuts
 {
-    public delegate void CollisionSideHandler(CollisionSide side);
-
     /// <summary>
     /// Represents all kind of player in games
     /// </summary>
     public abstract class Player : Actor
     {
+        public delegate void CollisionSideHandler(CollisionSide side);
+        public delegate void LifeCycleStepHandler();
+
         public event CollisionSideHandler? OnCollideVertically;
         public event CollisionSideHandler? OnCollideHorizontally;
+        public event LifeCycleStepHandler? OnBeforeApplyMoveAndDetectCollisions;
+        public event LifeCycleStepHandler? OnAfterApplyMoveAndDetectCollisions;
 
         // Public fields (for authoring edit)
         public float RunSpeed;
@@ -22,6 +25,7 @@ namespace SixteenBitNuts
         
         // Internal fields
         protected VirtualStick? runStick;
+        protected bool IsIntersectingWithObstacle = false;
 
         /// <summary>
         /// Creates a player for the given map
@@ -39,14 +43,15 @@ namespace SixteenBitNuts
         public override void Update()
         {
             base.Update();
-            
+
             runStick?.Update();
 
             UpdateDirection();
             UpdateVelocity();
             UpdateStates();
-            BeforeApplyMove();
-            ApplyMove();
+            OnBeforeApplyMoveAndDetectCollisions?.Invoke();
+            ApplyMoveAndDetectCollisions();
+            OnAfterApplyMoveAndDetectCollisions?.Invoke();
         }
 
         /// <summary>
@@ -68,24 +73,18 @@ namespace SixteenBitNuts
         }
 
         /// <summary>
-        /// Override this function to make other computations before applying the final move
-        /// </summary>
-        protected virtual void BeforeApplyMove()
-        {
-
-        }
-
-        /// <summary>
         /// Performs the movement of the player according to its velocity
-        /// Should be called after every player updates regarding velocity computation
-        /// (in order to use the newly computed velocity directly after, not in the next frame)
         /// </summary>
-        protected void ApplyMove()
+        private void ApplyMoveAndDetectCollisions()
         {
+            IsIntersectingWithObstacle = false;
+
             if (Velocity != Vector2.Zero)
             {
                 MoveX(Velocity.X, (Solid solid) =>
                 {
+                    IsIntersectingWithObstacle = true;
+
                     if (Velocity.X > 0)
                     {
                         OnCollideHorizontally?.Invoke(CollisionSide.Left);
@@ -97,6 +96,8 @@ namespace SixteenBitNuts
                 });
                 MoveY(Velocity.Y, (Solid solid) =>
                 {
+                    IsIntersectingWithObstacle = true;
+
                     if (Velocity.Y > 0)
                     {
                         OnCollideVertically?.Invoke(CollisionSide.Top);
