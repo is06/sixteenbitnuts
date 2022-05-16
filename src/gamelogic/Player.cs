@@ -21,7 +21,7 @@ namespace SixteenBitNuts
         public Direction Direction { get; set; }
         
         // Internal fields
-        protected VirtualStick? run;
+        protected VirtualStick? runStick;
 
         /// <summary>
         /// Creates a player for the given map
@@ -40,10 +40,11 @@ namespace SixteenBitNuts
         {
             base.Update();
             
-            run?.Update();
+            runStick?.Update();
 
             UpdateDirection();
             UpdateVelocity();
+            UpdateStates();
             BeforeApplyMove();
             ApplyMove();
         }
@@ -54,9 +55,17 @@ namespace SixteenBitNuts
         protected abstract void UpdateDirection();
 
         /// <summary>
-        /// Override this function to defined how the velocity is updated
+        /// Override this function to define how the velocity is updated
         /// </summary>
         protected abstract void UpdateVelocity();
+
+        /// <summary>
+        /// Override this function to define states for the player after velocity computation
+        /// </summary>
+        protected virtual void UpdateStates()
+        {
+
+        }
 
         /// <summary>
         /// Override this function to make other computations before applying the final move
