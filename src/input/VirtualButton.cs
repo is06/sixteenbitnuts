@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using System;
 using System.Collections.Generic;
 
 namespace SixteenBitNuts
@@ -18,6 +17,8 @@ namespace SixteenBitNuts
             public bool IsReleased;
             public bool IsPressedOnce;
 
+            private bool isBufferPressed;
+
             /// <summary>
             /// Updates the statuses of this virtual button key mapping according to the keyboard state
             /// </summary>
@@ -34,6 +35,15 @@ namespace SixteenBitNuts
                 if (Keyboard.GetState().IsKeyUp(Key))
                 {
                     IsReleased = true;
+                    isBufferPressed = false;
+                }
+                if (isBufferPressed == false)
+                {
+                    if (Keyboard.GetState().IsKeyDown(Key))
+                    {
+                        IsPressedOnce = true;
+                        isBufferPressed = true;
+                    }
                 }
             }
         }
@@ -46,6 +56,8 @@ namespace SixteenBitNuts
             public bool IsPressed;
             public bool IsReleased;
             public bool IsPressedOnce;
+
+            private bool isBufferPressed;
 
             public void Update()
             {
@@ -60,6 +72,15 @@ namespace SixteenBitNuts
                 if (GamePad.GetState(PlayerIndex).IsButtonUp(Button))
                 {
                     IsReleased = true;
+                    isBufferPressed = false;
+                }
+                if (isBufferPressed == false)
+                {
+                    if (GamePad.GetState(PlayerIndex).IsButtonDown(Button))
+                    {
+                        IsPressedOnce = true;
+                        isBufferPressed = true;
+                    }
                 }
             }
         }
@@ -133,24 +154,39 @@ namespace SixteenBitNuts
         {
             foreach (var mapping in keyMappings)
             {
-                if (mapping.IsReleased)
+                if (!mapping.IsReleased)
+                {
+                    return false;
+                }
+            }
+            foreach (var mapping in buttonMappings)
+            {
+                if (!mapping.IsReleased)
+                {
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+
+        public bool IsPressedOnce()
+        {
+            foreach (var mapping in keyMappings)
+            {
+                if (mapping.IsPressedOnce)
                 {
                     return true;
                 }
             }
             foreach (var mapping in buttonMappings)
             {
-                if (mapping.IsReleased)
+                if (mapping.IsPressedOnce)
                 {
                     return true;
                 }
             }
             return false;
-        }
-
-        public bool IsPressedOnce()
-        {
-            throw new NotImplementedException();
         }
     }
 }

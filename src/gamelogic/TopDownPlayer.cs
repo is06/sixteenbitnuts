@@ -15,7 +15,7 @@ namespace SixteenBitNuts
         /// <param name="map">Map in which the player will be created</param>
         public TopDownPlayer(Map map, Point hitBoxSize) : base(map, hitBoxSize)
         {
-            run = new VirtualStick(map.Game)
+            runStick = new VirtualStick(map.Game)
                 .AddKeys(Keys.Left, Keys.Right, Keys.Up, Keys.Down)
                 .AddKeys(Keys.Q, Keys.D, Keys.Z, Keys.S);
         }
@@ -25,7 +25,7 @@ namespace SixteenBitNuts
         /// </summary>
         protected override void UpdateDirection()
         {
-            if (run is VirtualStick stick)
+            if (runStick is VirtualStick stick)
             {
                 Direction = DirectionHelper.FromNormalizedVector(stick.Value);
             }

@@ -8,59 +8,51 @@ namespace SixteenBitNuts
         public float Weight = 1f;
         public float JumpForce = -8f;
 
+        public bool IsJumping = false;
+        public bool IsFalling = false;
         public bool IsTouchingTheGround = false;
         public bool IsTouchingTheCeiling = false;
 
-        protected VirtualButton jump;
+        private bool isJumpButtonPressed = false;
+
+        protected VirtualButton jumpButton;
 
         public PlatformerPlayer(Map map, Point hitBoxSize) : base(map, hitBoxSize)
         {
             OnCollideVertically += PlatformerPlayer_OnCollideVertically;
 
-            run = new VirtualStick(map.Game)
+            runStick = new VirtualStick(map.Game)
                 .AddKeys(Keys.Left, Keys.Right, Keys.Up, Keys.Down)
                 .AddButtons(PlayerIndex.One, Buttons.DPadLeft, Buttons.DPadRight, Buttons.DPadUp, Buttons.DPadDown);
-            jump = new VirtualButton()
+            jumpButton = new VirtualButton()
                 .AddKey(Keys.C)
                 .AddButton(PlayerIndex.One, Buttons.A);
-        }
-
-        public override void Update()
-        {
-            base.Update();
-
-            if (IsControllable)
-            {
-                jump.Update();
-
-                if (jump.IsPressed())
-                {
-                    Velocity.Y = JumpForce;
-                    IsTouchingTheGround = false;
-                }
-                if (jump.IsReleased())
-                {
-                    if (Velocity.Y < 0)
-                    {
-                        Velocity.Y *= 0.5f;
-                    }
-                }
-            }
-            
         }
 
         protected override void UpdateDirection()
         {
             if (IsControllable)
             {
-                if (run is VirtualStick stick)
+                if (runStick is VirtualStick stick)
                 {
                     Direction = DirectionHelper.FromNormalizedHorizontal((int)stick.Value.X);
                 }
             }
         }
 
+        /// <summary>
+        /// Updates the player velocity during different stages like running or jumping
+        /// </summary>
         protected override void UpdateVelocity()
+        {
+            if (IsControllable)
+            {
+                UpdateRunVelocity();
+                UpdateJumpVelocity();
+            }
+        }
+
+        private void UpdateRunVelocity()
         {
             if (Direction == Direction.Left)
             {
@@ -76,6 +68,42 @@ namespace SixteenBitNuts
             }
         }
 
+        private void UpdateJumpVelocity()
+        {
+            jumpButton.Update();
+
+            if (!isJumpButtonPressed && IsTouchingTheGround && jumpButton.IsPressed())
+            {
+                Velocity.Y = JumpForce;
+                IsTouchingTheGround = false;
+                isJumpButtonPressed = true;
+            }
+            else if (isJumpButtonPressed && jumpButton.IsReleased())
+            {
+                if (Velocity.Y < 0)
+                {
+                    Velocity.Y *= 0.5f;
+                }
+                isJumpButtonPressed = false;
+            }
+        }
+
+        protected override void UpdateStates()
+        {
+            base.UpdateStates();
+
+            if (Velocity.Y > 0)
+            {
+                IsFalling = true;
+                IsJumping = false;
+            }
+            else if (Velocity.Y < 0)
+            {
+                IsJumping = true;
+                IsFalling = false;
+            }
+        }
+
         protected override void BeforeApplyMove()
         {
             base.BeforeApplyMove();
@@ -83,16 +111,14 @@ namespace SixteenBitNuts
             ApplyGravity();
         }
 
-        protected virtual void ApplyGravity()
+        private void ApplyGravity()
         {
             if (IsTouchingTheGround)
             {
                 Velocity.Y = 0;
             }
-            else
-            {
-                Velocity += ((PlatformerMap)map).Gravity * Weight;
-            }
+
+            Velocity += ((PlatformerMap)map).Gravity * Weight;
 
             if (IsTouchingTheCeiling)
             {
@@ -101,11 +127,19 @@ namespace SixteenBitNuts
             }
         }
 
+        /// <summary>
+        /// Sets the state of touching the ground or ceiling when a vertical collision with a solid occurs
+        /// </summary>
+        /// <param name="side">Side of the vertical collision</param>
         private void PlatformerPlayer_OnCollideVertically(CollisionSide side)
         {
             if (side == CollisionSide.Top)
             {
                 IsTouchingTheGround = true;
+            }
+            if (side == CollisionSide.Bottom)
+            {
+                IsTouchingTheCeiling = true;
             }
         }
     }
