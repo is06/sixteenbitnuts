@@ -7,6 +7,7 @@ namespace SixteenBitNuts
     public abstract class Map : Scene
     {
         public Tileset? Tileset { get; set; }
+        public QuadBatch? QuadBatch { get; private set; }
         public Dictionary<int, MapSection> Sections { get; private set; }
         public List<Solid> Solids { get; private set; }
         public Player? Player { get; protected set; }
@@ -20,6 +21,7 @@ namespace SixteenBitNuts
             this.loadFromDefinitionFile = loadFromDefinitionFile;
             Solids = new List<Solid>();
             Sections = new Dictionary<int, MapSection>();
+            QuadBatch = new QuadBatch(game);
         }
 
         public override void Initialize()
@@ -28,7 +30,7 @@ namespace SixteenBitNuts
 
             if (loadFromDefinitionFile)
             {
-                Game.MapLoader.LoadMapData(this, name);
+                Game.MapLoader?.LoadMapData(this, name);
             }
 
             Player?.Initialize();
@@ -40,6 +42,41 @@ namespace SixteenBitNuts
 
             Tileset?.LoadContent();
             Player?.LoadContent();
+
+            LoadQuadBatchContent();
+        }
+
+        private void LoadQuadBatchContent()
+        {
+            int tileCount = 0;
+            foreach (var section in Sections)
+            {
+                tileCount += section.Value.Tiles.Count;
+            }
+
+            QuadFragment[] qfs = new QuadFragment[tileCount];
+            int qfi = 0;
+            foreach (var section in Sections)
+            {
+                foreach (var tile in section.Value.Tiles)
+                {
+                    var tilesetFragment = Tileset?.GetTilesetFragmentFromIndex(tile.Index);
+                    if (tilesetFragment.HasValue)
+                    {
+                        qfs[qfi] = new QuadFragment
+                        {
+                            Source = new Rectangle(tilesetFragment.Value.Position, tilesetFragment.Value.Size),
+                            Destination = new Rectangle(tile.Position, tilesetFragment.Value.Size)
+                        };
+                        qfi++;
+                    }
+                }
+            }
+
+            if (Tileset != null)
+            {
+                QuadBatch?.LoadContent("Graphics/Tilesets/" + Tileset.Name, qfs);
+            }
         }
 
         public override void Update()
@@ -61,14 +98,11 @@ namespace SixteenBitNuts
             if (Game.SpriteBatch is SpriteBatch batch)
             {
                 // TODO: get the matrix from camera
-                batch.Begin(transformMatrix: Matrix.Identity);
 
                 foreach (var section in Sections)
                 {
                     section.Value.Draw();
                 }
-
-                batch.End();
             }
 
             Player?.Draw(Matrix.Identity);

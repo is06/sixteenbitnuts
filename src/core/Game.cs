@@ -15,8 +15,8 @@ namespace SixteenBitNuts
         
         // Service properties
         public InputInterface InputInterface { get; private set; }
-        public MapLoader MapLoader { get; private set; }
-        public TilesetLoader TilesetLoader { get; private set; }
+        public IMapLoader? MapLoader { get; protected set; }
+        public ITilesetLoader? TilesetLoader { get; protected set; }
         public SpriteLoader SpriteLoader { get; private set; }
         public SpriteBatch? SpriteBatch { get; private set; }
         public IAuthoringTool? AuthoringTool { get; protected set; }
@@ -108,12 +108,17 @@ namespace SixteenBitNuts
 
             // Change the render target to in game surface
             GraphicsDevice.SetRenderTarget(inGameRenderSurface);
+            
+            var rs = new RasterizerState();
+            //rs.FillMode = FillMode.WireFrame;
+            rs.CullMode = CullMode.CullCounterClockwiseFace;
             GraphicsDevice.Clear(Color.Black);
+            GraphicsDevice.RasterizerState = rs;
 
             // Draws everything in game in the surface
             CurrentScene?.Draw();
             CurrentScene?.DebugDraw();
-
+                
             // Back to main framebuffer
             GraphicsDevice.SetRenderTarget(null);
 

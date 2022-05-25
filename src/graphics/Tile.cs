@@ -6,5 +6,7 @@ namespace SixteenBitNuts
     {
         public int Index;
         public Point Position;
+        public Point? OverrideSize;
+        public int? OverrideLayer;
     }
 }
