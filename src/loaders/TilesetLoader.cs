@@ -3,7 +3,7 @@ using System.IO;
 
 namespace SixteenBitNuts
 {
-    public class TilesetLoader
+    public class TilesetLoader : ITilesetLoader
     {
         public TilesetLoader()
         {

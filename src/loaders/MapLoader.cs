@@ -3,7 +3,7 @@ using System.IO;
 
 namespace SixteenBitNuts
 {
-    public class MapLoader
+    public class MapLoader : IMapLoader
     {
         public MapLoader()
         {
@@ -70,12 +70,7 @@ namespace SixteenBitNuts
             var fragmentOrNull = map.Tileset?.GetTilesetFragmentFromIndex(fragmentIndex);
             if (fragmentOrNull is TilesetFragment fragment)
             {
-                map.Solids.Add(new Solid(map.Game, new Rectangle(position, fragment.Size)));
-                section.Tiles.Add(new Tile
-                {
-                    Index = fragmentIndex,
-                    Position = position
-                });
+                section.CreateTile(fragmentIndex, position, fragment.Size);
             }
             else
             {
