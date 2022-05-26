@@ -19,24 +19,7 @@ namespace SixteenBitNuts
 
         public void Draw()
         {
-            QuadFragment[] qfs = new QuadFragment[Tiles.Count];
 
-            if (map.Tileset is Tileset tileset)
-            {
-                for (int i = 0; i < Tiles.Count; i++)
-                {
-                    var tile = Tiles[i];
-                    var tilesetFragment = tileset.GetTilesetFragmentFromIndex(tile.Index);
-
-                    qfs[i] = new QuadFragment
-                    {
-                        Source = new Rectangle(tilesetFragment.Position, tilesetFragment.Size),
-                        Destination = new Rectangle(tile.Position, tile.OverrideSize.HasValue ? tile.OverrideSize.Value : tilesetFragment.Size)
-                    };
-                }
-
-                map.QuadBatch?.DrawFragments();
-            }
         }
 
         /// <summary>

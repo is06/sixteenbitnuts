@@ -18,9 +18,8 @@ namespace SixteenBitNuts
         private int[]? indices;
 
         private readonly Game game;
-        private string? textureName;
-        private Texture2D? texture;
         private BasicEffect? effect;
+        private Texture2D? texture;
 
         // Camera position
         private Vector3 cameraScrollPosition = new Vector3(0, 0, -1);
@@ -31,22 +30,11 @@ namespace SixteenBitNuts
             this.game = game;
         }
 
-        public void LoadContent(string textureName, QuadFragment[] fragments)
+        public void LoadContent(string textureName)
         {
-            this.textureName = textureName;
-
-            fragmentCount = fragments.Length;
-
-            int vertexCount = fragments.Length * 4;
-            vertices = new VertexPositionColorTexture[vertexCount];
-
-            int indexCount = fragments.Length * 6;
-            indices = new int[indexCount];
-
             texture = game.Content.Load<Texture2D>(textureName);
 
             Viewport vp = new Viewport(new Rectangle(Point.Zero, game.InternalSize));
-
             effect = new BasicEffect(game.GraphicsDevice)
             {
                 VertexColorEnabled = true,
@@ -55,12 +43,28 @@ namespace SixteenBitNuts
                 World = Matrix.Identity,
                 Projection = Matrix.CreateScale(1, -1, 1) * Matrix.CreateOrthographicOffCenter(0, vp.Width, vp.Height, 0, 0, 1)
             };
-
-            SetupVertices(fragments);
         }
 
-        private void SetupVertices(QuadFragment[] fragments)
+        public void Draw(QuadFragment[] fragments)
         {
+            SetBuffers(fragments);
+            DrawPrimitivesFromBuffers();
+        }
+
+        /// <summary>
+        /// Sets the vertex and index buffer from fragments to draw
+        /// </summary>
+        /// <param name="fragments"></param>
+        private void SetBuffers(QuadFragment[] fragments)
+        {
+            fragmentCount = fragments.Length;
+
+            int vertexCount = fragments.Length * 4;
+            vertices = new VertexPositionColorTexture[vertexCount];
+
+            int indexCount = fragments.Length * 6;
+            indices = new int[indexCount];
+
             for (int i = 0; i < fragmentCount; i++)
             {
                 int firstVertex = i * 4;
@@ -102,43 +106,46 @@ namespace SixteenBitNuts
                     indices[firstIndex + 5] = 3 + firstVertex;
                 }
             }
-        }
 
-        public void DrawFragments()
-        {
-            if (vertices != null && indices != null)
+            if (vertices != null)
             {
                 vertexBuffer = new VertexBuffer(game.GraphicsDevice, typeof(VertexPositionColorTexture), vertices.Length, BufferUsage.WriteOnly);
                 vertexBuffer.SetData(vertices);
-
+            }
+            
+            if (indices != null)
+            {
                 indexBuffer = new IndexBuffer(game.GraphicsDevice, typeof(short), indices.Length, BufferUsage.WriteOnly);
                 indexBuffer.SetData(indices);
+            }
+        }
 
+        private void DrawPrimitivesFromBuffers()
+        {
+            if (vertices != null && indices != null && effect != null)
+            {
                 game.GraphicsDevice.SetVertexBuffer(vertexBuffer);
                 game.GraphicsDevice.Indices = indexBuffer;
 
-                if (effect is BasicEffect e)
+                //Vector3 cameraUp = Vector3.Transform(new Vector3(0, -1, 0), Matrix.CreateRotationZ(0f));
+                effect.View = Matrix.CreateLookAt(cameraScrollPosition, cameraScrollLookAt, new Vector3(0, -1, 0));
+
+                foreach (var pass in effect.CurrentTechnique.Passes)
                 {
-                    //Vector3 cameraUp = Vector3.Transform(new Vector3(0, -1, 0), Matrix.CreateRotationZ(0f));
-                    e.View = Matrix.CreateLookAt(cameraScrollPosition, cameraScrollLookAt, new Vector3(0, -1, 0));
+                    pass.Apply();
 
-                    foreach (var pass in e.CurrentTechnique.Passes)
-                    {
-                        pass.Apply();
+                    int primitiveCount = fragmentCount * 2;
 
-                        int primitiveCount = fragmentCount * 2;
-
-                        // Draw current vertex and index buffer content
-                        game.GraphicsDevice.DrawUserIndexedPrimitives(
-                            primitiveType: PrimitiveType.TriangleList,
-                            vertexData: vertices,
-                            vertexOffset: 0,
-                            numVertices: vertices.Length,
-                            indexData: indices,
-                            indexOffset: 0,
-                            primitiveCount: primitiveCount
-                        );
-                    }
+                    // Draw current vertex and index buffer content
+                    game.GraphicsDevice.DrawUserIndexedPrimitives(
+                        primitiveType: PrimitiveType.TriangleList,
+                        vertexData: vertices,
+                        vertexOffset: 0,
+                        numVertices: vertices.Length,
+                        indexData: indices,
+                        indexOffset: 0,
+                        primitiveCount: primitiveCount
+                    );
                 }
             }
         }
