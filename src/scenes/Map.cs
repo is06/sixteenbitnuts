@@ -40,13 +40,42 @@ namespace SixteenBitNuts
         {
             base.LoadContent();
 
-            Tileset?.LoadContent();
+            if (Tileset is Tileset tileset && QuadBatch is QuadBatch batch)
+            {
+                tileset.LoadContent();
+                batch.LoadContent("Graphics/Tilesets/" + tileset.Name);
+            }
+            
             Player?.LoadContent();
-
-            LoadQuadBatchContent();
         }
 
-        private void LoadQuadBatchContent()
+        public override void Update()
+        {
+            base.Update();
+
+            Player?.Update();
+
+            foreach (var solid in Solids)
+            {
+                solid.Update();
+            }
+        }
+
+        public override void Draw()
+        {
+            base.Draw();
+
+            DrawQuadBatch();
+
+            foreach (var section in Sections)
+            {
+                section.Value.Draw();
+            }
+
+            Player?.Draw(Matrix.Identity);
+        }
+
+        private void DrawQuadBatch()
         {
             int tileCount = 0;
             foreach (var section in Sections)
@@ -73,39 +102,7 @@ namespace SixteenBitNuts
                 }
             }
 
-            if (Tileset != null)
-            {
-                QuadBatch?.LoadContent("Graphics/Tilesets/" + Tileset.Name, qfs);
-            }
-        }
-
-        public override void Update()
-        {
-            base.Update();
-
-            Player?.Update();
-
-            foreach (var solid in Solids)
-            {
-                solid.Update();
-            }
-        }
-
-        public override void Draw()
-        {
-            base.Draw();
-
-            if (Game.SpriteBatch is SpriteBatch batch)
-            {
-                // TODO: get the matrix from camera
-
-                foreach (var section in Sections)
-                {
-                    section.Value.Draw();
-                }
-            }
-
-            Player?.Draw(Matrix.Identity);
+            QuadBatch?.Draw(qfs);
         }
 
         public override void DebugDraw()
