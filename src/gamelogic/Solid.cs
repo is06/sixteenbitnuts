@@ -23,7 +23,7 @@ namespace SixteenBitNuts
 
         public void DebugDraw()
         {
-            //debugBox.Draw();
+            debugBox.Draw();
         }
     }
 }

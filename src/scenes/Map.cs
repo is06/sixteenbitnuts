@@ -109,19 +109,11 @@ namespace SixteenBitNuts
         {
             base.DebugDraw();
 
-            if (Game.SpriteBatch is SpriteBatch batch)
+            Player?.DebugDraw();
+
+            foreach (var solid in Solids)
             {
-                // TODO: get the matrix from camera
-                batch.Begin(transformMatrix: Matrix.Identity);
-
-                Player?.DebugDraw();
-
-                foreach (var solid in Solids)
-                {
-                    solid.DebugDraw();
-                }
-
-                batch.End();
+                solid.DebugDraw();
             }
         }
     }
