@@ -41,7 +41,7 @@ namespace SixteenBitNuts
             });
 
             // TODO: Do that only if the fragment is an obstacle!!!
-            map.Solids.Add(new Solid(map.Game, new Rectangle(position, overrideSize.HasValue ? overrideSize.Value : sizeFromTileset)));
+            map.Solids.Add(new Solid(map.Game, new Rectangle(position, overrideSize ?? sizeFromTileset)));
         }
     }
 }

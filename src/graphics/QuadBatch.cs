@@ -9,42 +9,34 @@ namespace SixteenBitNuts
         public Rectangle Destination;
     }
 
-    public class QuadBatch
+    public class QuadBatch : PrimitiveBatch
     {
         private int fragmentCount;
         private VertexBuffer? vertexBuffer;
         private VertexPositionColorTexture[]? vertices;
         private IndexBuffer? indexBuffer;
         private int[]? indices;
-
-        private readonly Game game;
-        private BasicEffect? effect;
         private Texture2D? texture;
 
-        // Camera position
-        private Vector3 cameraScrollPosition = new Vector3(0, 0, -1);
-        private Vector3 cameraScrollLookAt = new Vector3(0, 0, 0);
-
-        public QuadBatch(Game game)
+        public QuadBatch(Game game) : base(game)
         {
-            this.game = game;
+            effect.TextureEnabled = true;
         }
 
-        public void LoadContent(string textureName)
+        /// <summary>
+        /// Loads texture for this quad batch
+        /// </summary>
+        /// <param name="texturePath"></param>
+        public void LoadContent(string texturePath)
         {
-            texture = game.Content.Load<Texture2D>(textureName);
-
-            Viewport vp = new Viewport(new Rectangle(Point.Zero, game.InternalSize));
-            effect = new BasicEffect(game.GraphicsDevice)
-            {
-                VertexColorEnabled = true,
-                TextureEnabled = true,
-                Texture = texture,
-                World = Matrix.Identity,
-                Projection = Matrix.CreateScale(1, -1, 1) * Matrix.CreateOrthographicOffCenter(0, vp.Width, vp.Height, 0, 0, 1)
-            };
+            texture = game.Content.Load<Texture2D>(texturePath);
+            effect.Texture = texture;
         }
 
+        /// <summary>
+        /// Draws all quad fragments for the current texture
+        /// </summary>
+        /// <param name="fragments"></param>
         public void Draw(QuadFragment[] fragments)
         {
             SetBuffers(fragments);
@@ -120,6 +112,9 @@ namespace SixteenBitNuts
             }
         }
 
+        /// <summary>
+        /// Actually draws all primitives from buffer into graphics device
+        /// </summary>
         private void DrawPrimitivesFromBuffers()
         {
             if (vertices != null && indices != null && effect != null)

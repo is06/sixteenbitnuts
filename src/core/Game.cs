@@ -19,6 +19,7 @@ namespace SixteenBitNuts
         public ITilesetLoader? TilesetLoader { get; protected set; }
         public SpriteLoader SpriteLoader { get; private set; }
         public SpriteBatch? SpriteBatch { get; private set; }
+        public LineBatch? LineBatch { get; private set; }
         public IAuthoringTool? AuthoringTool { get; protected set; }
         public IAudioManager? AudioManager { get; protected set; }
         
@@ -63,6 +64,7 @@ namespace SixteenBitNuts
             TargetElapsedTime = new TimeSpan((int)(1000f / FrameRate * 10000f));
 
             SpriteBatch = new SpriteBatch(GraphicsDevice);
+            LineBatch = new LineBatch(this);
 
             inGameRenderSurface = new RenderTarget2D(
                 GraphicsDevice,
