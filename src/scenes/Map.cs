@@ -12,13 +12,26 @@ namespace SixteenBitNuts
         public List<Solid> Solids { get; private set; }
         public Player? Player { get; protected set; }
 
+        public MapSection CurrentSection
+        {
+            get
+            {
+                return Sections[currentSectionIndex];
+            }
+        }
+
+        private readonly Camera camera;
         private readonly string name;
         private readonly bool loadFromDefinitionFile;
+        private int currentSectionIndex;
 
         public Map(Game game, string name, bool loadFromDefinitionFile = true) : base(game)
         {
             this.name = name;
             this.loadFromDefinitionFile = loadFromDefinitionFile;
+            currentSectionIndex = 0;
+            camera = new Camera(this);
+
             Solids = new List<Solid>();
             Sections = new Dictionary<int, MapSection>();
             QuadBatch = new QuadBatch(game);
@@ -54,6 +67,7 @@ namespace SixteenBitNuts
             base.Update();
 
             Player?.Update();
+            camera.Update();
 
             foreach (var solid in Solids)
             {

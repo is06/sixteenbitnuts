@@ -43,6 +43,7 @@ namespace SixteenBitNuts
             
             WindowTitle = "Untitled game";
             WindowInitSize = new Point(1280, 720);
+            InternalSize = new Point(320, 180);
             FrameRate = 60;
 
             graphics = new GraphicsDeviceManager(this);

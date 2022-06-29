@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 
 namespace SixteenBitNuts
-{
+{ 
     public struct Line
     {
         public Point Origin;

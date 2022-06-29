@@ -5,6 +5,8 @@ namespace SixteenBitNuts
 {
     public class PrimitiveBatch
     {
+        private static Matrix scale2dMatrix = Matrix.CreateScale(1, -1, 1);
+
         protected readonly Game game;
         protected BasicEffect effect;
 
@@ -15,12 +17,11 @@ namespace SixteenBitNuts
         {
             this.game = game;
 
-            Viewport vp = new Viewport(new Rectangle(Point.Zero, game.InternalSize));
             effect = new BasicEffect(game.GraphicsDevice)
             {
                 VertexColorEnabled = true,
                 World = Matrix.Identity,
-                Projection = Matrix.CreateScale(1, -1, 1) * Matrix.CreateOrthographicOffCenter(0, vp.Width, vp.Height, 0, 0, 1)
+                Projection = scale2dMatrix * Matrix.CreateOrthographicOffCenter(0, game.InternalSize.X, game.InternalSize.Y, 0, 0, 1)
             };
         }
     }
