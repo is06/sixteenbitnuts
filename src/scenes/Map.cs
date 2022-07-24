@@ -69,7 +69,7 @@ namespace SixteenBitNuts
 
             if (Player != null)
             {
-                camera.Position = (Player.Position + Player.Center).ToVector2();
+                camera.Position = (Player.Position + Player.RelativeCenter).ToVector2();
             }
             camera.Update();
 

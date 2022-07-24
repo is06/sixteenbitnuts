@@ -27,6 +27,14 @@ namespace SixteenBitNuts
             }
         }
 
+        public Point RelativeCenter
+        {
+            get
+            {
+                return new Point(collider.Bounds.Size.X / 2, collider.Bounds.Size.Y / 2);
+            }
+        }
+
         protected Sprite? sprite;
         protected readonly Map map;
         protected readonly Collider collider;
