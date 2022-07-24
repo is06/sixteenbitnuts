@@ -10,9 +10,6 @@ namespace SixteenBitNuts
         protected readonly Game game;
         protected BasicEffect effect;
 
-        protected Vector3 cameraScrollPosition = new Vector3(0, 0, -1);
-        protected Vector3 cameraScrollLookAt = new Vector3(0, 0, 0);
-
         public PrimitiveBatch(Game game)
         {
             this.game = game;

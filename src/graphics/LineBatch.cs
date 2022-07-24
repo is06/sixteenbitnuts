@@ -17,7 +17,7 @@ namespace SixteenBitNuts
 
         }
 
-        public void Draw(Line[] lines)
+        public void Draw(Line[] lines, Matrix transform)
         {
             VertexPositionColor[] vertices = new VertexPositionColor[lines.Length * 2];
 
@@ -30,7 +30,8 @@ namespace SixteenBitNuts
             }
 
             //Vector3 cameraUp = Vector3.Transform(new Vector3(0, -1, 0), Matrix.CreateRotationZ(0f));
-            effect.View = Matrix.CreateLookAt(cameraScrollPosition, cameraScrollLookAt, new Vector3(0, -1, 0));
+            var cameraPosition = transform.Translation + new Vector3(0, 0, -1);
+            effect.View = Matrix.CreateLookAt(cameraPosition, Vector3.Zero, new Vector3(0, -1, 0));
 
             foreach (var pass in effect.CurrentTechnique.Passes)
             {

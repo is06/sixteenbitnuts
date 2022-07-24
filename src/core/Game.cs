@@ -1,11 +1,15 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using System;
 
 namespace SixteenBitNuts
 {
     public class Game : Microsoft.Xna.Framework.Game
     {
+        // Public fields
+        public bool IsDebugDisplayOn;
+
         // Config properties
         public string WindowTitle { get; protected set; }
         public Point WindowInitSize { get; protected set; }
@@ -30,6 +34,7 @@ namespace SixteenBitNuts
         private readonly GraphicsDeviceManager graphics;
         private RenderTarget2D? inGameRenderSurface;
         private Point currentWindowSize;
+        private VirtualButton debugDisplayButton;
 
         /// <summary>
         /// Constructor
@@ -47,6 +52,8 @@ namespace SixteenBitNuts
             FrameRate = 60;
 
             graphics = new GraphicsDeviceManager(this);
+
+            debugDisplayButton = new VirtualButton().AddKey(Keys.F3);
         }
 
         /// <summary>
@@ -61,7 +68,12 @@ namespace SixteenBitNuts
             Window.Title = WindowTitle;
             IsMouseVisible = true;
             Content.RootDirectory = "Content";
-            
+
+            GraphicsDevice.RasterizerState = new RasterizerState
+            {
+                CullMode = CullMode.CullCounterClockwiseFace
+            };
+
             TargetElapsedTime = new TimeSpan((int)(1000f / FrameRate * 10000f));
 
             SpriteBatch = new SpriteBatch(GraphicsDevice);
@@ -101,6 +113,7 @@ namespace SixteenBitNuts
         {
             base.Update(gameTime);
 
+            HandleDebugDisplay();
             CurrentScene?.Update();
             AudioManager?.Update();
         }
@@ -111,16 +124,14 @@ namespace SixteenBitNuts
 
             // Change the render target to in game surface
             GraphicsDevice.SetRenderTarget(inGameRenderSurface);
-            
-            var rs = new RasterizerState();
-            //rs.FillMode = FillMode.WireFrame;
-            rs.CullMode = CullMode.CullCounterClockwiseFace;
             GraphicsDevice.Clear(Color.Black);
-            GraphicsDevice.RasterizerState = rs;
 
             // Draws everything in game in the surface
             CurrentScene?.Draw();
-            CurrentScene?.DebugDraw();
+            if (IsDebugDisplayOn)
+            {
+                CurrentScene?.DebugDraw();
+            }
                 
             // Back to main framebuffer
             GraphicsDevice.SetRenderTarget(null);
@@ -163,6 +174,15 @@ namespace SixteenBitNuts
             {
                 SetWindowGraphics(WindowInitSize.X, WindowInitSize.Y, false);
                 currentWindowSize = WindowInitSize;
+            }
+        }
+
+        private void HandleDebugDisplay()
+        {
+            debugDisplayButton.Update();
+            if (debugDisplayButton.IsPressedOnce())
+            {
+                IsDebugDisplayOn = !IsDebugDisplayOn;
             }
         }
 

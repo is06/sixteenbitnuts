@@ -36,11 +36,12 @@ namespace SixteenBitNuts
         /// <summary>
         /// Draws all quad fragments for the current texture
         /// </summary>
-        /// <param name="fragments"></param>
-        public void Draw(QuadFragment[] fragments)
+        /// <param name="fragments">List of quad fragments to draw</param>
+        /// <param name="transform">Transform matrix to apply</param>
+        public void Draw(QuadFragment[] fragments, Matrix transform)
         {
             SetBuffers(fragments);
-            DrawPrimitivesFromBuffers();
+            DrawPrimitivesFromBuffers(transform);
         }
 
         /// <summary>
@@ -115,7 +116,8 @@ namespace SixteenBitNuts
         /// <summary>
         /// Actually draws all primitives from buffer into graphics device
         /// </summary>
-        private void DrawPrimitivesFromBuffers()
+        /// <param name="transform">Transform matrix to apply</param>
+        private void DrawPrimitivesFromBuffers(Matrix transform)
         {
             if (vertices != null && indices != null && effect != null)
             {
@@ -123,7 +125,8 @@ namespace SixteenBitNuts
                 game.GraphicsDevice.Indices = indexBuffer;
 
                 //Vector3 cameraUp = Vector3.Transform(new Vector3(0, -1, 0), Matrix.CreateRotationZ(0f));
-                effect.View = Matrix.CreateLookAt(cameraScrollPosition, cameraScrollLookAt, new Vector3(0, -1, 0));
+                var cameraPosition = transform.Translation + new Vector3(0, 0, -1);
+                effect.View = Matrix.CreateLookAt(cameraPosition, Vector3.Zero, new Vector3(0, -1, 0));
 
                 foreach (var pass in effect.CurrentTechnique.Passes)
                 {

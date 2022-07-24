@@ -1,13 +1,23 @@
 ﻿using Microsoft.Xna.Framework;
+using System;
 
 namespace SixteenBitNuts
 {
     public class Camera
     {
-        public Vector2 Position => position;
+        public Vector2 Position;
+
+        public Matrix Transform
+        {
+            get
+            {
+                Vector2 viewPortCenter = new Vector2(map.Game.InternalSize.X / 2, map.Game.InternalSize.Y / 2);
+                Vector2 translation = -Position + viewPortCenter;
+                return Matrix.CreateTranslation((float)Math.Round(translation.X), (float)Math.Round(translation.Y), 0);
+            }
+        }
 
         private readonly Map map;
-        private Vector2 position;
 
         public Camera(Map map)
         {
@@ -17,28 +27,28 @@ namespace SixteenBitNuts
         public void Update()
         {
             int hcenter = map.Game.InternalSize.X / 2;
-            int vcenter = map.Game.InternalSize.X / 2;
+            int vcenter = map.Game.InternalSize.Y / 2;
 
             int left = map.CurrentSection.Bounds.X + hcenter;
             int right = map.CurrentSection.Bounds.X + map.CurrentSection.Bounds.Width - hcenter;
             int top = map.CurrentSection.Bounds.Y + vcenter;
             int bottom = map.CurrentSection.Bounds.Y + map.CurrentSection.Bounds.Height - vcenter;
 
-            if (position.X < left)
+            if (Position.X < left)
             {
-                position.X = left;
+                Position.X = left;
             }
-            if (position.X > right)
+            if (Position.X > right)
             {
-                position.X = right;
+                Position.X = right;
             }
-            if (position.Y < top)
+            if (Position.Y < top)
             {
-                position.Y = top;
+                Position.Y = top;
             }
-            if (position.Y > bottom)
+            if (Position.Y > bottom)
             {
-                position.Y = bottom;
+                Position.Y = bottom;
             }
         }
     }
