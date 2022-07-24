@@ -125,8 +125,10 @@ namespace SixteenBitNuts
                 game.GraphicsDevice.Indices = indexBuffer;
 
                 //Vector3 cameraUp = Vector3.Transform(new Vector3(0, -1, 0), Matrix.CreateRotationZ(0f));
-                var cameraPosition = transform.Translation + new Vector3(0, 0, -1);
-                effect.View = Matrix.CreateLookAt(cameraPosition, Vector3.Zero, new Vector3(0, -1, 0));
+                //var cameraPosition = new Vector3(0, 0, -1) - transform.Translation;
+                var invertedTransform = -transform;
+                var cameraPosition = invertedTransform.Translation + new Vector3(0, 0, -1);
+                effect.View = Matrix.CreateLookAt(cameraPosition, invertedTransform.Translation, new Vector3(0, -1, 0));
 
                 foreach (var pass in effect.CurrentTechnique.Passes)
                 {
