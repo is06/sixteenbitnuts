@@ -19,6 +19,14 @@ namespace SixteenBitNuts
             }
         }
 
+        public Point Center
+        {
+            get
+            {
+                return collider.Bounds.Center;
+            }
+        }
+
         protected Sprite? sprite;
         protected readonly Map map;
         protected readonly Collider collider;
@@ -58,9 +66,9 @@ namespace SixteenBitNuts
             sprite?.Draw(transform);
         }
 
-        public virtual void DebugDraw()
+        public virtual void DebugDraw(Matrix transform)
         {
-            collider.DebugDraw();
+            collider.DebugDraw(transform);
         }
 
         /// <summary>

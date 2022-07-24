@@ -27,30 +27,32 @@ namespace SixteenBitNuts
 
         public void Update()
         {
+            var offset = 1;
+
             // Top
-            lines[0].Origin = new Point(Bounds.Left, Bounds.Top + 1);
-            lines[0].Destination = new Point(Bounds.Right, Bounds.Top + 1);
+            lines[0].Origin = new Point(Bounds.Left, Bounds.Top);
+            lines[0].Destination = new Point(Bounds.Right, Bounds.Top);
             lines[0].Color = Color;
 
             // Left
-            lines[1].Origin = new Point(Bounds.Left + 1, Bounds.Top);
-            lines[1].Destination = new Point(Bounds.Left + 1, Bounds.Bottom);
+            lines[1].Origin = new Point(Bounds.Left, Bounds.Top);
+            lines[1].Destination = new Point(Bounds.Left, Bounds.Bottom);
             lines[1].Color = Color;
 
             // Right
-            lines[2].Origin = new Point(Bounds.Right, Bounds.Top);
-            lines[2].Destination = new Point(Bounds.Right, Bounds.Bottom);
+            lines[2].Origin = new Point(Bounds.Right - offset, Bounds.Top);
+            lines[2].Destination = new Point(Bounds.Right - offset, Bounds.Bottom);
             lines[2].Color = Color;
 
             // Bottom
-            lines[3].Origin = new Point(Bounds.Left, Bounds.Bottom);
-            lines[3].Destination = new Point(Bounds.Right, Bounds.Bottom);
+            lines[3].Origin = new Point(Bounds.Left, Bounds.Bottom - offset);
+            lines[3].Destination = new Point(Bounds.Right, Bounds.Bottom - offset);
             lines[3].Color = Color;
         }
 
-        public void Draw()
+        public void Draw(Matrix transform)
         {
-            game.LineBatch?.Draw(lines);
+            game.LineBatch?.Draw(lines, transform);
         }
     }
 }

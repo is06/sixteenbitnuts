@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 
 namespace SixteenBitNuts
@@ -23,7 +22,7 @@ namespace SixteenBitNuts
         private readonly Camera camera;
         private readonly string name;
         private readonly bool loadFromDefinitionFile;
-        private int currentSectionIndex;
+        private readonly int currentSectionIndex;
 
         public Map(Game game, string name, bool loadFromDefinitionFile = true) : base(game)
         {
@@ -67,6 +66,11 @@ namespace SixteenBitNuts
             base.Update();
 
             Player?.Update();
+
+            if (Player != null)
+            {
+                camera.Position = (Player.Position + Player.Center).ToVector2();
+            }
             camera.Update();
 
             foreach (var solid in Solids)
@@ -79,17 +83,17 @@ namespace SixteenBitNuts
         {
             base.Draw();
 
-            DrawQuadBatch();
+            DrawQuadBatch(camera.Transform);
 
             foreach (var section in Sections)
             {
                 section.Value.Draw();
             }
 
-            Player?.Draw(Matrix.Identity);
+            Player?.Draw(camera.Transform);
         }
 
-        private void DrawQuadBatch()
+        private void DrawQuadBatch(Matrix transform)
         {
             int tileCount = 0;
             foreach (var section in Sections)
@@ -116,18 +120,18 @@ namespace SixteenBitNuts
                 }
             }
 
-            QuadBatch?.Draw(qfs);
+            QuadBatch?.Draw(qfs, transform);
         }
 
         public override void DebugDraw()
         {
             base.DebugDraw();
 
-            Player?.DebugDraw();
+            Player?.DebugDraw(camera.Transform);
 
             foreach (var solid in Solids)
             {
-                solid.DebugDraw();
+                solid.DebugDraw(camera.Transform);
             }
         }
     }

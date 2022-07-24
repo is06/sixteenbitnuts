@@ -22,9 +22,9 @@ namespace SixteenBitNuts
             debugBox.Update();
         }
 
-        public void DebugDraw()
+        public void DebugDraw(Matrix transform)
         {
-            debugBox.Draw();
+            debugBox.Draw(transform);
         }
 
         /// <summary>
