@@ -6,6 +6,7 @@ namespace SixteenBitNuts
     public struct SpriteAnimation
     {
         public string Name;
+        public string? OverrideFileName;
         public Point Size;
         public Point Offset;
         public uint Length;

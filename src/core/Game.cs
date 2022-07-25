@@ -19,11 +19,13 @@ namespace SixteenBitNuts
         
         // Service properties
         public InputInterface InputInterface { get; private set; }
-        public IMapLoader? MapLoader { get; protected set; }
-        public ITilesetLoader? TilesetLoader { get; protected set; }
-        public SpriteLoader SpriteLoader { get; private set; }
         public SpriteBatch? SpriteBatch { get; private set; }
         public LineBatch? LineBatch { get; private set; }
+
+        // Customizable services
+        public IMapLoader? MapLoader { get; protected set; }
+        public ITilesetLoader? TilesetLoader { get; protected set; }
+        public ISpriteLoader? SpriteLoader { get; protected set; }
         public IAuthoringTool? AuthoringTool { get; protected set; }
         public IAudioManager? AudioManager { get; protected set; }
         
@@ -33,8 +35,8 @@ namespace SixteenBitNuts
         // Private members
         private readonly GraphicsDeviceManager graphics;
         private RenderTarget2D? inGameRenderSurface;
-        private Point currentWindowSize;
         private VirtualButton debugDisplayButton;
+        private Rectangle gameRenderBounds;
 
         /// <summary>
         /// Constructor
@@ -62,7 +64,7 @@ namespace SixteenBitNuts
         protected override void Initialize()
         {
             SetWindowGraphics(WindowInitSize.X, WindowInitSize.Y, IsFullScreen);
-            currentWindowSize = WindowInitSize;
+            gameRenderBounds = new Rectangle(Point.Zero, WindowInitSize);
 
             Window.AllowUserResizing = false;
             Window.Title = WindowTitle;
@@ -140,7 +142,7 @@ namespace SixteenBitNuts
             SpriteBatch?.Begin(SpriteSortMode.Immediate, BlendState.Opaque, SamplerState.PointClamp);
             SpriteBatch?.Draw(
                 texture: inGameRenderSurface,
-                destinationRectangle: new Rectangle(Point.Zero, currentWindowSize),
+                destinationRectangle: gameRenderBounds,
                 sourceRectangle: new Rectangle(Point.Zero, InternalSize),
                 color: Color.White
             );
@@ -162,18 +164,22 @@ namespace SixteenBitNuts
             graphics.ApplyChanges();
         }
 
+        /// <summary>
+        /// Call this function to enter or leave the fullscreen mode
+        /// Can be called from a authoring tool
+        /// </summary>
         public void ToggleFullScreen()
         {
             if (!graphics.IsFullScreen)
             {
                 var currentDisplayMode = GraphicsDevice.Adapter.CurrentDisplayMode;
                 SetWindowGraphics(currentDisplayMode.Width, currentDisplayMode.Height, true);
-                currentWindowSize = new Point(currentDisplayMode.Width, currentDisplayMode.Height);
+                gameRenderBounds.Size = new Point(currentDisplayMode.Width, currentDisplayMode.Height);
             }
             else
             {
                 SetWindowGraphics(WindowInitSize.X, WindowInitSize.Y, false);
-                currentWindowSize = WindowInitSize;
+                gameRenderBounds.Size = WindowInitSize;
             }
         }
 

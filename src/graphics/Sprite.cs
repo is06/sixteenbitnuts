@@ -44,12 +44,28 @@ namespace SixteenBitNuts
 
         public void Initialize()
         {
-            animations = game.SpriteLoader.LoadAnimations(name);
+            if (game.SpriteLoader is ISpriteLoader loader)
+            {
+                animations = loader.LoadAnimations(name);
+            }
         }
 
         public void LoadContent()
         {
-            texture = game.Content.Load<Texture2D>("Graphics/Sprites/" + name);
+            var firstAnimation = new SpriteAnimation();
+            foreach (var animation in animations)
+            {
+                firstAnimation = animation.Value;
+                break;
+            }
+            if (firstAnimation.OverrideFileName is string overrideFileName)
+            {
+                // Load image with a png loader or something
+            }
+            else
+            {
+                texture = game.Content.Load<Texture2D>("Graphics/Sprites/" + name);
+            }
         }
 
         public void StartAnimation(string name)
