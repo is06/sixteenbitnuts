@@ -6,7 +6,7 @@ using System.IO;
 
 namespace SixteenBitNuts
 {
-    public class SpriteLoader
+    public class SpriteLoader : ISpriteLoader
     {
         private readonly Dictionary<string, Dictionary<string, SpriteAnimation>> loadedSpriteAnimations;
 
