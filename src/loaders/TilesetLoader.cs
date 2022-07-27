@@ -10,9 +10,14 @@ namespace SixteenBitNuts
 
         }
 
-        public Dictionary<int, TilesetFragment> LoadFragments(string name)
+        public string GetTextureFileName(string name)
         {
-            var fragments = new Dictionary<int, TilesetFragment>();
+            return "Graphics/Tilesets/" + name;
+        }
+
+        public Dictionary<string, TilesetFragment> LoadFragments(string name)
+        {
+            var fragments = new Dictionary<string, TilesetFragment>();
             int fragmentIndex = 0;
             string[] lines = File.ReadAllLines("Content/Definitions/Tilesets/" + name + ".tileset");
 
@@ -23,7 +28,7 @@ namespace SixteenBitNuts
                 switch (chunks[0])
                 {
                     case "fr":
-                        fragments.Add(fragmentIndex, CreateFragment(chunks));
+                        fragments.Add(fragmentIndex.ToString(), CreateFragment(chunks));
                         fragmentIndex++;
                         break;
                 }

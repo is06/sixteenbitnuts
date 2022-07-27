@@ -4,6 +4,7 @@ namespace SixteenBitNuts
 {
     public interface ITilesetLoader
     {
-        Dictionary<int, TilesetFragment> LoadFragments(string name);
+        string GetTextureFileName(string name);
+        Dictionary<string, TilesetFragment> LoadFragments(string name);
     }
 }
