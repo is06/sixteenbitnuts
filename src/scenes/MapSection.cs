@@ -30,7 +30,7 @@ namespace SixteenBitNuts
         /// <param name="sizeFromTileset"></param>
         /// <param name="overrideSize"></param>
         /// <param name="overrideLayer"></param>
-        public void CreateTile(int fragmentIndex, Point position, Point sizeFromTileset, Point? overrideSize = null, int? overrideLayer = null)
+        public void CreateTile(string fragmentIndex, Point position, Point sizeFromTileset, Point? overrideSize = null, int? overrideLayer = null)
         {
             Tiles.Add(new Tile
             {

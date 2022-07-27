@@ -4,7 +4,7 @@ namespace SixteenBitNuts
 {
     public struct Tile
     {
-        public int Index;
+        public string Index;
         public Point Position;
         public Point? OverrideSize;
         public int? OverrideLayer;

@@ -61,7 +61,7 @@ namespace SixteenBitNuts
         /// <param name="chunks"></param>
         private void AddTile(Map map, MapSection section, string[] chunks)
         {
-            int fragmentIndex = int.Parse(chunks[1]);
+            string fragmentIndex = chunks[1];
             var position = new Point
             {
                 X = int.Parse(chunks[2]),

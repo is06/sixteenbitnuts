@@ -52,13 +52,23 @@ namespace SixteenBitNuts
         {
             base.LoadContent();
 
+            LoadTilesetContent();
+            Player?.LoadContent();
+        }
+
+        private void LoadTilesetContent()
+        {
             if (Tileset is Tileset tileset && QuadBatch is QuadBatch batch)
             {
-                tileset.LoadContent();
-                batch.LoadContent("Graphics/Tilesets/" + tileset.Name);
+                if (tileset.TextureFileName is string texture)
+                {
+                    batch.LoadContent(texture);
+                }
+                else
+                {
+                    throw new EngineException("No tileset texture defined");
+                }
             }
-            
-            Player?.LoadContent();
         }
 
         public override void Update()
