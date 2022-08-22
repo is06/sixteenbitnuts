@@ -37,12 +37,16 @@ namespace SixteenBitNuts
         protected override void UpdateVelocity()
         {
             double radians = Direction.GetRadians();
-            if (radians != -1)
+            if ((int)radians != -1)
             {
                 // compute move with the direction
                 double x = Math.Cos(radians);
                 double y = -Math.Sin(radians);
                 Velocity = new Vector2((float)x, (float)y) * RunSpeed;
+            }
+            else
+            {
+                Velocity = Vector2.Zero;
             }
         }
     }

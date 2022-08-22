@@ -8,7 +8,7 @@ namespace SixteenBitNuts
         public Rectangle Bounds { get; private set; }
         public List<Tile> Tiles { get; private set; }
 
-        private readonly Map map;
+        protected readonly Map map;
 
         public MapSection(Map map, Rectangle bounds)
         {

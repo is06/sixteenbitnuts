@@ -100,13 +100,13 @@ namespace SixteenBitNuts
                 }
             }
 
-            if (vertices != null)
+            if (vertices != null && vertices.Length > 0)
             {
                 vertexBuffer = new VertexBuffer(game.GraphicsDevice, typeof(VertexPositionColorTexture), vertices.Length, BufferUsage.WriteOnly);
                 vertexBuffer.SetData(vertices);
             }
             
-            if (indices != null)
+            if (indices != null && indices.Length > 0)
             {
                 indexBuffer = new IndexBuffer(game.GraphicsDevice, typeof(short), indices.Length, BufferUsage.WriteOnly);
                 indexBuffer.SetData(indices);
@@ -119,7 +119,9 @@ namespace SixteenBitNuts
         /// <param name="transform">Transform matrix to apply</param>
         private void DrawPrimitivesFromBuffers(Matrix transform)
         {
-            if (vertices != null && indices != null && effect != null)
+            if (vertices != null && vertices.Length > 0
+                && indices != null && indices.Length > 0
+                && effect != null)
             {
                 game.GraphicsDevice.SetVertexBuffer(vertexBuffer);
                 game.GraphicsDevice.Indices = indexBuffer;

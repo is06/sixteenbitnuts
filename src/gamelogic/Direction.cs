@@ -56,6 +56,11 @@ namespace SixteenBitNuts
             };
         }
 
+        /// <summary>
+        /// Retrive the radian value of a given direction, -1 if the direction is none
+        /// </summary>
+        /// <param name="direction">The direction</param>
+        /// <returns>Radian value</returns>
         public static double GetRadians(this Direction direction)
         {
             return direction switch
