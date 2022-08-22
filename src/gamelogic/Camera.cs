@@ -11,7 +11,7 @@ namespace SixteenBitNuts
         {
             get
             {
-                Vector2 viewPortCenter = new Vector2(map.Game.InternalSize.X / 2, map.Game.InternalSize.Y / 2);
+                Vector2 viewPortCenter = new Vector2(map.ScrollAreaSize.X / 2, map.ScrollAreaSize.Y / 2);
                 Vector2 translation = -Position + viewPortCenter;
                 return Matrix.CreateTranslation((float)Math.Round(translation.X), (float)Math.Round(translation.Y), 0);
             }
@@ -26,8 +26,8 @@ namespace SixteenBitNuts
 
         public void Update()
         {
-            int hcenter = map.Game.InternalSize.X / 2;
-            int vcenter = map.Game.InternalSize.Y / 2;
+            int hcenter = map.ScrollAreaSize.X / 2;
+            int vcenter = map.ScrollAreaSize.Y / 2;
 
             int left = map.CurrentSection.Bounds.X + hcenter;
             int right = map.CurrentSection.Bounds.X + map.CurrentSection.Bounds.Width - hcenter;

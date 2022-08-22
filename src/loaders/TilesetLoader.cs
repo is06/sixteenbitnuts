@@ -19,7 +19,13 @@ namespace SixteenBitNuts
         {
             var fragments = new Dictionary<string, TilesetFragment>();
             int fragmentIndex = 0;
-            string[] lines = File.ReadAllLines("Content/Definitions/Tilesets/" + name + ".tileset");
+            string filePath = "Content/Definitions/Tilesets/" + name + ".tileset";
+            string[] lines = File.ReadAllLines(filePath);
+
+            if (lines.Length == 0 || lines[0] == "")
+            {
+                throw new EngineException("Tileset file is empty: " + filePath);
+            }
 
             foreach (string line in lines)
             {

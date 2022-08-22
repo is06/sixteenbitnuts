@@ -75,7 +75,7 @@ namespace SixteenBitNuts
             {
                 Value.X = Value.X == 0
                     ? game.InputInterface.Keyboard.GetAxis(mapping.Left, mapping.Right)
-                    : Value.Y;
+                    : Value.X;
                 Value.Y = Value.Y == 0
                     ? game.InputInterface.Keyboard.GetAxis(mapping.Up, mapping.Down)
                     : Value.Y;
