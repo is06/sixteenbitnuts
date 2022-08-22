@@ -35,6 +35,7 @@ namespace SixteenBitNuts
         // Private members
         private readonly GraphicsDeviceManager graphics;
         private RenderTarget2D? inGameRenderSurface;
+        private RenderTarget2D? mapRenderSurface;
         private VirtualButton debugDisplayButton;
         private Rectangle gameRenderBounds;
 
@@ -124,15 +125,50 @@ namespace SixteenBitNuts
         {
             base.Draw(gameTime);
 
-            // Change the render target to in game surface
-            GraphicsDevice.SetRenderTarget(inGameRenderSurface);
-            GraphicsDevice.Clear(Color.Black);
-
-            // Draws everything in game in the surface
-            CurrentScene?.Draw();
-            if (IsDebugDisplayOn)
+            if (CurrentScene?.RenderSurface is RenderTarget2D sceneSurface
+                && CurrentScene?.RenderDestinationBounds is Rectangle sceneRenderDestinationBounds)
             {
-                CurrentScene?.DebugDraw();
+                // Render in the scene render surface
+                GraphicsDevice.SetRenderTarget(sceneSurface); // 256x176
+                GraphicsDevice.Clear(Color.Black);
+
+                // Draws everything in the scene surface
+                CurrentScene?.Draw();
+
+                // Draws debug boxes
+                if (IsDebugDisplayOn)
+                {
+                    CurrentScene?.DebugDraw();
+                }
+
+                // Change the render target to in game surface
+                GraphicsDevice.SetRenderTarget(inGameRenderSurface); // 256x224
+                //GraphicsDevice.Clear(Color.Black);
+
+                // Draws scene surface in game surface
+                SpriteBatch?.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.PointClamp);
+                SpriteBatch?.Draw(
+                    texture: sceneSurface, // 256x176
+                    destinationRectangle: sceneRenderDestinationBounds, // 0,48 256x176
+                    sourceRectangle: sceneSurface.Bounds, 
+                    color: Color.White
+                );
+                SpriteBatch?.End();
+            }
+            else
+            {
+                // Change the render target to in game surface
+                GraphicsDevice.SetRenderTarget(inGameRenderSurface);
+                GraphicsDevice.Clear(Color.Red);
+
+                // Draws everything in the game surface
+                CurrentScene?.Draw();
+
+                // Draws debug boxes
+                if (IsDebugDisplayOn)
+                {
+                    CurrentScene?.DebugDraw();
+                }
             }
                 
             // Back to main framebuffer

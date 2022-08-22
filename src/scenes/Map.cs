@@ -40,6 +40,8 @@ namespace SixteenBitNuts
         {
             base.Initialize();
 
+            QuadBatch?.Initialize();
+
             if (loadFromDefinitionFile)
             {
                 Game.MapLoader?.LoadMapData(this, name);

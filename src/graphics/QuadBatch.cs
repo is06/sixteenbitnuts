@@ -20,7 +20,7 @@ namespace SixteenBitNuts
 
         public QuadBatch(Game game) : base(game)
         {
-            effect.TextureEnabled = true;
+            
         }
 
         /// <summary>
@@ -29,8 +29,12 @@ namespace SixteenBitNuts
         /// <param name="texturePath"></param>
         public void LoadContent(string texturePath)
         {
-            texture = game.Content.Load<Texture2D>(texturePath);
-            effect.Texture = texture;
+            if (effect is Effect)
+            {
+                texture = game.Content.Load<Texture2D>(texturePath);
+                effect.TextureEnabled = true;
+                effect.Texture = texture;
+            }
         }
 
         /// <summary>
