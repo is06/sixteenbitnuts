@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace SixteenBitNuts
 {
@@ -6,11 +7,14 @@ namespace SixteenBitNuts
     {
         public Game Game { get; private set; }
         public Point ScrollAreaSize { get; protected set; }
+        public RenderTarget2D? RenderSurface { get; protected set; }
+        public Rectangle RenderDestinationBounds { get; protected set; }
 
         public Scene(Game game)
         {
             Game = game;
             ScrollAreaSize = game.InternalSize;
+            RenderDestinationBounds = new Rectangle(Point.Zero, game.InternalSize);
         }
 
         public virtual void Initialize()
