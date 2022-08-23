@@ -10,5 +10,7 @@ namespace SixteenBitNuts
         public Point Size;
         public Point Position;
         public TileType Type;
+        public bool IsFlippedHorizontally;
+        public bool IsFlippedVertically;
     }
 }
