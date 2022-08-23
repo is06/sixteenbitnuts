@@ -35,7 +35,6 @@ namespace SixteenBitNuts
         // Private members
         private readonly GraphicsDeviceManager graphics;
         private RenderTarget2D? inGameRenderSurface;
-        private RenderTarget2D? mapRenderSurface;
         private VirtualButton debugDisplayButton;
         private Rectangle gameRenderBounds;
 
@@ -81,6 +80,7 @@ namespace SixteenBitNuts
 
             SpriteBatch = new SpriteBatch(GraphicsDevice);
             LineBatch = new LineBatch(this);
+            LineBatch?.Initialize();
 
             inGameRenderSurface = new RenderTarget2D(
                 GraphicsDevice,

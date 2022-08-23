@@ -125,7 +125,9 @@ namespace SixteenBitNuts
                         qfs[qfi] = new QuadFragment
                         {
                             Source = new Rectangle(tilesetFragment.Value.Position, tilesetFragment.Value.Size),
-                            Destination = new Rectangle(tile.Position, tilesetFragment.Value.Size)
+                            Destination = new Rectangle(tile.Position, tilesetFragment.Value.Size),
+                            IsFlippedHorizontally = tilesetFragment.Value.IsFlippedHorizontally,
+                            IsFlippedVertically = tilesetFragment.Value.IsFlippedVertically,
                         };
                         qfi++;
                     }

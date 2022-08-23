@@ -17,16 +17,11 @@ namespace SixteenBitNuts
             Tiles = new List<Tile>();
         }
 
-        public void Draw()
-        {
-
-        }
-
         /// <summary>
         /// Create a tile in the section and its corresponding solid in the map if applicable
         /// </summary>
-        /// <param name="fragmentIndex"></param>
-        /// <param name="position"></param>
+        /// <param name="fragmentIndex">Index of the fragment in the tileset</param>
+        /// <param name="position">Position of the tile in the map in pixels</param>
         /// <param name="sizeFromTileset"></param>
         /// <param name="overrideSize"></param>
         /// <param name="overrideLayer"></param>

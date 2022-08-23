@@ -7,6 +7,8 @@ namespace SixteenBitNuts
     {
         public Rectangle Source;
         public Rectangle Destination;
+        public bool IsFlippedHorizontally;
+        public bool IsFlippedVertically;
     }
 
     public class QuadBatch : PrimitiveBatch
@@ -51,7 +53,7 @@ namespace SixteenBitNuts
         /// <summary>
         /// Sets the vertex and index buffer from fragments to draw
         /// </summary>
-        /// <param name="fragments"></param>
+        /// <param name="fragments">Quad fragments to draw</param>
         private void SetBuffers(QuadFragment[] fragments)
         {
             fragmentCount = fragments.Length;
@@ -62,37 +64,52 @@ namespace SixteenBitNuts
             int indexCount = fragments.Length * 6;
             indices = new int[indexCount];
 
-            for (int i = 0; i < fragmentCount; i++)
+            if (texture is Texture2D tex && vertices != null && indices != null)
             {
-                int firstVertex = i * 4;
-                int firstIndex = i * 6;
+                float textureWidth = (float)tex.Width;
+                float textureHeight = (float)tex.Height;
 
-                if (texture is Texture2D tex && vertices != null && indices != null)
+                for (int i = 0; i < fragmentCount; i++)
                 {
-                    float left = (float)fragments[i].Source.X / (float)tex.Width;
-                    float top = (float)fragments[i].Source.Y / (float)tex.Height;
-                    float right = (float)fragments[i].Source.Width / (float)tex.Width + left;
-                    float bottom = (float)fragments[i].Source.Height / (float)tex.Height + top;
+                    int firstVertex = i * 4;
+                    int firstIndex = i * 6;
+
+                    float left = (float)fragments[i].Source.X / textureWidth;
+                    float top = (float)fragments[i].Source.Y / textureHeight;
+                    float right = (float)fragments[i].Source.Width / textureWidth + left;
+                    float bottom = (float)fragments[i].Source.Height / textureHeight + top;
 
                     vertices[firstVertex] = new VertexPositionColorTexture(
                         new Vector3(fragments[i].Destination.Left, fragments[i].Destination.Top, 0),
                         Color.White,
-                        new Vector2(left, top)
+                        new Vector2(
+                            fragments[i].IsFlippedHorizontally ? right : left,
+                            fragments[i].IsFlippedVertically ? bottom : top
+                        )
                     );
                     vertices[firstVertex + 1] = new VertexPositionColorTexture(
                         new Vector3(fragments[i].Destination.Left, fragments[i].Destination.Bottom, 0),
                         Color.White,
-                        new Vector2(left, bottom)
+                        new Vector2(
+                            fragments[i].IsFlippedHorizontally ? right : left,
+                            fragments[i].IsFlippedVertically ? top : bottom
+                        )
                     );
                     vertices[firstVertex + 2] = new VertexPositionColorTexture(
                         new Vector3(fragments[i].Destination.Right, fragments[i].Destination.Bottom, 0),
                         Color.White,
-                        new Vector2(right, bottom)
+                        new Vector2(
+                            fragments[i].IsFlippedHorizontally ? left : right,
+                            fragments[i].IsFlippedVertically ? top : bottom
+                        )
                     );
                     vertices[firstVertex + 3] = new VertexPositionColorTexture(
                         new Vector3(fragments[i].Destination.Right, fragments[i].Destination.Top, 0),
                         Color.White,
-                        new Vector2(right, top)
+                        new Vector2(
+                            fragments[i].IsFlippedHorizontally ? left : right,
+                            fragments[i].IsFlippedVertically ? bottom : top
+                        )
                     );
 
                     indices[firstIndex] = 0 + firstVertex;
@@ -136,11 +153,11 @@ namespace SixteenBitNuts
                 var cameraPosition = invertedTransform.Translation + new Vector3(0, 0, -1);
                 effect.View = Matrix.CreateLookAt(cameraPosition, invertedTransform.Translation, new Vector3(0, -1, 0));
 
+                int primitiveCount = fragmentCount * 2;
+
                 foreach (var pass in effect.CurrentTechnique.Passes)
                 {
                     pass.Apply();
-
-                    int primitiveCount = fragmentCount * 2;
 
                     // Draw current vertex and index buffer content
                     game.GraphicsDevice.DrawUserIndexedPrimitives(

@@ -57,7 +57,9 @@ namespace SixteenBitNuts
                     X = int.Parse(chunks[1]),
                     Y = int.Parse(chunks[2]),
                 },
-                Type = (TileType)int.Parse(chunks[5])
+                Type = (TileType)int.Parse(chunks[5]),
+                IsFlippedHorizontally = chunks[6] == "1",
+                IsFlippedVertically = chunks[7] == "1"
             };
             return fragment;
         }
