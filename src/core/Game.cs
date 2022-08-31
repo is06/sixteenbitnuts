@@ -159,7 +159,7 @@ namespace SixteenBitNuts
             {
                 // Change the render target to in game surface
                 GraphicsDevice.SetRenderTarget(inGameRenderSurface);
-                GraphicsDevice.Clear(Color.Red);
+                GraphicsDevice.Clear(Color.Black);
 
                 // Draws everything in the game surface
                 CurrentScene?.Draw();

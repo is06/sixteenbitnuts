@@ -17,6 +17,16 @@ namespace SixteenBitNuts
             Tiles = new List<Tile>();
         }
 
+        public void Update()
+        {
+
+        }
+
+        public void Draw()
+        {
+
+        }
+
         /// <summary>
         /// Create a tile in the section and its corresponding solid in the map if applicable
         /// </summary>
