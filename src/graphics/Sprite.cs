@@ -58,9 +58,13 @@ namespace SixteenBitNuts
                 firstAnimation = animation.Value;
                 break;
             }
+
             if (firstAnimation.OverrideFileName is string overrideFileName)
             {
                 // Load image with a png loader or something
+
+                // But for now, we load from mgcb
+                texture = game.Content.Load<Texture2D>(firstAnimation.OverrideFileName);
             }
             else
             {
