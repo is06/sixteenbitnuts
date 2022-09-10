@@ -21,8 +21,10 @@ namespace SixteenBitNuts
 
         // Properties
         public bool IsControllable { get; set; }
-        public Direction Direction { get; set; }
-        
+        public bool IsRunning { get; protected set; }
+        public Direction MoveDirection { get; set; }
+        public Direction LookDirection { get; set; }
+
         // Internal fields
         protected VirtualStick? runStick;
         protected bool IsIntersectingWithObstacle = false;
@@ -35,6 +37,7 @@ namespace SixteenBitNuts
         {
             RunSpeed = 1;
             IsControllable = true;
+            LookDirection = Direction.Right;
         }
 
         /// <summary>
@@ -46,9 +49,10 @@ namespace SixteenBitNuts
 
             runStick?.Update();
 
-            UpdateDirection();
+            UpdateMoveDirection();
             UpdateVelocity();
             UpdateStates();
+            UpdateSprite();
             OnBeforeApplyMoveAndDetectCollisions?.Invoke();
             ApplyMoveAndDetectCollisions();
             OnAfterApplyMoveAndDetectCollisions?.Invoke();
@@ -57,7 +61,7 @@ namespace SixteenBitNuts
         /// <summary>
         /// Override this function to define how the direction is updated
         /// </summary>
-        protected abstract void UpdateDirection();
+        protected abstract void UpdateMoveDirection();
 
         /// <summary>
         /// Override this function to define how the velocity is updated
@@ -68,6 +72,11 @@ namespace SixteenBitNuts
         /// Override this function to define states for the player after velocity computation
         /// </summary>
         protected virtual void UpdateStates()
+        {
+
+        }
+
+        protected virtual void UpdateSprite()
         {
 
         }

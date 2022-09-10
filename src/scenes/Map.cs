@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 
 namespace SixteenBitNuts
@@ -48,6 +49,11 @@ namespace SixteenBitNuts
             }
 
             Player?.Initialize();
+
+            foreach (var section in Sections)
+            {
+                section.Value.Initialize();
+            }
         }
 
         public override void LoadContent()
@@ -56,13 +62,18 @@ namespace SixteenBitNuts
 
             LoadTilesetContent();
             Player?.LoadContent();
+
+            foreach (var section in Sections)
+            {
+                section.Value.LoadContent();
+            }
         }
 
         private void LoadTilesetContent()
         {
             if (Tileset is Tileset tileset && QuadBatch is QuadBatch batch)
             {
-                if (tileset.TextureFileName is string texture)
+                if (tileset.Texture is Texture2D texture)
                 {
                     batch.LoadContent(texture);
                 }
@@ -85,6 +96,11 @@ namespace SixteenBitNuts
             }
             camera.Update();
 
+            foreach (var section in Sections)
+            {
+                section.Value.Update();
+            }
+
             foreach (var solid in Solids)
             {
                 solid.Update();
@@ -99,10 +115,27 @@ namespace SixteenBitNuts
 
             foreach (var section in Sections)
             {
-                section.Value.Draw();
+                section.Value.Draw(camera.Transform);
             }
 
             Player?.Draw(camera.Transform);
+        }
+
+        public override void DebugDraw()
+        {
+            base.DebugDraw();
+
+            Player?.DebugDraw(camera.Transform);
+
+            foreach (var solid in Solids)
+            {
+                solid.DebugDraw(camera.Transform);
+            }
+
+            foreach (var section in Sections)
+            {
+                section.Value.DebugDraw(camera.Transform);
+            }
         }
 
         private void DrawQuadBatch(Matrix transform)
@@ -135,18 +168,6 @@ namespace SixteenBitNuts
             }
 
             QuadBatch?.Draw(qfs, transform);
-        }
-
-        public override void DebugDraw()
-        {
-            base.DebugDraw();
-
-            Player?.DebugDraw(camera.Transform);
-
-            foreach (var solid in Solids)
-            {
-                solid.DebugDraw(camera.Transform);
-            }
         }
     }
 }

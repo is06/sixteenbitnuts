@@ -18,6 +18,22 @@ namespace SixteenBitNuts
 
     public static class DirectionHelper
     {
+        public static string Identifier(this Direction direction)
+        {
+            return direction switch
+            {
+                Direction.Left => "left",
+                Direction.Right => "right",
+                Direction.TopRight => "topright",
+                Direction.Top => "top",
+                Direction.TopLeft => "topleft",
+                Direction.BottomLeft => "bottomleft",
+                Direction.Bottom => "bottom",
+                Direction.BottomRight => "bottomright",
+                _ => "none",
+            };
+        }
+
         public static Direction Opposite(this Direction direction)
         {
             return direction switch

@@ -5,9 +5,11 @@ namespace SixteenBitNuts
 {
     public class MapLoader : IMapLoader
     {
-        public MapLoader()
-        {
+        private EntityFactory? entityFactory;
 
+        public void SetEntityFactory(EntityFactory factory)
+        {
+            entityFactory = factory;
         }
 
         public void LoadMapData(Map map, string name)
@@ -31,14 +33,16 @@ namespace SixteenBitNuts
                     case "ti":
                         AddTile(map, map.Sections[sectionIndex], chunks);
                         break;
+                    case "en":
+                        AddEntity(map, map.Sections[sectionIndex], chunks);
+                        break;
                 }
             }
         }
 
         private void InitTileset(Map map, string[] chunks)
         {
-            map.Tileset = new Tileset(map.Game, chunks[1]);
-            map.Tileset?.Initialize();
+            map.Tileset = map.Game.AssetManager?.GetTileset(chunks[1]);
         }
 
         private void BeginSection(Map map, string[] chunks)
@@ -75,6 +79,19 @@ namespace SixteenBitNuts
             else
             {
                 throw new System.Exception("Unable to get tileset component size for index " + fragmentIndex);
+            }
+        }
+
+        private void AddEntity(Map map, MapSection section, string[] chunks)
+        {
+            var type = chunks[1];
+            var name = chunks[2];
+            var position = new Point(int.Parse(chunks[3]), int.Parse(chunks[4]));
+
+            var entity = entityFactory?.CreateEntity(map, type, name, position, chunks);
+            if (entity is Entity)
+            {
+                section.Entities.Add(name, entity);
             }
         }
     }

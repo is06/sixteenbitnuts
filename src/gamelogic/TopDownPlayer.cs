@@ -23,11 +23,11 @@ namespace SixteenBitNuts
         /// <summary>
         /// Updates the current direction according to the virtual stick value
         /// </summary>
-        protected override void UpdateDirection()
+        protected override void UpdateMoveDirection()
         {
             if (runStick is VirtualStick stick)
             {
-                Direction = DirectionHelper.FromNormalizedVector(stick.Value);
+                MoveDirection = DirectionHelper.FromNormalizedVector(stick.Value);
             }
         }
 
@@ -36,7 +36,7 @@ namespace SixteenBitNuts
         /// </summary>
         protected override void UpdateVelocity()
         {
-            double radians = Direction.GetRadians();
+            double radians = MoveDirection.GetRadians();
             if ((int)radians != -1)
             {
                 // compute move with the direction

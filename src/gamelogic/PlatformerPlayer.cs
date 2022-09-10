@@ -8,15 +8,15 @@ namespace SixteenBitNuts
         public float Weight = 1f;
         public float JumpForce = -8f;
 
-        public bool IsJumping = false;
-        public bool IsFalling = false;
-        public bool IsTouchingTheGround = false;
-        public bool IsTouchingTheCeiling = false;
+        public bool IsJumping { get; private set; }
+        public bool IsFalling { get; private set; }
+        public bool IsTouchingTheGround { get; private set; }
+        public bool IsTouchingTheCeiling { get; private set; }
+
+        protected VirtualButton jumpButton;
 
         private bool isJumpButtonPressed = false;
         private bool wasOnTheGround = false;
-
-        protected VirtualButton jumpButton;
 
         public PlatformerPlayer(Map map, Point hitBoxSize) : base(map, hitBoxSize)
         {
@@ -32,13 +32,17 @@ namespace SixteenBitNuts
                 .AddButton(PlayerIndex.One, Buttons.A);
         }
 
-        protected override void UpdateDirection()
+        protected override void UpdateMoveDirection()
         {
             if (IsControllable)
             {
                 if (runStick is VirtualStick stick)
                 {
-                    Direction = DirectionHelper.FromNormalizedHorizontal((int)stick.Value.X);
+                    MoveDirection = DirectionHelper.FromNormalizedHorizontal((int)stick.Value.X);
+                    if (MoveDirection != Direction.None)
+                    {
+                        LookDirection = MoveDirection;
+                    }
                 }
             }
         }
@@ -57,11 +61,12 @@ namespace SixteenBitNuts
 
         private void UpdateRunVelocity()
         {
-            if (Direction == Direction.Left)
+            if (MoveDirection == Direction.Left)
             {
                 Velocity.X = -RunSpeed;
+                
             }
-            else if (Direction == Direction.Right)
+            else if (MoveDirection == Direction.Right)
             {
                 Velocity.X = RunSpeed;
             }
@@ -95,6 +100,17 @@ namespace SixteenBitNuts
         {
             base.UpdateStates();
 
+            // Running
+            if (MoveDirection == Direction.Left || MoveDirection == Direction.Right)
+            {
+                IsRunning = true;
+            }
+            else
+            {
+                IsRunning = false;
+            }
+
+            // Jump & Fall
             if (Velocity.Y > 0)
             {
                 IsFalling = true;
@@ -104,6 +120,16 @@ namespace SixteenBitNuts
             {
                 IsJumping = true;
                 IsFalling = false;
+            }
+        }
+
+        protected override void UpdateSprite()
+        {
+            base.UpdateSprite();
+
+            if (sprite is Sprite && LookDirection != Direction.None)
+            {
+                sprite.Direction = LookDirection;
             }
         }
 
