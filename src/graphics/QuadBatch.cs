@@ -28,12 +28,12 @@ namespace SixteenBitNuts
         /// <summary>
         /// Loads texture for this quad batch
         /// </summary>
-        /// <param name="texturePath"></param>
-        public void LoadContent(string texturePath)
+        /// <param name="texture"></param>
+        public void LoadContent(Texture2D texture)
         {
             if (effect is Effect)
             {
-                texture = game.Content.Load<Texture2D>(texturePath);
+                this.texture = texture;
                 effect.TextureEnabled = true;
                 effect.Texture = texture;
             }

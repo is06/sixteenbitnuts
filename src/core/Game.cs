@@ -23,11 +23,13 @@ namespace SixteenBitNuts
         public LineBatch? LineBatch { get; private set; }
 
         // Customizable services
+        public EntityFactory? EntityFactory { get; protected set; }
         public IMapLoader? MapLoader { get; protected set; }
         public ITilesetLoader? TilesetLoader { get; protected set; }
         public ISpriteLoader? SpriteLoader { get; protected set; }
         public IAuthoringTool? AuthoringTool { get; protected set; }
         public IAudioManager? AudioManager { get; protected set; }
+        public AssetManager? AssetManager { get; protected set; }
         
         // Component properties
         public Scene? CurrentScene { get; private set; }
@@ -44,7 +46,9 @@ namespace SixteenBitNuts
         public Game() : base()
         {
             InputInterface = new InputInterface();
+            EntityFactory = new EntityFactory();
             MapLoader = new MapLoader();
+            MapLoader.SetEntityFactory(EntityFactory);
             TilesetLoader = new TilesetLoader();
             SpriteLoader = new SpriteLoader();
             

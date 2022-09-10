@@ -35,7 +35,16 @@ namespace SixteenBitNuts
             }
         }
 
+        public Point RelativeCenterBottom
+        {
+            get
+            {
+                return new Point(collider.Bounds.Size.X / 2, collider.Bounds.Size.Y);
+            }
+        }
+
         protected Sprite? sprite;
+        protected Point spriteOffset = Point.Zero;
         protected readonly Map map;
         protected readonly Collider collider;
 
@@ -50,22 +59,20 @@ namespace SixteenBitNuts
 
         public virtual void Initialize()
         {
-            sprite?.Initialize();
         }
 
         public virtual void LoadContent()
         {
-            sprite?.LoadContent();
         }
 
         public virtual void Update()
         {
             collider.Update();
 
-            if (sprite is Sprite spr)
+            if (sprite is Sprite)
             {
-                spr.Position = Position;
-                spr.Update();
+                sprite.Position = Position + spriteOffset;
+                sprite.Update();
             }
         }
 
@@ -77,6 +84,16 @@ namespace SixteenBitNuts
         public virtual void DebugDraw(Matrix transform)
         {
             collider.DebugDraw(transform);
+        }
+
+        /// <summary>
+        /// Get the loaded sprite from the asset manager.
+        /// </summary>
+        /// <param name="name">The name of the loaded sprite to retrieve</param>
+        /// <returns>The sprite if loaded, null otherwise</returns>
+        protected Sprite? GetSprite(string name)
+        {
+            return map.Game.AssetManager?.GetSprite(name);
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.Xna.Framework.Graphics;
+using System.Collections.Generic;
 
 namespace SixteenBitNuts
 {
@@ -6,6 +7,7 @@ namespace SixteenBitNuts
     {
         public string Name { get; private set; }
         public string? TextureFileName { get; private set; }
+        public Texture2D? Texture { get; private set; }
 
         private readonly Game game;
         private Dictionary<string, TilesetFragment> fragments;
@@ -25,6 +27,11 @@ namespace SixteenBitNuts
                 TextureFileName = loader.GetTextureFileName(Name);
                 fragments = loader.LoadFragments(Name);
             }
+        }
+
+        public void LoadContent()
+        {
+            Texture = game.Content.Load<Texture2D>(TextureFileName);
         }
 
         /// <summary>

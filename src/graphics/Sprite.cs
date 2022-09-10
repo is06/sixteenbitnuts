@@ -24,7 +24,8 @@ namespace SixteenBitNuts
                 return null;
             }
         }
-        public Direction Direction { get; private set; }
+
+        public Direction Direction { get; set; }
 
         private readonly string name;
         private readonly Game game;
@@ -72,10 +73,28 @@ namespace SixteenBitNuts
             }
         }
 
+        public SpriteAnimation GetAnimation(string name)
+        {
+            return animations[name];
+        }
+
+        public void ChangeAnimation(string name, SpriteAnimation animation)
+        {
+            animations[name] = animation;
+        }
+
+        public void ChangeAnimationDirection(string name, Direction direction, SpriteAnimationDirection data)
+        {
+            animations[name].Directions[direction] = data;
+        }
+
         public void StartAnimation(string name)
         {
-            currentAnimationName = name;
-            currentFrame = 0.0f;
+            if (currentAnimationName != name)
+            {
+                currentAnimationName = name;
+                currentFrame = 0.0f;
+            }
         }
 
         public void Update()
@@ -121,6 +140,10 @@ namespace SixteenBitNuts
                 {
                     flipEffects |= SpriteEffects.FlipVertically;
                 }
+            }
+            else
+            {
+                throw new Exception("Animation '" + currentAnimationName + "' for sprite '" + name + "' was not found");
             }
         }
 
