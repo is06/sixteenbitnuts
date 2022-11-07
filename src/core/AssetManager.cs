@@ -17,11 +17,13 @@ namespace SixteenBitNuts
 
     public class AssetManager
     {
-        protected List<Asset> assetsToLoad = new List<Asset>();
-        protected readonly Game game;
+        protected List<string> tilesets = new List<string>();
+        protected List<string> sprites = new List<string>();
 
-        private Dictionary<string, Sprite> sprites = new Dictionary<string, Sprite>();
-        private Dictionary<string, Tileset> tilesets = new Dictionary<string, Tileset>();
+        private readonly Game game;
+
+        private readonly Dictionary<string, Sprite> loadedSprites = new Dictionary<string, Sprite>();
+        private readonly Dictionary<string, Tileset> loadedTilesets = new Dictionary<string, Tileset>();
 
         public AssetManager(Game game)
         {
@@ -30,62 +32,76 @@ namespace SixteenBitNuts
 
         public virtual void LoadContent()
         {
-            foreach (var asset in assetsToLoad)
+            LoadTilesets();
+            LoadSprites();
+        }
+
+        private void LoadSprites()
+        {
+            System.Console.WriteLine("Loading sprites...");
+
+            foreach (var sprite in sprites)
             {
-                switch (asset.Type)
+                if (sprite is string)
                 {
-                    case AssetType.Sprite:
-                        LoadSprite(asset.Name);
-                        break;
-                    case AssetType.Tileset:
-                        LoadTileset(asset.Name);
-                        break;
-                    default:
-                        throw new System.Exception("Unsupported asset type (" + asset.Type.ToString() + ") in AssetManager loading phase");
+                    LoadSprite(sprite);
+                }
+            }
+        }
+
+        private void LoadTilesets()
+        {
+            System.Console.WriteLine("Loading tilesets...");
+
+            foreach (var tileset in tilesets)
+            {
+                if (tileset is string)
+                {
+                    LoadTileset(tileset);
                 }
             }
         }
 
         private void LoadSprite(string name)
         {
-            System.Console.WriteLine("Loading sprite " + name + "...");
+            System.Console.WriteLine("  - " + name + "...");
 
             var sprite = new Sprite(game, name);
             sprite.Initialize();
             sprite.LoadContent();
 
-            sprites.Add(name, sprite);
+            loadedSprites.Add(name, sprite);
         }
 
         private void LoadTileset(string name)
         {
-            System.Console.WriteLine("Loading tileset " + name + "...");
+            System.Console.WriteLine("  - " + name + "...");
 
             var tileset = new Tileset(game, name);
             tileset.Initialize();
             tileset.LoadContent();
 
-            tilesets.Add(name, tileset);
+            loadedTilesets.Add(name, tileset);
         }
 
         public Sprite GetSprite(string name)
         {
-            if (!sprites.ContainsKey(name))
+            if (!loadedSprites.ContainsKey(name))
             {
                 throw new System.Exception("Unable to find sprite '" + name + "'. Did you reference it in the AssetManager loading phase?");
             }
 
-            return sprites[name];
+            return loadedSprites[name];
         }
 
         public Tileset GetTileset(string name)
         {
-            if (!tilesets.ContainsKey(name))
+            if (!loadedTilesets.ContainsKey(name))
             {
                 throw new System.Exception("Unable to find tileset '" + name + "'. Did you reference it in the AssetManager loading phase?");
             }
 
-            return tilesets[name];
+            return loadedTilesets[name];
         }
     }
 }

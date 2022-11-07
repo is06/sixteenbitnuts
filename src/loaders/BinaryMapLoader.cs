@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using System.IO;
-using System.Collections.Generic;
 
 namespace SixteenBitNuts
 {
