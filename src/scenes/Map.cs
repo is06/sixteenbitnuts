@@ -6,6 +6,7 @@ namespace SixteenBitNuts
 {
     public abstract class Map : Scene
     {
+        public string Name => name;
         public Tileset? Tileset { get; set; }
         public QuadBatch? QuadBatch { get; private set; }
         public Dictionary<int, MapSection> Sections { get; private set; }

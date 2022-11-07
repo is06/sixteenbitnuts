@@ -3,6 +3,9 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace SixteenBitNuts
 {
+    /// <summary>
+    /// Structure representing a quad instance to draw using a quad batch
+    /// </summary>
     public struct QuadFragment
     {
         public Rectangle Source;
@@ -11,6 +14,9 @@ namespace SixteenBitNuts
         public bool IsFlippedVertically;
     }
 
+    /// <summary>
+    /// Used to draw quad instances (fragments) using vertices
+    /// </summary>
     public class QuadBatch : PrimitiveBatch
     {
         private int fragmentCount;
@@ -20,15 +26,16 @@ namespace SixteenBitNuts
         private int[]? indices;
         private Texture2D? texture;
 
-        public QuadBatch(Game game) : base(game)
-        {
-            
-        }
+        /// <summary>
+        /// Constructs the instance of the quad batch for a game
+        /// </summary>
+        /// <param name="game">Game where to create the batch</param>
+        public QuadBatch(Game game) : base(game) {}
 
         /// <summary>
         /// Loads texture for this quad batch
         /// </summary>
-        /// <param name="texture"></param>
+        /// <param name="texture">Texture to load</param>
         public void LoadContent(Texture2D texture)
         {
             if (effect is Effect)
@@ -40,7 +47,7 @@ namespace SixteenBitNuts
         }
 
         /// <summary>
-        /// Draws all quad fragments for the current texture
+        /// Draws all quad fragments for the loaded texture
         /// </summary>
         /// <param name="fragments">List of quad fragments to draw</param>
         /// <param name="transform">Transform matrix to apply</param>
@@ -74,10 +81,10 @@ namespace SixteenBitNuts
                     int firstVertex = i * 4;
                     int firstIndex = i * 6;
 
-                    float left = (float)fragments[i].Source.X / textureWidth;
-                    float top = (float)fragments[i].Source.Y / textureHeight;
-                    float right = (float)fragments[i].Source.Width / textureWidth + left;
-                    float bottom = (float)fragments[i].Source.Height / textureHeight + top;
+                    float left = fragments[i].Source.X / textureWidth;
+                    float top = fragments[i].Source.Y / textureHeight;
+                    float right = fragments[i].Source.Width / textureWidth + left;
+                    float bottom = fragments[i].Source.Height / textureHeight + top;
 
                     vertices[firstVertex] = new VertexPositionColorTexture(
                         new Vector3(fragments[i].Destination.Left, fragments[i].Destination.Top, 0),

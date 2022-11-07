@@ -3,7 +3,10 @@ using System.IO;
 
 namespace SixteenBitNuts
 {
-    public class MapLoader : IMapLoader
+    /// <summary>
+    /// This map loader is for loading text format maps, meant for quickly testing customizable map definition files.
+    /// </summary>
+    public class TextFormatMapLoader : IMapLoader
     {
         private EntityFactory? entityFactory;
 
