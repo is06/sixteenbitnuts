@@ -22,11 +22,12 @@ namespace SixteenBitNuts
         public SpriteBatch? SpriteBatch { get; private set; }
         public LineBatch? LineBatch { get; private set; }
 
-        // Customizable services
+        // Overridable services
         public EntityFactory? EntityFactory { get; protected set; }
         public IMapLoader? MapLoader { get; protected set; }
         public ITilesetLoader? TilesetLoader { get; protected set; }
         public ISpriteLoader? SpriteLoader { get; protected set; }
+        public BinaryMapWriter? MapWriter { get; protected set; }
         public IAuthoringTool? AuthoringTool { get; protected set; }
         public IAudioManager? AudioManager { get; protected set; }
         public AssetManager? AssetManager { get; protected set; }
@@ -47,10 +48,11 @@ namespace SixteenBitNuts
         {
             InputInterface = new InputInterface();
             EntityFactory = new EntityFactory();
-            MapLoader = new MapLoader();
+            MapLoader = new TextFormatMapLoader();
             MapLoader.SetEntityFactory(EntityFactory);
             TilesetLoader = new TilesetLoader();
             SpriteLoader = new SpriteLoader();
+            MapWriter = new BinaryMapWriter();
             
             WindowTitle = "Untitled game";
             WindowInitSize = new Point(1280, 720);
@@ -80,8 +82,10 @@ namespace SixteenBitNuts
                 CullMode = CullMode.CullCounterClockwiseFace
             };
 
+            // Time computation
             TargetElapsedTime = new TimeSpan((int)(1000f / FrameRate * 10000f));
 
+            // Graphic batches
             SpriteBatch = new SpriteBatch(GraphicsDevice);
             LineBatch = new LineBatch(this);
             LineBatch?.Initialize();
@@ -95,6 +99,7 @@ namespace SixteenBitNuts
                 DepthFormat.Depth24
             );
 
+            // Other services initializations
             AuthoringTool?.Initialize();
             AudioManager?.Initialize();
 

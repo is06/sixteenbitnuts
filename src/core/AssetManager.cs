@@ -48,6 +48,8 @@ namespace SixteenBitNuts
 
         private void LoadSprite(string name)
         {
+            System.Console.WriteLine("Loading sprite " + name + "...");
+
             var sprite = new Sprite(game, name);
             sprite.Initialize();
             sprite.LoadContent();
@@ -57,6 +59,8 @@ namespace SixteenBitNuts
 
         private void LoadTileset(string name)
         {
+            System.Console.WriteLine("Loading tileset " + name + "...");
+
             var tileset = new Tileset(game, name);
             tileset.Initialize();
             tileset.LoadContent();

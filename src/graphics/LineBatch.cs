@@ -12,10 +12,7 @@ namespace SixteenBitNuts
 
     public class LineBatch : PrimitiveBatch
     {
-        public LineBatch(Game game) : base(game)
-        {
-
-        }
+        public LineBatch(Game game) : base(game) {}
 
         public void Draw(Line[] lines, Matrix transform)
         {
