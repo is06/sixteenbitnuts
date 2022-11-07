@@ -6,7 +6,7 @@ namespace SixteenBitNuts
     {
         public string Name { get; private set; }
 
-        public Entity(Map map, Point hitBoxSize, string name) : base(map, hitBoxSize)
+        public Entity(Map map, string name, Point? hitBoxSize = null) : base(map, hitBoxSize)
         {
             Name = name;
         }

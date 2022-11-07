@@ -67,7 +67,7 @@ namespace SixteenBitNuts
         /// <param name="sizeFromTileset"></param>
         /// <param name="overrideSize"></param>
         /// <param name="overrideLayer"></param>
-        public void CreateTile(string fragmentIndex, Point position, Point sizeFromTileset, Point? overrideSize = null, int? overrideLayer = null)
+        public void CreateTile(string fragmentIndex, Point position, Point sizeFromTileset, TileType tileType, Point? overrideSize = null, int? overrideLayer = null)
         {
             Tiles.Add(new Tile
             {
@@ -77,8 +77,10 @@ namespace SixteenBitNuts
                 OverrideLayer = overrideLayer,
             });
 
-            // TODO: Do that only if the fragment is an obstacle!!!
-            map.Solids.Add(new Solid(map.Game, new Rectangle(position, overrideSize ?? sizeFromTileset)));
+            if (tileType == TileType.Obstacle)
+            {
+                map.Solids.Add(new Solid(map.Game, new Rectangle(position, overrideSize ?? sizeFromTileset)));
+            }
         }
 
         /// <summary>

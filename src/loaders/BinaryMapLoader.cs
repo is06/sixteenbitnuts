@@ -104,6 +104,7 @@ namespace SixteenBitNuts
                     fragmentIndex: pattern,
                     position: bounds.Location,
                     sizeFromTileset: fragment.Value.Size,
+                    tileType: fragment.Value.Type,
                     overrideSize: bounds.Size,
                     overrideLayer: overrideLayer
                 );

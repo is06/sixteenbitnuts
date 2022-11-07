@@ -18,7 +18,7 @@ namespace SixteenBitNuts
         private bool isJumpButtonPressed = false;
         private bool wasOnTheGround = false;
 
-        public PlatformerPlayer(Map map, Point hitBoxSize) : base(map, hitBoxSize)
+        public PlatformerPlayer(Map map, Point? hitBoxSize = null) : base(map, hitBoxSize)
         {
             OnCollideVertically += PlatformerPlayer_OnCollideVertically;
             OnBeforeApplyMoveAndDetectCollisions += PlatformerPlayer_ApplyGravity;

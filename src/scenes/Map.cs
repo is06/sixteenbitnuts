@@ -21,6 +21,14 @@ namespace SixteenBitNuts
             }
         }
 
+        public Dictionary<string, Entity> CurrentSectionEntities
+        {
+            get
+            {
+                return CurrentSection.Entities;
+            }
+        }
+
         private readonly Camera camera;
         private readonly string name;
         private readonly bool loadFromDefinitionFile;

@@ -7,13 +7,12 @@ namespace SixteenBitNuts
     /// </summary>
     public abstract class Player : Actor
     {
-        public delegate void CollisionSideHandler(CollisionSide side);
         public delegate void LifeCycleStepHandler();
 
-        public event CollisionSideHandler? OnCollideVertically;
-        public event CollisionSideHandler? OnCollideHorizontally;
         public event LifeCycleStepHandler? OnBeforeApplyMoveAndDetectCollisions;
         public event LifeCycleStepHandler? OnAfterApplyMoveAndDetectCollisions;
+        public event CollisionSideHandler? OnCollideVertically;
+        public event CollisionSideHandler? OnCollideHorizontally;
 
         // Public fields (for authoring edit)
         public float RunSpeed;
@@ -33,7 +32,7 @@ namespace SixteenBitNuts
         /// Creates a player for the given map
         /// </summary>
         /// <param name="map">Map in which the player will be created</param>
-        public Player(Map map, Point hitBoxSize) : base(map, hitBoxSize)
+        public Player(Map map, Point? hitBoxSize = null) : base(map, hitBoxSize)
         {
             RunSpeed = 1;
             IsControllable = true;
