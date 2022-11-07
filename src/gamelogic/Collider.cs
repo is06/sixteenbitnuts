@@ -32,7 +32,7 @@ namespace SixteenBitNuts
         /// </summary>
         /// <param name="solids">List of solids to test</param>
         /// <param name="offset">An offset to apply to the overlapping test</param>
-        /// <returns>True if the collider is overlapping any solid</returns>
+        /// <returns>The solid that is overlapping, null if no overlapping occurs</returns>
         public Solid? GetOverlappingSolid(List<Solid> solids, Point offset)
         {
             foreach (var solid in solids)
@@ -40,6 +40,24 @@ namespace SixteenBitNuts
                 if (IsOverlappingWith(solid.Bounds, offset))
                 {
                     return solid;
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Determines if the current actor collider is overlapping any entity in the current map section
+        /// </summary>
+        /// <param name="entities">Dictionnary of entities to test</param>
+        /// <param name="offset">An offset to apply to the overlapping test</param>
+        /// <returns>The entity that is overlapping, null if no overlapping occurs</returns>
+        public Entity? GetOverlappingEntity(Dictionary<string, Entity> entities, Point offset)
+        {
+            foreach (var entity in entities)
+            {
+                if (IsOverlappingWith(entity.Value.Bounds, offset))
+                {
+                    return entity.Value;
                 }
             }
             return null;

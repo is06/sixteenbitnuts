@@ -77,7 +77,7 @@ namespace SixteenBitNuts
             var fragmentOrNull = map.Tileset?.GetTilesetFragmentFromIndex(fragmentIndex);
             if (fragmentOrNull is TilesetFragment fragment)
             {
-                section.CreateTile(fragmentIndex, position, fragment.Size);
+                section.CreateTile(fragmentIndex, position, fragment.Size, tileType: fragment.Type);
             }
             else
             {

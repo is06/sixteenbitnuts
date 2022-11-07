@@ -9,7 +9,7 @@ namespace SixteenBitNuts
             switch (type)
             {
                 case "SpawnPoint":
-                    return new SpawnPoint(map, new Point(16, 16), name)
+                    return new SpawnPoint(map, name)
                     {
                         Position = position
                     };

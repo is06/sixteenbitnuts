@@ -4,7 +4,7 @@ namespace SixteenBitNuts
 {
     public class Enemy : Entity
     {
-        public Enemy(Map map, Point hitBoxSize, string name) : base(map, hitBoxSize, name)
+        public Enemy(Map map, string name) : base(map, name)
         {
 
         }
